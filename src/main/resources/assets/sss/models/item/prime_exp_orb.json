@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "sss:item/prime_exp_orb"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "block.sss.crusted_magma_block": "Crusted Magma Block",
+  "block.sss.crusted_magma_block_0": "Crusted Magma",
+  "block.sss.crusted_magma_block_1": "Crusted Magma",
+  "block.sss.crusted_magma_block_2": "Crusted Magma",
+  "block.sss.crusted_magma_block_3": "Crusted Magma",
+  "block.sss.prime_exp_grinder": "Prime EXP Grinder",
+
+  "enchantment.sss.magma_walker": "Magma Walker",
+  "enchantment.sss.magma_walker.desc": "Solidifies lava if you slowly step on it  [Boots]",
+
+  "itemGroup.sss.creative_tab": "Level Up System",
+  "item.sss.mod_icon": "LUS Mod Icon",
+
+  "container.prime_exp_grinder_title": "Prime EXP Grinder",
+
+  "item.sss.prime_exp_book": "Prime EXP Book",
+  "item.sss.prime_exp_grinder": "Prime EXP Grinder",
+  "item.sss.prime_exp_orb": "Prime EXP",
+
+  "entity.minecraft.villager.sss.soundmaster": "Sound Master"
+}

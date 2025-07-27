@@ -1,0 +1,57 @@
+{
+  "variants": {
+    "face=ceiling,facing=east": {
+      "model": "sss:block/prime_exp_grinder",
+      "x": 180,
+      "y": 270
+    },
+    "face=ceiling,facing=north": {
+      "model": "sss:block/prime_exp_grinder",
+      "x": 180,
+      "y": 180
+    },
+    "face=ceiling,facing=south": {
+      "model": "sss:block/prime_exp_grinder",
+      "x": 180
+    },
+    "face=ceiling,facing=west": {
+      "model": "sss:block/prime_exp_grinder",
+      "x": 180,
+      "y": 90
+    },
+    "face=floor,facing=east": {
+      "model": "sss:block/prime_exp_grinder",
+      "y": 90
+    },
+    "face=floor,facing=north": {
+      "model": "sss:block/prime_exp_grinder"
+    },
+    "face=floor,facing=south": {
+      "model": "sss:block/prime_exp_grinder",
+      "y": 180
+    },
+    "face=floor,facing=west": {
+      "model": "sss:block/prime_exp_grinder",
+      "y": 270
+    },
+    "face=wall,facing=east": {
+      "model": "sss:block/prime_exp_grinder",
+      "x": 90,
+      "y": 90
+    },
+    "face=wall,facing=north": {
+      "model": "sss:block/prime_exp_grinder",
+      "x": 90
+    },
+    "face=wall,facing=south": {
+      "model": "sss:block/prime_exp_grinder",
+      "x": 90,
+      "y": 180
+    },
+    "face=wall,facing=west": {
+      "model": "sss:block/prime_exp_grinder",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

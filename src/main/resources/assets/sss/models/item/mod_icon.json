@@ -1,0 +1,15 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "sss:item/mod_icon"
+  },
+  "display": {
+    "gui": {
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ]
+    }
+  }
+}
