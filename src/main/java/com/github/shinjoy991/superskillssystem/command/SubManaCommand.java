@@ -11,10 +11,10 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 
-public class ManaCommand {
+public class SubManaCommand {
 
-    public ManaCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("AddMana")
+    public SubManaCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
+        dispatcher.register(Commands.literal("SubMana")
                 .requires(commandSource -> commandSource.hasPermission(4)).executes((command) -> CustomCommand1a(command.getSource())));
     }
 
@@ -25,10 +25,10 @@ public class ManaCommand {
             if (!player.level().isClientSide && player.level().getServer() != null) {
                 if (true) {
                     // Reset the player's prime exp to 0
-                    AllPlayersInfo.get(player.getUUID()).addMana(1);
+                    AllPlayersInfo.get(player.getUUID()).addMana(-1);
                     MutableComponent message = Component.literal("[Super Skills System]")
                             .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD))
-                            .append(Component.literal(" Added 1 Mana").setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
+                            .append(Component.literal(" Added -1 Mana").setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
                     player.sendSystemMessage(message);
 
                 } else {

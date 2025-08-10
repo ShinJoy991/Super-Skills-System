@@ -137,7 +137,7 @@ repositories {
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html#sub:flat_dir_resolver
     flatDir {
-        dir 'C:/Users/Admin/IdeaProjects'
+        dir 'C:/Users/Admin/IdeaProjects/mods'
     }
 }
 
@@ -159,6 +159,9 @@ dependencies {
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
     // The group id is ignored when searching -- in this case, it is "blank"
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
+    runtimeOnly fg.deobf("blank:AttributeFix-Forge-1.20.1:21.0.4")
+    runtimeOnly fg.deobf("blank:Jade-1.20.1:11.13.1")
+    runtimeOnly fg.deobf("blank:create_custom_command-1.19.1v2.0:1.19.1v2.0")
 
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html

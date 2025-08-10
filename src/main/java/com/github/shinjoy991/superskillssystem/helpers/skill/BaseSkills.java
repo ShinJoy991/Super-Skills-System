@@ -1,28 +1,22 @@
 package com.github.shinjoy991.superskillssystem.helpers.skill;
 
-public enum SkillTag {
-    ATK("attack"),
-    DEFENSE("defense"),
-    SPEED("speed"),
-    HP("health"),
-    MANA_FLAT("mana_flat"),
-    MANA_PERCENT("mana_percent"),
-    CRIT_CHANCE("crit_chance"),
-    CRIT_DAMAGE("crit_damage"),
-    LIFESTEAL("lifesteal"),
-    REGENERATION("regeneration"),
-    ARMOR_PENETRATION("armor_penetration");
+public enum BaseSkills {
+    OVERLORD_SUTRA("overlord_sutra"),
+    TYRANT_BODY_DIVINE_TECHNIQUE("tyrant_body_divine_technique"),
+    SKILL3("skill3_name");
 
-    private final String tag;
+    private final String skillName;
 
-    SkillTag(String tag) {
-        this.tag = tag;
+    BaseSkills(String skillName) {
+        this.skillName = skillName;
     }
 
-    public String getTag() {
-        return tag;
+    public String string() {
+        return skillName;
     }
-    public static SkillTag fromName(String name) {
-        return SkillTag.valueOf(name.toUpperCase());
+
+    @Override
+    public String toString() {
+        return skillName;
     }
 }

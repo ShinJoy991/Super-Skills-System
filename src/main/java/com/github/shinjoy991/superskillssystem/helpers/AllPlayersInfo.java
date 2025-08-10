@@ -7,10 +7,13 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AllPlayersInfo {
-    public static HashMap<UUID, PlayerInfo> allPlayersInfo = new HashMap<>();
+    private static final Map<UUID, PlayerInfo> allPlayersInfo = new ConcurrentHashMap<>();
+
     private static ServerLevel serverLevelData;
 
     public static void init() {

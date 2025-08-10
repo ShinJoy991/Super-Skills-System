@@ -24,7 +24,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import com.github.shinjoy991.superskillssystem.gui.PrimeEXPGrinderMenu;
+import com.github.shinjoy991.superskillssystem.gui.menu.PrimeEXPGrinderMenu;
 
 public class PrimeEXPGrinder extends FaceAttachedHorizontalDirectionalBlock {
 

@@ -18,5 +18,47 @@
   "item.sss.prime_exp_grinder": "Prime EXP Grinder",
   "item.sss.prime_exp_orb": "Prime EXP",
 
-  "entity.minecraft.villager.sss.soundmaster": "Sound Master"
+  "entity.minecraft.villager.sss.soundmaster": "Sound Master",
+
+  "skill.info.atk": "Melee ATK ",
+  "skill.info.defense": "Defense ",
+  "skill.info.magic": "Magic ",
+  "skill.info.speed": "Speed ",
+  "skill.info.unknown": "Skill Info UNK",
+
+  "skill.name.overlord_sutra": "Overlord Sutra",
+  "skill.name.tyrant_body_divine_technique": "Tyrant Body Divine Technique",
+
+  "skill.type.passive": "Passive",
+  "title.sect": "Sect",
+  "sentence.playerinfo.uuid": "View detail",
+  "title.name": "Name",
+  "title.playerinfo": "Player Info",
+  "title.detailinfo": "Detail Info",
+  "title.skillinfo": "Skill Info",
+  "sentence.detail.strength": "Strength affects",
+  "sentence.detail.vitality": "Vitality affects",
+  "sentence.detail.agility": "Agility affects",
+  "sentence.detail.intelligence": "Intelligence affects",
+  "sentence.detail.perception": "Perception affects",
+  "sentence.detail.level": "Each level will accumulate 3 attribute points, prime exp can be get from special activities like",
+  "title.str": "STR",
+  "title.vit": "VIT",
+  "title.agi": "AGI",
+  "title.int": "INT",
+  "title.per": "PER",
+  "title.title": "title",
+  "title.used": "Used",
+  "title.statpoints": "Stat points",
+  "title.level": "level",
+  "title.hp": "HP",
+  "title.mp": "MP",
+  "title.exp": "EXP",
+
+  "death.attack.sss.fixed_damage": "%1$s was slain by %2$s",
+  "label.sect_villager.skill_master": "Skill Master",
+
+  "sect_type.warrior": "Warrior",
+  "sect_type.sect_1": "This Sect 1",
+  "label.sect_villager.skills": "Skills"
 }

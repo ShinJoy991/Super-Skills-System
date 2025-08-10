@@ -2,10 +2,13 @@ package com.github.shinjoy991.superskillssystem.network.server;
 
 import com.github.shinjoy991.superskillssystem.helpers.AllPlayersInfo;
 import com.github.shinjoy991.superskillssystem.helpers.PlayerInfo;
+import com.github.shinjoy991.superskillssystem.helpers.SterilizeTags;
+import com.github.shinjoy991.superskillssystem.network.ModNetworking;
+import com.github.shinjoy991.superskillssystem.network.client.InfoChangeUpdateS2C;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -44,9 +47,12 @@ public class AttPointChangeRequestC2S {
                         return;
                     }
                     int verifiedAmount = amount;
+//                    System.out.println("Server received request");
                     if (amount > 0) {
                         // Kiểm tra xem có đủ điểm để cộng không
+//                        System.out.println("A1");
                         if (playerInfo.getTotalAttPoint() - playerInfo.getUsedAttPoint() < amount) {
+//                            System.out.println("A2");
                             verifiedAmount = playerInfo.getTotalAttPoint() - playerInfo.getUsedAttPoint();
                         }
                     } else { // amount < 0
@@ -76,6 +82,78 @@ public class AttPointChangeRequestC2S {
                             playerInfo.addPerPoint(actualAmount);
                         }
                         playerInfo.addUsedAttPoint(actualAmount);
+                    switch (type) {
+                        case 0 -> {
+                            CompoundTag sendTag = new CompoundTag();
+                            sendTag.putInt(SterilizeTags.STR_POINT.name(), playerInfo.getStrPoint());
+                            sendTag.putInt(SterilizeTags.TOTAL_STR.name(), playerInfo.getTotalStr());
+                            sendTag.putInt(SterilizeTags.USED_ATT_POINT.name(), playerInfo.getUsedAttPoint());
+                            sendTag.putFloat(SterilizeTags.ATK_DMG.name(), playerInfo.getAtkDmg());
+                            sendTag.putFloat(SterilizeTags.DEF.name(), playerInfo.getDef());
+                            sendTag.putFloat(SterilizeTags.DEF_PEN.name(), playerInfo.getDefPen());
+                            sendTag.putFloat(SterilizeTags.ATTACK_SPEED.name(), playerInfo.getAttackSpeed());
+                            sendTag.putFloat(SterilizeTags.DMG_RED.name(), playerInfo.getDmgRed());
+                            sendTag.putFloat(SterilizeTags.ACCURACY.name(), playerInfo.getAccuracy());
+                            ModNetworking.INSTANCE.sendTo(new InfoChangeUpdateS2C(sendTag), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+                        }
+                        case 1 -> {
+                            CompoundTag sendTag = new CompoundTag();
+                            sendTag.putInt(SterilizeTags.VIT_POINT.name(), playerInfo.getVitPoint());
+                            sendTag.putInt(SterilizeTags.TOTAL_VIT.name(), playerInfo.getTotalVit());
+                            sendTag.putInt(SterilizeTags.USED_ATT_POINT.name(), playerInfo.getUsedAttPoint());
+                            sendTag.putFloat(SterilizeTags.DEF.name(), playerInfo.getDef());
+                            sendTag.putFloat(SterilizeTags.MAGIC_DEF.name(), playerInfo.getMagDef());
+                            sendTag.putFloat(SterilizeTags.MAGIC_RESIST.name(), playerInfo.getMagResist());
+                            sendTag.putFloat(SterilizeTags.DMG_RED.name(), playerInfo.getDmgRed());
+                            sendTag.putFloat(SterilizeTags.RESISTANCE.name(), playerInfo.getResistance());
+                            sendTag.putFloat(SterilizeTags.HEAL_REGEN.name(), playerInfo.getHealRegen());
+                            ModNetworking.INSTANCE.sendTo(new InfoChangeUpdateS2C(sendTag), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+                        }
+                        case 2 -> {
+                            CompoundTag sendTag = new CompoundTag();
+                            sendTag.putInt(SterilizeTags.AGI_POINT.name(), playerInfo.getAgiPoint());
+                            sendTag.putInt(SterilizeTags.TOTAL_AGI.name(), playerInfo.getTotalAgi());
+                            sendTag.putInt(SterilizeTags.USED_ATT_POINT.name(), playerInfo.getUsedAttPoint());
+                            sendTag.putFloat(SterilizeTags.ATK_DMG.name(), playerInfo.getAtkDmg());
+                            sendTag.putFloat(SterilizeTags.RANGE_DMG.name(), playerInfo.getRangeDmg());
+                            sendTag.putFloat(SterilizeTags.ATTACK_SPEED.name(), playerInfo.getAttackSpeed());
+                            sendTag.putFloat(SterilizeTags.ACCURACY.name(), playerInfo.getAccuracy());
+                            sendTag.putFloat(SterilizeTags.SPEED.name(), playerInfo.getSpeed());
+                            sendTag.putFloat(SterilizeTags.EVASION.name(), playerInfo.getEvasion());
+                            ModNetworking.INSTANCE.sendTo(new InfoChangeUpdateS2C(sendTag), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+                        }
+                        case 3 -> {
+                            CompoundTag sendTag = new CompoundTag();
+                            sendTag.putInt(SterilizeTags.INT_POINT.name(), playerInfo.getIntPoint());
+                            sendTag.putInt(SterilizeTags.TOTAL_INT.name(), playerInfo.getTotalInt());
+                            sendTag.putInt(SterilizeTags.USED_ATT_POINT.name(), playerInfo.getUsedAttPoint());
+                            sendTag.putFloat(SterilizeTags.MAGIC_DMG.name(), playerInfo.getMagicDmg());
+                            sendTag.putFloat(SterilizeTags.MAGIC_DEF.name(), playerInfo.getMagDef());
+                            sendTag.putFloat(SterilizeTags.MAGIC_PEN.name(), playerInfo.getMagicPen());
+                            sendTag.putFloat(SterilizeTags.MAGIC_RESIST.name(), playerInfo.getMagResist());
+                            sendTag.putFloat(SterilizeTags.RESISTANCE.name(), playerInfo.getResistance());
+                            sendTag.putFloat(SterilizeTags.MAX_MANA.name(), playerInfo.getMaxMana());
+                            ModNetworking.INSTANCE.sendTo(new InfoChangeUpdateS2C(sendTag), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+                        }
+                        case 4 -> {
+                            CompoundTag sendTag = new CompoundTag();
+                            sendTag.putInt(SterilizeTags.PER_POINT.name(), playerInfo.getPerPoint());
+                            sendTag.putInt(SterilizeTags.TOTAL_PER.name(), playerInfo.getTotalPer());
+                            sendTag.putInt(SterilizeTags.USED_ATT_POINT.name(), playerInfo.getUsedAttPoint());
+                            sendTag.putFloat(SterilizeTags.MAGIC_DMG.name(), playerInfo.getMagicDmg());
+                            sendTag.putFloat(SterilizeTags.DEF.name(), playerInfo.getDef());
+                            sendTag.putFloat(SterilizeTags.MAGIC_DEF.name(), playerInfo.getMagDef());
+                            sendTag.putFloat(SterilizeTags.MAGIC_RESIST.name(), playerInfo.getMagResist());
+                            sendTag.putFloat(SterilizeTags.SPEED.name(), playerInfo.getSpeed());
+                            sendTag.putFloat(SterilizeTags.DMG_RED.name(), playerInfo.getDmgRed());
+                            sendTag.putFloat(SterilizeTags.RESISTANCE.name(), playerInfo.getResistance());
+                            sendTag.putFloat(SterilizeTags.EVASION.name(), playerInfo.getEvasion());
+                            sendTag.putFloat(SterilizeTags.MANA_REGEN.name(), playerInfo.getManaRegen());
+                            sendTag.putFloat(SterilizeTags.MAX_MANA.name(), playerInfo.getMaxMana());
+                            ModNetworking.INSTANCE.sendTo(new InfoChangeUpdateS2C(sendTag), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+                        }
+
+                    }
             }
         });
         context.get().setPacketHandled(true);

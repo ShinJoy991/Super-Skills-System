@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import com.github.shinjoy991.superskillssystem.gui.PrimeEXPGrinderMenu;
+import com.github.shinjoy991.superskillssystem.gui.menu.PrimeEXPGrinderMenu;
 
 @OnlyIn(Dist.CLIENT)
 public class PrimeEXPGrinderScreen extends AbstractContainerScreen<PrimeEXPGrinderMenu> {

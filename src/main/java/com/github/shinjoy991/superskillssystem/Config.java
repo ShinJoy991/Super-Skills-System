@@ -1,64 +1,91 @@
-//package com.github.shinjoy991.sss;
-//
-//import net.minecraft.resources.ResourceLocation;
-//import net.minecraft.world.item.Item;
-//import net.minecraftforge.common.ForgeConfigSpec;
-//import net.minecraftforge.eventbus.api.SubscribeEvent;
-//import net.minecraftforge.fml.common.Mod;
-//import net.minecraftforge.fml.event.config.ModConfigEvent;
-//import net.minecraftforge.registries.ForgeRegistries;
-//
-//import java.util.Collections;
-//import java.util.List;
-//import java.util.Set;
-//import java.util.stream.Collectors;
-//
-//// An example config class. This is not required, but it's a good idea to have one to keep your config organized.
-//// Demonstrates how to use Forge's config APIs
-//@Mod.EventBusSubscriber(modid = sss.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
-//public class Config
-//{
-//    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-//
-//    private static final ForgeConfigSpec.BooleanValue LOG_DIRT_BLOCK = BUILDER
-//            .comment("Whether to log the dirt block on common setup")
-//            .define("logDirtBlock", true);
-//
-//    private static final ForgeConfigSpec.IntValue MAGIC_NUMBER = BUILDER
-//            .comment("A magic number")
-//            .defineInRange("magicNumber", 42, 0, Integer.MAX_VALUE);
-//
-//    public static final ForgeConfigSpec.ConfigValue<String> MAGIC_NUMBER_INTRODUCTION = BUILDER
-//            .comment("What you want the introduction message to be for the magic number")
-//            .define("magicNumberIntroduction", "The magic number is... ");
-//
-//    // a list of strings that are treated as resource locations for items
-//    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> ITEM_STRINGS = BUILDER
-//            .comment("A list of items to log on common setup.")
-//            .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), Config::validateItemName);
-//
-//    static final ForgeConfigSpec SPEC = BUILDER.build();
-//
-//    public static boolean logDirtBlock;
-//    public static int magicNumber;
-//    public static String magicNumberIntroduction;
-//    public static Set<Item> items;
-//
-//    private static boolean validateItemName(final Object obj)
-//    {
-//        return obj instanceof final String itemName && ForgeRegistries.ITEMS.containsKey(new ResourceLocation(itemName));
-//    }
-//
+package com.github.shinjoy991.superskillssystem;
+
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.electronwill.nightconfig.core.io.WritingMode;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.loading.FMLPaths;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+
+//@Mod.EventBusSubscriber(modid = SSS.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+public class Config {
+    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+    private static final Map<String, ForgeConfigSpec.IntValue> configValues = new HashMap<>();
+    private static final Map<String, ForgeConfigSpec.DoubleValue> configDoubleValues = new HashMap<>();
+
+
+    static {
+        configDoubleValues.put("SCALE_DMG", BUILDER.comment("Scale damage dealt by players")
+                .defineInRange("scale_dmg", 1f, 0.0001f, 10000f));
+        configValues.put("MOB_MAX_EVASION", BUILDER.comment("Normal mob max evasion")
+                .defineInRange("mob_max_evasion", 20, 0, 10000));
+        configValues.put("MOB_MIN_EVASION", BUILDER.comment("Normal mob min evasion")
+                .defineInRange("mob_min_evasion", 0, 0, 10000));
+        configValues.put("MOB_MAX_DMG_REDUCTION", BUILDER.comment("Normal mob max damage reduction")
+                .defineInRange("mob_max_dmg_reduction", 20, 0, 10000));
+        configValues.put("MOB_MIN_DMG_REDUCTION", BUILDER.comment("Normal mob min damage reduction")
+                .defineInRange("mob_min_dmg_reduction", 0, 0, 10000));
+        configValues.put("MOB_MAX_RESISTANCE", BUILDER.comment("Normal mob max resistance")
+                .defineInRange("mob_max_resistance", 20, 0, 500));
+        configValues.put("MOB_MIN_RESISTANCE", BUILDER.comment("Normal mob min resistance")
+                .defineInRange("mob_min_resistance", 0, 0, 500));
+
+        SPEC = BUILDER.build();
+    }
+
+    static final ForgeConfigSpec SPEC;
+
+    public static double SCALE_DMG;
+    public static int MOB_MAX_EVASION;
+    public static int MOB_MIN_EVASION;
+    public static int MOB_MAX_DMG_REDUCTION;
+    public static int MOB_MIN_DMG_REDUCTION;
+    public static int MOB_MAX_RESISTANCE;
+    public static int MOB_MIN_RESISTANCE;
+
 //    @SubscribeEvent
-//    static void onLoad(final ModConfigEvent event)
-//    {
-//        logDirtBlock = LOG_DIRT_BLOCK.get();
-//        magicNumber = MAGIC_NUMBER.get();
-//        magicNumberIntroduction = MAGIC_NUMBER_INTRODUCTION.get();
+//    static void onLoad(final ModConfigEvent event) {
+//        MOB_MAX_EVASION = configValues.get("MOB_MAX_EVASION").get();
+//        MOB_MIN_EVASION = configValues.get("MOB_MIN_EVASION").get();
+//        MOB_MAX_DMG_REDUCTION = configValues.get("MOB_MAX_DMG_REDUCTION").get();
+//        MOB_MIN_DMG_REDUCTION = configValues.get("MOB_MIN_DMG_REDUCTION").get();
+//        MOB_MAX_RESISTANCE = configValues.get("MOB_MAX_RESISTANCE").get();
+//        MOB_MIN_RESISTANCE = configValues.get("MOB_MIN_RESISTANCE").get();
 //
-//        // convert the list of strings into a set of items
-//        items = ITEM_STRINGS.get().stream()
-//                .map(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
-//                .collect(Collectors.toSet());
 //    }
-//}
+
+
+    public static void loadCustomConfig() {
+        try {
+            Path configDir = FMLPaths.CONFIGDIR.get().resolve("superskillssystem");
+            Files.createDirectories(configDir); // tạo thư mục nếu chưa có
+
+            Path file = configDir.resolve("sss-common.toml");
+
+            CommentedFileConfig configData = CommentedFileConfig.builder(file)
+                    .autosave()
+                    .writingMode(WritingMode.REPLACE)
+                    .sync()
+                    .build();
+
+            configData.load();
+            SPEC.setConfig(configData);
+
+            // Load giá trị sau khi set config
+            SCALE_DMG = configDoubleValues.get("SCALE_DMG").get();
+            MOB_MAX_EVASION = configValues.get("MOB_MAX_EVASION").get();
+            MOB_MIN_EVASION = configValues.get("MOB_MIN_EVASION").get();
+            MOB_MAX_DMG_REDUCTION = configValues.get("MOB_MAX_DMG_REDUCTION").get();
+            MOB_MIN_DMG_REDUCTION = configValues.get("MOB_MIN_DMG_REDUCTION").get();
+            MOB_MAX_RESISTANCE = configValues.get("MOB_MAX_RESISTANCE").get();
+            MOB_MIN_RESISTANCE = configValues.get("MOB_MIN_RESISTANCE").get();
+
+        } catch (IOException e) {
+            SSS.LOGGER.error("Failed to load custom config file", e);
+        }
+    }
+}

@@ -1,6 +1,6 @@
 //package com.github.shinjoy991.superskillssystem.mixin.client;
 //
-//import com.github.shinjoy991.superskillssystem.gui.PlayerInfoMenu;
+//import com.github.shinjoy991.superskillssystem.gui.menu.PlayerInfoMenu;
 //import com.github.shinjoy991.superskillssystem.gui.screen.PlayerInfoScreen;
 //import net.minecraft.client.Minecraft;
 //import net.minecraft.client.gui.components.ImageButton;

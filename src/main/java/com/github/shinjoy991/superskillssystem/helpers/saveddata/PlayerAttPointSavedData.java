@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class PlayerAttPointSavedData extends SavedData {
+    // TotalAttPoint, UsedAttPoint, StrPoint, VitPoint, AgiPoint, IntPoint, PerPoint
     private static final String DATA_NAME = "player_attribute_point_data";
 
     private final HashMap<UUID, CompoundTag> data = new HashMap<>();

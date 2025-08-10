@@ -1,4 +1,4 @@
-package com.github.shinjoy991.superskillssystem.gui;
+package com.github.shinjoy991.superskillssystem.gui.menu;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;

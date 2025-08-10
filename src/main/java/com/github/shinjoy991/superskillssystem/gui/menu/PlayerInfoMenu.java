@@ -1,8 +1,6 @@
-package com.github.shinjoy991.superskillssystem.gui;
+package com.github.shinjoy991.superskillssystem.gui.menu;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;

@@ -5,6 +5,12 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "sss.refmap.json",
   "mixins": [
+    "AbstractArrowMixin",
+    "BowItemMixin",
+    "CrossbowItemMixin",
+    "ItemStackMixin",
+    "LivingEntityMixin",
+    "PlayerMixin"
   ],
   "client": [
   ],

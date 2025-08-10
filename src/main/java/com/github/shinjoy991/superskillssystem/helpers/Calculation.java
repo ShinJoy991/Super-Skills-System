@@ -1,6 +1,9 @@
 package com.github.shinjoy991.superskillssystem.helpers;
 
-import net.minecraft.world.entity.player.Player;
+import com.github.shinjoy991.superskillssystem.helpers.skill.PassiveSkillInstance;
+import com.github.shinjoy991.superskillssystem.helpers.skill.SkillTags;
+
+import java.util.List;
 
 public class Calculation {
     private static final int TARGET_LEVEL = 100;         // Cấp mục tiêu (ví dụ: 100)
@@ -53,7 +56,7 @@ public class Calculation {
 
     public static Integer calTotalStr(PlayerInfo info) {
         if (info == null) return 0;
-        return info.getStrPoint() * 2; // Giả sử mỗi điểm StrPoint tăng 2 Str
+        return info.getStrPoint() * 2;
     }
     public static Integer calTotalStr(int info) {
         return info * 2; // vi dụ, mỗi điểm StrPoint tăng 2 Str, tạm thời cho local
@@ -87,6 +90,21 @@ public class Calculation {
     }
     public static Integer calTotalPer(int info) {
         return info * 2; // vi dụ, mỗi điểm PerPoint tăng 2 Per, tạm thời cho local
+    }
+
+    public static Integer calMaxMana(Integer intPoint, Integer perPoint, double manaPercentBonus, double manaFlatBonus) {
+        int baseMana = intPoint * 10 + perPoint * 5;
+        return (int) (baseMana * (1 + manaPercentBonus / 100) + manaFlatBonus);
+    }
+
+    public static double getBonus(SkillTags skillTag, List<PassiveSkillInstance> passiveSkills) {
+        double bonus = 0;
+        for (PassiveSkillInstance skillInstance : passiveSkills) {
+            if (skillInstance.getLevel() > 0 && skillInstance.getTags().contains(skillTag)) {
+                bonus += skillInstance.getValue(skillTag);
+            }
+        }
+        return bonus;
     }
 }
 

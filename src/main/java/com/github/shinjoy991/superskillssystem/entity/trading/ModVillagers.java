@@ -28,7 +28,6 @@ public class ModVillagers {
                     ImmutableSet.of(), ImmutableSet.of(), SoundEvents.VILLAGER_WORK_ARMORER));
 
 
-
     public static void register(IEventBus eventBus) {
         POI_TYPES.register(eventBus);
         VILLAGER_PROFESSIONS.register(eventBus);

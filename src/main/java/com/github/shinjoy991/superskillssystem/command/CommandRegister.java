@@ -15,6 +15,11 @@ public class CommandRegister {
 
         new ReloadCommand(event.getDispatcher());
         new ResetPrimeExpCommand(event.getDispatcher());
+        new ManaCommand(event.getDispatcher());
+        new SubManaCommand(event.getDispatcher());
+        new AddPassiveSkillCommand(event.getDispatcher());
+        new ResetPassiveSkillCommand(event.getDispatcher());
+        new AddSectTypeCommand(event.getDispatcher());
         ConfigCommand.register(event.getDispatcher());
     }
 }

@@ -1,8 +1,7 @@
 package com.github.shinjoy991.superskillssystem.gui.screen;
 
 import com.github.shinjoy991.superskillssystem.gui.ScaledStatImageButton;
-import com.github.shinjoy991.superskillssystem.helpers.Calculation;
-import com.github.shinjoy991.superskillssystem.helpers.PlayerDataScreen;
+import com.github.shinjoy991.superskillssystem.helpers.PlayerClientData;
 import com.github.shinjoy991.superskillssystem.network.ModNetworking;
 import com.github.shinjoy991.superskillssystem.network.server.AttPointChangeRequestC2S;
 import net.minecraft.ChatFormatting;
@@ -26,28 +25,11 @@ public class PlayerInfoScreen extends Screen {
     private static final ResourceLocation PLAYER_INFO_WIDGET_LOC =
             new ResourceLocation(SSS.MODID, "textures/gui/player_info_widget.png");
 
-    private final PlayerDataScreen screenData;
-    // Changeable data
-    private int StrPoint;
-    private int VitPoint;
-    private int AgiPoint;
-    private int IntPoint;
-    private int PerPoint;
-    private int totalStr;
-    private int totalVit;
-    private int totalAgi;
-    private int totalInt;
-    private int totalPer;
-    private int availableAttPoint;
-
-
     private final Player player;
-//    private final int primeExp;
-//    private final int level;
-//    private final int expForNextLevel;
-//    private final int currentExp;
 
     // Dimensions of gui NEED TO SHOW
+    private int topLeftX;
+    private int topLeftY;
     private final int imageWidth = 222;
     private final int imageHeight = 208;
 
@@ -58,53 +40,11 @@ public class PlayerInfoScreen extends Screen {
     private final int detailBtnW = 16 * 6;
     private final int detailBtnH = 16 * 3;
 
-    private ImageButton detailBtn;
-    private ImageButton addStrBtn; // Strength
-    private ImageButton subStrBtn;
-    private ImageButton addVitBtn; // Vitality
-    private ImageButton subVitBtn;
-    private ImageButton addAgiBtn; // Agility
-    private ImageButton subAgiBtn;
-    private ImageButton addIntBtn; // Intelligence
-    private ImageButton subIntBtn;
-    private ImageButton addPerBtn; // Perception
-    private ImageButton subPerBtn;
-    private ImageButton detailStrBtn;
-    private ImageButton detailVitBtn;
-    private ImageButton detailAgiBtn;
-    private ImageButton detailIntBtn;
-    private ImageButton detailPerBtn;
-    private ImageButton detailLevelBtn;
+    private DetailType selectedDetail = null;
 
-    private boolean showDetailStr = false; // Show detail strength
-    private boolean showDetailVit = false; // Show detail vitality
-    private boolean showDetailAgi = false; // Show detail agility
-    private boolean showDetailInt = false; // Show detail intelligence
-    private boolean showDetailPer = false; // Show detail perception
-    private boolean showDetailLevel = false; // Show detail level
-
-    public PlayerInfoScreen(PlayerDataScreen data) {
+    public PlayerInfoScreen() {
         super(Component.literal("Player Info"));
-        this.screenData = data;
-//        assert Minecraft.getInstance().level != null;
         this.player = Minecraft.getInstance().player;
-        this.StrPoint = screenData.StrPoint;
-        this.VitPoint = screenData.VitPoint;
-        this.AgiPoint = screenData.AgiPoint;
-        this.IntPoint = screenData.IntPoint;
-        this.PerPoint = screenData.PerPoint;
-        this.totalStr = screenData.TotalStr;
-        this.totalVit = screenData.TotalVit;
-        this.totalAgi = screenData.TotalAgi;
-        this.totalInt = screenData.TotalInt;
-        this.totalPer = screenData.TotalPer;
-        this.availableAttPoint = screenData.availableAttPoint;
-
-//        this.primeExp = primeExp;
-//        this.level = Calculation.calLevelByExp(this.primeExp);
-//        this.expForNextLevel =  Calculation.calExpForLevel(this.level + 1)
-//                - Calculation.calExpForLevel(level);
-//        this.currentExp = Calculation.calCurrentLevelExp(this.primeExp);
     }
 
     @Override
@@ -112,590 +52,211 @@ public class PlayerInfoScreen extends Screen {
         super.init();
 
         // GUI center screen, so i,j is the top left corner of the draw gui (not full gui image)
-        int i = (this.width - imageWidth) / 2;
-        int j = (this.height - imageHeight) / 2;
+        topLeftX = (this.width - imageWidth) / 2;
+        topLeftY = (this.height - imageHeight) / 2;
 
         int buttonImageHeight = 256;
         int buttonImageWidth = 256;
 
-        detailBtn = new ImageButton(
-                i + (imageWidth - tabBtnH) / 2,
-                j + 185,
+        // u, v, hover state OffsetV
+        ImageButton detailBtn = new ImageButton(
+                topLeftX + (imageWidth - tabBtnH) / 2,
+                topLeftY + 185,
                 tabBtnW, tabBtnH,
                 0, 0, tabBtnH,  // u, v, hover state OffsetV
                 PLAYER_INFO_WIDGET_LOC, buttonImageHeight, buttonImageWidth,
-                (btn) -> this.minecraft.setScreen(new PlayerInfoDetailScreen(screenData))
+                (btn) -> this.minecraft.setScreen(new PlayerInfoDetailScreen())
         );
         this.addRenderableWidget(detailBtn);
+        ImageButton skillBtn = new ImageButton(
+                topLeftX + (imageWidth - tabBtnH) / 2 + 80,
+                topLeftY + 185,
+                tabBtnW, tabBtnH,
+                0, 0, tabBtnH,  // u, v, hoverOffsetV
+                PLAYER_INFO_WIDGET_LOC, buttonImageHeight, buttonImageWidth,
+                (btn) -> this.minecraft.setScreen(new PlayerInfoSkillScreen())
+        );
+        this.addRenderableWidget(skillBtn);
         // Add Detail button
         addBtn(
-                i + 195, j + 65, detailBtnW, detailBtnH,
+                topLeftX + 195, topLeftY + 30, detailBtnW, detailBtnH,
                 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
                 () -> {
-                    this.showDetailStr = true;
-                    this.showDetailVit = false;
-                    this.showDetailAgi = false;
-                    this.showDetailInt = false;
-                    this.showDetailPer = false;
+                    this.selectedDetail = DetailType.UUID;
                 }
         );
         addBtn(
-                i + 196, j + 83, detailBtnW, detailBtnH,
+                topLeftX + 195, topLeftY + 65, detailBtnW, detailBtnH,
                 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
                 () -> {
-                    this.showDetailStr = false;
-                    this.showDetailVit = true;
-                    this.showDetailAgi = false;
-                    this.showDetailInt = false;
-                    this.showDetailPer = false;
+                    this.selectedDetail = DetailType.STRENGTH;
                 }
         );
         addBtn(
-                i + 196, j + 98, detailBtnW, detailBtnH,
+                topLeftX + 196, topLeftY + 83, detailBtnW, detailBtnH,
                 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
                 () -> {
-                    this.showDetailStr = false;
-                    this.showDetailVit = false;
-                    this.showDetailAgi = true;
-                    this.showDetailInt = false;
-                    this.showDetailPer = false;
+                    selectedDetail = DetailType.VITALITY;
                 }
         );
         addBtn(
-                i + 196, j + 113, detailBtnW, detailBtnH,
+                topLeftX + 196, topLeftY + 98, detailBtnW, detailBtnH,
                 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
                 () -> {
-                    this.showDetailStr = false;
-                    this.showDetailVit = false;
-                    this.showDetailAgi = false;
-                    this.showDetailInt = true;
-                    this.showDetailPer = false;
+                    selectedDetail = DetailType.AGILITY;
                 }
         );
         addBtn(
-                i + 196, j + 128, detailBtnW, detailBtnH,
+                topLeftX + 196, topLeftY + 113, detailBtnW, detailBtnH,
                 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
                 () -> {
-                    this.showDetailStr = false;
-                    this.showDetailVit = false;
-                    this.showDetailAgi = false;
-                    this.showDetailInt = false;
-                    this.showDetailPer = true;
+                    selectedDetail = DetailType.INTELLIGENCE;
+                }
+        );
+        addBtn(
+                topLeftX + 196, topLeftY + 128, detailBtnW, detailBtnH,
+                0, 48, detailBtnH,
+                PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
+                0.3f, false,
+                () -> {
+                    selectedDetail = DetailType.PERCEPTION;
+                }
+        );
+        addBtn(
+                topLeftX + 196, topLeftY + 163, detailBtnW, detailBtnH,
+                0, 48, detailBtnH,
+                PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
+                0.3f, false,
+                () -> {
+                    selectedDetail = DetailType.LEVEL;
                 }
         );
 
         // Add Strength button
         addBtn(
-                i + 190, j + 66, statBtnW, statBtnH,
+                topLeftX + 190, topLeftY + 66, statBtnW, statBtnH,
                 64, 0, statBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.5f, true,
                 () -> {
-                    System.out.println("Add Strength clicked");
-                    AttButtonClicked(0, 2); // Add Strength
-
+                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(0, 2));
                 }
         );
         addBtn(
-                i + 180, j + 66, statBtnW, statBtnH,
+                topLeftX + 180, topLeftY + 66, statBtnW, statBtnH,
                 78, 0, statBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.5f, true,
                 () -> {
-                    System.out.println("Subtract Strength clicked");
-                    AttButtonClicked(0, -2); // Subtract Strength
+                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(0, -2));
                 }
         );
         // Add Vitality button
         addBtn(
-                i + 190, j + 84, statBtnW, statBtnH,
+                topLeftX + 190, topLeftY + 84, statBtnW, statBtnH,
                 64, 0, statBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.5f, true,
                 () -> {
-                    System.out.println("Add Vitality clicked");
-                    AttButtonClicked(1, 2); // Add Vitality
+                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(1, 2)); // Add Vitality
                 }
         );
         addBtn(
-                i + 180, j + 84, statBtnW, statBtnH,
+                topLeftX + 180, topLeftY + 84, statBtnW, statBtnH,
                 78, 0, statBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.5f, true,
                 () -> {
-                    System.out.println("Subtract Vitality clicked");
-                    AttButtonClicked(1, -2); // Subtract Vitality
+                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(1, -2)); // Subtract Vitality
                 }
         );
         // Add Agility button
         addBtn(
-                i + 190, j + 99, statBtnW, statBtnH,
+                topLeftX + 190, topLeftY + 99, statBtnW, statBtnH,
                 64, 0, statBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.5f, true,
                 () -> {
-                    System.out.println("Add Agility clicked");
-                    AttButtonClicked(2, 2); // Add Agility
+                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(2, 2)); // Add Agility
                 }
         );
         addBtn(
-                i + 180, j + 99, statBtnW, statBtnH,
+                topLeftX + 180, topLeftY + 99, statBtnW, statBtnH,
                 78, 0, statBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.5f, true,
                 () -> {
-                    System.out.println("Subtract Agility clicked");
-                    AttButtonClicked(2, -2); // Subtract Agility
+                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(2, -2)); // Subtract Agility
                 }
         );
         // Add Intelligence button
         addBtn(
-                i + 190, j + 114, statBtnW, statBtnH,
+                topLeftX + 190, topLeftY + 114, statBtnW, statBtnH,
                 64, 0, statBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.5f, true,
                 () -> {
-                    System.out.println("Add Intelligence clicked");
-                    AttButtonClicked(3, 2); // Add Intelligence
+                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(3, 2)); // Add Intelligence
                 }
         );
         addBtn(
-                i + 180, j + 114, statBtnW, statBtnH,
+                topLeftX + 180, topLeftY + 114, statBtnW, statBtnH,
                 78, 0, statBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.5f, true,
                 () -> {
-                    System.out.println("Subtract Intelligence clicked");
-                    AttButtonClicked(3, -2); // Subtract Intelligence
+                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(3, -2)); // Subtract Intelligence
                 }
         );
         // Add Perception button
         addBtn(
-                i + 190, j + 129, statBtnW, statBtnH,
+                topLeftX + 190, topLeftY + 129, statBtnW, statBtnH,
                 64, 0, statBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.5f, true,
                 () -> {
-                    System.out.println("Add Perception clicked");
-                    AttButtonClicked(4, 2); // Add Perception
+                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(4, 2)); // Add Perception
                 }
         );
         addBtn(
-                i + 180, j + 129, statBtnW, statBtnH,
+                topLeftX + 180, topLeftY + 129, statBtnW, statBtnH,
                 78, 0, statBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.5f, true,
                 () -> {
-                    System.out.println("Subtract Perception clicked");
-                    AttButtonClicked(4, -2); // Subtract Perception
+                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(4, -2)); // Subtract Perception
                 }
         );
     }
-    private void AttButtonClicked(int type, int amount) {
-        switch (type) {
-            case 0: // Strength
-            {
-                if (amount > 0) {
-                    int verifiedAmount = VerifyAmountClient(true, amount, this.StrPoint);
-//                    System.out.println("Add Strength: " + verifiedAmount);
-                    this.StrPoint += verifiedAmount;
-                    this.availableAttPoint -= verifiedAmount;
-                    this.totalStr = Calculation.calTotalStr(this.StrPoint);
-                    screenData.usedAttPoint += verifiedAmount;
-                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(0, verifiedAmount));
-                }
-                else if (amount < 0) {
-                    int verifiedAmount = VerifyAmountClient(false, amount, this.StrPoint);
-//                    System.out.println("Subtract Strength: " + verifiedAmount);
-                    this.StrPoint -= verifiedAmount; // amount is negative, so we subtract
-                    this.availableAttPoint += verifiedAmount; // Add back to available points
-                    this.totalStr = Calculation.calTotalStr(this.StrPoint);
-                    screenData.usedAttPoint -= verifiedAmount;
-                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(0, -verifiedAmount));
-                }
-                screenData.StrPoint = this.StrPoint;
-                screenData.TotalStr = this.totalStr;
-                screenData.availableAttPoint = this.availableAttPoint;
-            }
-            break;
-            case 1: // Vitality
-            {
-                if (amount > 0) {
-                    int verifiedAmount = VerifyAmountClient(true, amount, this.VitPoint);
-//                    System.out.println("Add Vitality: " + verifiedAmount);
-                    this.VitPoint += verifiedAmount;
-                    this.availableAttPoint -= verifiedAmount;
-                    this.totalVit = Calculation.calTotalVit(this.VitPoint);
-                    screenData.usedAttPoint += verifiedAmount;
-                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(1, verifiedAmount));
-                }
-                else if (amount < 0) {
-                    int verifiedAmount = VerifyAmountClient(false, amount, this.VitPoint);
-//                    System.out.println("Subtract Vitality: " + verifiedAmount);
-                    this.VitPoint -= verifiedAmount; // amount is negative, so we subtract
-                    this.availableAttPoint += verifiedAmount; // Add back to available points
-                    this.totalVit = Calculation.calTotalVit(this.VitPoint);
-                    screenData.usedAttPoint -= verifiedAmount;
-                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(1, -verifiedAmount));
-                }
-                screenData.VitPoint = this.VitPoint;
-                screenData.TotalVit = this.totalVit;
-                screenData.availableAttPoint = this.availableAttPoint;
-            }
-            break;
-            case 2: // Agility
-            {
-                if (amount > 0) {
-                    int verifiedAmount = VerifyAmountClient(true, amount, this.AgiPoint);
-                    this.AgiPoint += verifiedAmount;
-                    this.availableAttPoint -= verifiedAmount;
-                    this.totalAgi = Calculation.calTotalAgi(this.AgiPoint);
-                    screenData.usedAttPoint += verifiedAmount;
-                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(2, verifiedAmount));
-                }
-                else if (amount < 0) {
-                    int verifiedAmount = VerifyAmountClient(false, amount, this.AgiPoint);
-                    this.AgiPoint -= verifiedAmount; // amount is negative, so we subtract
-                    this.availableAttPoint += verifiedAmount; // Add back to available points
-                    this.totalAgi = Calculation.calTotalAgi(this.AgiPoint);
-                    screenData.usedAttPoint -= verifiedAmount;
-                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(2, -verifiedAmount));
-                }
-                screenData.AgiPoint = this.AgiPoint;
-                screenData.TotalAgi = this.totalAgi;
-                screenData.availableAttPoint = this.availableAttPoint;
-            }
-            break;
-            case 3: // Intelligence
-            {
-                if (amount > 0) {
-                    int verifiedAmount = VerifyAmountClient(true, amount, this.IntPoint);
-                    this.IntPoint += verifiedAmount;
-                    this.availableAttPoint -= verifiedAmount;
-                    this.totalInt = Calculation.calTotalInt(this.IntPoint);
-                    screenData.usedAttPoint += verifiedAmount;
-                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(3, verifiedAmount));
-                }
-                else if (amount < 0) {
-                    int verifiedAmount = VerifyAmountClient(false, amount, this.IntPoint);
-                    this.IntPoint -= verifiedAmount; // amount is negative, so we subtract
-                    this.availableAttPoint += verifiedAmount; // Add back to available points
-                    this.totalInt = Calculation.calTotalInt(this.IntPoint);
-                    screenData.usedAttPoint -= verifiedAmount;
-                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(3, -verifiedAmount));
-                }
-                screenData.IntPoint = this.IntPoint;
-                screenData.TotalInt = this.totalInt;
-                screenData.availableAttPoint = this.availableAttPoint;
-            }
-            break;
-            case 4: // Perception
-            {
-                if (amount > 0) {
-                    int verifiedAmount = VerifyAmountClient(true, amount, this.PerPoint);
-                    this.PerPoint += verifiedAmount;
-                    this.availableAttPoint -= verifiedAmount;
-                    this.totalPer = Calculation.calTotalPer(this.PerPoint);
-                    screenData.usedAttPoint += verifiedAmount;
-                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(4, verifiedAmount));
-                }
-                else if (amount < 0) {
-                    int verifiedAmount = VerifyAmountClient(false, amount, this.PerPoint);
-                    this.PerPoint -= verifiedAmount; // amount is negative, so we subtract
-                    this.availableAttPoint += verifiedAmount; // Add back to available points
-                    this.totalPer = Calculation.calTotalPer(this.PerPoint);
-                    screenData.usedAttPoint -= verifiedAmount;
-                    ModNetworking.INSTANCE.sendToServer(new AttPointChangeRequestC2S(4, -verifiedAmount));
-                }
-                screenData.PerPoint = this.PerPoint;
-                screenData.TotalPer = this.totalPer;
-                screenData.availableAttPoint = this.availableAttPoint;
-            }
-        }
-    }
 
-    private int VerifyAmountClient(boolean isPositive, int amount, int currentAttPoint) {
-        int returnAmount = amount;
-        if (isPositive) {
-            if (amount > this.availableAttPoint) {
-                returnAmount = this.availableAttPoint; // Limit to available points
-            }
-        } else {
-            if (-amount > currentAttPoint) {
-                returnAmount = -currentAttPoint; // Limit to current points
-            }
-            returnAmount = -returnAmount; // Convert to positive for subtraction logic
-        }
-        return returnAmount;
-    }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(guiGraphics);
-        int i = (this.width - imageWidth) / 2;
-        int j = (this.height - imageHeight) / 2;
-        float scaleT = 0.8f;
-        guiGraphics.blit(PLAYER_INFO_LOC, i, j, 0, 0, imageWidth, imageHeight);
 
-        guiGraphics.pose().pushPose();
-        float scale = 0.8f; // scale to 80%
-        guiGraphics.pose().scale(scale, scale, 1.0f);
+        guiGraphics.blit(PLAYER_INFO_LOC, topLeftX, topLeftY, 0, 0, imageWidth, imageHeight);
 
-        // Draw icons
-        guiGraphics.blit(
-                PLAYER_INFO_WIDGET_LOC,
-                (int) ((i + 105) / scale),
-                (int) ((j + 65) / scale),
-                96, 0, 16, 16
-        );
-
-        guiGraphics.blit(
-                PLAYER_INFO_WIDGET_LOC,    // Texture chứa ảnh
-                (int) ((i + 105) / scale),
-                (int) ((j + 83) / scale),
-                112, 0, // Vị trí ảnh trong texture
-                16, 16
-        );
-
-        guiGraphics.blit(
-                PLAYER_INFO_WIDGET_LOC,
-                (int) ((i + 105) / scale),
-                (int) ((j + 98) / scale),
-                128, 0,
-                16, 16
-        );
-        guiGraphics.blit(
-                PLAYER_INFO_WIDGET_LOC,
-                (int) ((i + 105) / scale),
-                (int) ((j + 113) / scale),
-                144, 0,
-                16, 16
-        );
-        guiGraphics.blit(
-                PLAYER_INFO_WIDGET_LOC,
-                (int) ((i + 105) / scale),
-                (int) ((j + 128) / scale),
-                160, 0,
-                16, 16
-        );
-        // Restore pose
-        guiGraphics.pose().popPose();
+        drawIcon(guiGraphics, topLeftX, topLeftY);
 
         // Some add after render
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
-        // Draw the EXP bar
-        float expProgress = (float) screenData.expInCurrentLevel / screenData.expToNextLevel; // Giá trị từ 0.0 đến 1.0
-        int barWidth = 100;
-        int barHeight = 8;
+        drawBars(guiGraphics);
 
-        int x = i + 10; // Vị trí X của thanh
-        int y = j + 165;  // Vị trí Y của thanh
+        drawText(guiGraphics);
 
-        int filledWidth = (int) (barWidth * expProgress);
-
-        // Viền hoặc nền thanh EXP (màu tối)
-        guiGraphics.fill(x - 1, y - 1, x + barWidth + 1, y + barHeight + 1, 0xFF000000);
-
-        // Nền EXP (màu xám)
-        guiGraphics.fill(x, y, x + barWidth, y + barHeight, 0xFF555555);
-
-        // Phần đã đầy EXP
-        guiGraphics.fill(x, y, x + filledWidth, y + barHeight, 0xFFAA00AA);
-
-
-
-        guiGraphics.pose().pushPose();
-        //        if (this.detailBtn.isHovered()) {
-//            guiGraphics.renderTooltip(this.font,
-//                    Component.literal("View Player Details"),
-//                    (int) (mouseX / scaleT), (int) (mouseY / scaleT) + 80
-//            );
-//        }
-        // Text
-        guiGraphics.pose().scale(scaleT, scaleT, 1.0f);  // scale to 80%
-
-        guiGraphics.drawString(
-                this.font,
-                Component.literal("Player Info").withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((i + (float) (imageWidth - tabBtnH) / 2) - 40/ scaleT),
-                (int) ((j + 185) / scaleT),
-                0xFFAA00,
-                false
-        );
-        guiGraphics.drawString(
-                this.font,
-                Component.literal("Detail Info").withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((i + (float) (imageWidth - tabBtnH) / 2) / scaleT),
-                (int) ((j + 185) / scaleT),
-                0xFFAA00,
-                false
-        );
-        guiGraphics.drawString(
-                this.font,
-                Component.literal("Skill Info").withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((i + (float) (imageWidth - tabBtnH) / 2) + 120/ scaleT),
-                (int) ((j + 185) / scaleT),
-                0xFFAA00,
-                false
-        );
-        if (this.showDetailStr) {
-            drawInfoText(guiGraphics, i, j, scaleT,
-                    Component.literal("Strength affects physical damage, some defense")
-                            .withStyle(ChatFormatting.WHITE));
-
-        }
-        else if (this.showDetailVit) {
-            drawInfoText(guiGraphics, i, j, scaleT,
-                    Component.literal("Vitality affects health and some defense")
-                            .withStyle(ChatFormatting.WHITE));
-        }
-        else if (this.showDetailAgi) {
-            drawInfoText(guiGraphics, i, j, scaleT,
-                    Component.literal("Agility affects attack speed and dodge chance")
-                            .withStyle(ChatFormatting.WHITE));
-        }
-        else if (this.showDetailInt) {
-            drawInfoText(guiGraphics, i, j, scaleT,
-                    Component.literal("Intelligence affects magic damage and mana")
-                            .withStyle(ChatFormatting.DARK_GRAY));
-        }
-        else if (this.showDetailPer) {
-            drawInfoText(guiGraphics, i, j, scaleT,
-                    Component.literal("Perception affects critical hit chance and accuracy")
-                            .withStyle(ChatFormatting.DARK_GRAY));
-        }
-        else if (this.showDetailLevel) {
-            drawInfoText(guiGraphics, i, j, scaleT,
-                    Component.literal("Level determines overall power and unlocks new skills")
-                            .withStyle(ChatFormatting.DARK_GRAY));
-        }
-
-        guiGraphics.drawString(
-                this.font,
-                Component.literal("STR: " + this.StrPoint).withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((i + 121) / scaleT),
-                (int) ((j + 69) / scaleT),
-                0xFFAA00, // Color for text
-                false
-        );
-        guiGraphics.drawString(
-                this.font,
-                Component.literal("VIT: " + this.VitPoint).withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((i + 121) / scaleT),
-                (int) ((j + 87) / scaleT),
-                0xFFAA00,
-                false
-        );
-        guiGraphics.drawString(
-                this.font,
-                Component.literal("AGI: " + this.AgiPoint).withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((i + 121) / scaleT),
-                (int) ((j + 102) / scaleT),
-                0xFFAA00,
-                false
-        );
-        guiGraphics.drawString(
-                this.font,
-                Component.literal("INT: " + this.IntPoint).withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((i + 121) / scaleT),
-                (int) ((j + 117) / scaleT),
-                0xFFAA00,
-                false
-        );
-        guiGraphics.drawString(
-                this.font,
-                Component.literal("PER: " + this.PerPoint).withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((i + 121) / scaleT),
-                (int) ((j + 132) / scaleT),
-                0xFFAA00,
-                false
-        );
-
-        guiGraphics.drawString(
-                this.font,
-                Component.literal("Name: " + screenData.name).withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((i + 121) / scaleT),
-                (int) ((j + 10) / scaleT),
-                0xFFAA00,
-                false
-        );
-        guiGraphics.drawString(
-                this.font,
-                Component.literal("UUID: View detail").withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((i + 121) / scaleT),
-                (int) ((j + 25) / scaleT),
-                0xFFAA00,
-                false
-        );
-        guiGraphics.drawString(
-                this.font,
-                Component.literal("Faction:").withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((i + 121) / scaleT),
-                (int) ((j + 38) / scaleT),
-                0xFFAA00,
-                false
-        );
-        guiGraphics.drawString(
-                this.font,
-                Component.literal("Title:").withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((i + 121) / scaleT),
-                (int) ((j + 53) / scaleT),
-                0xFFAA00,
-                false
-        );
-        guiGraphics.drawString(
-                this.font,
-                Component.literal("Stats point: " + (screenData.availableAttPoint) +
-                        "Used: "+ screenData.usedAttPoint).withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((i + 121) / scaleT),
-                (int) ((j + 150) / scaleT),
-                0xFFAA00,
-                false
-        );
-        guiGraphics.drawString(
-                this.font,
-                Component.literal("Level: " + screenData.primeLevel).withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((i + 121) / scaleT),
-                (int) ((j + 168) / scaleT),
-                0xFFAA00,
-                false
-        );
-        guiGraphics.drawString(
-                this.font,
-                Component.literal("Prime Exp: " + screenData.primeExp).withStyle(ChatFormatting.DARK_PURPLE).withStyle(ChatFormatting.BOLD),
-                (int) ((i + 121) / scaleT),
-                (int) ((j + 183) / scaleT),
-                0xFFAA00,
-                false
-        );
-        guiGraphics.drawString(
-                this.font,
-                Component.literal("Exp: " + screenData.expInCurrentLevel + " / " + screenData.expToNextLevel)
-                        .withStyle(ChatFormatting.LIGHT_PURPLE),
-                (int) ((i + 35) / scaleT),
-                (int) ((j + 165) / scaleT),
-                0xFFAA00,
-                false
-        );
-
-        guiGraphics.pose().popPose();
-
-
-
-        int entityX = i + 50; // X position on screen
-        int entityY = j + 130;   // Y position on screen
-        int scaleM = 50;
+        int entityX = topLeftX + 50;
+        int entityY = topLeftY + 130;
 
         float xRot = (float)(entityX - mouseX);
         float yRot = (float)(entityY - mouseY);
@@ -704,7 +265,7 @@ public class PlayerInfoScreen extends Screen {
                 guiGraphics,
                 entityX,
                 entityY,
-                scaleM,
+                50, // scale
                 xRot,
                 yRot,
                 this.player
@@ -731,13 +292,335 @@ public class PlayerInfoScreen extends Screen {
         int dialogHeight = 100;
 
         // Vẽ nền hộp thoại
-        guiGraphics.fill((int) ((i + 224) / scaleT), (int) (j / scaleT),
-                (int) ((i + 200 + dialogWidth) / scaleT), j + 65 + dialogHeight, 0xCC000000);
+        guiGraphics.fill((int) ((topLeftX + 224) / scaleT), (int) (j / scaleT),
+                (int) ((topLeftX + 200 + dialogWidth) / scaleT), topLeftY + 65 + dialogHeight, 0xCC000000);
         guiGraphics.drawWordWrap(this.font, text,
-                (int)((i + 230) / scaleT),
-                (int)((j + 5) / scaleT),
+                (int)((topLeftX + 230) / scaleT),
+                (int)((topLeftY + 5) / scaleT),
                 dialogWidth - 10, // max width in pixels
                 0xFFFFFF
         );
+    }
+    
+    private void drawIcon(GuiGraphics guiGraphics, int topLeftX, int topLeftY) {
+        guiGraphics.pose().pushPose();
+        float scale = 0.8f; // scale to 80%
+        guiGraphics.pose().scale(scale, scale, 1.0f);
+
+        // Draw icons
+        guiGraphics.blit(
+                PLAYER_INFO_WIDGET_LOC,
+                (int) ((topLeftX + 105) / scale),
+                (int) ((topLeftY + 65) / scale),
+                96, 0, 16, 16
+        );
+
+        guiGraphics.blit(
+                PLAYER_INFO_WIDGET_LOC,    // Texture chứa ảnh
+                (int) ((topLeftX + 105) / scale),
+                (int) ((topLeftY + 83) / scale),
+                112, 0, // Vị trí ảnh trong texture
+                16, 16
+        );
+
+        guiGraphics.blit(
+                PLAYER_INFO_WIDGET_LOC,
+                (int) ((topLeftX + 105) / scale),
+                (int) ((topLeftY + 98) / scale),
+                128, 0,
+                16, 16
+        );
+        guiGraphics.blit(
+                PLAYER_INFO_WIDGET_LOC,
+                (int) ((topLeftX + 105) / scale),
+                (int) ((topLeftY + 113) / scale),
+                144, 0,
+                16, 16
+        );
+        guiGraphics.blit(
+                PLAYER_INFO_WIDGET_LOC,
+                (int) ((topLeftX + 105) / scale),
+                (int) ((topLeftY + 128) / scale),
+                160, 0,
+                16, 16
+        );
+        // Restore pose
+        guiGraphics.pose().popPose();
+    }
+
+    private void drawBars(GuiGraphics guiGraphics) {
+        // Draw the EXP bar
+        float expProgress = (float) PlayerClientData.expInCurrentLevel / PlayerClientData.expToNextLevel; // Giá trị từ 0.0 đến 1.0
+        int barWidth = 90;
+        int barHeight = 8;
+
+        int x = topLeftX + 10; // Vị trí X của thanh
+        int y = topLeftY + 175;  // Vị trí Y của thanh
+
+        int filledWidth = (int) (barWidth * expProgress);
+
+        // Viền hoặc nền thanh EXP (màu tối)
+        guiGraphics.fill(x - 1, y - 1, x + barWidth + 1, y + barHeight + 1, 0xFF000000);
+
+        // Nền EXP (màu xám)
+        guiGraphics.fill(x, y, x + barWidth, y + barHeight, 0xFF555555);
+
+        // Phần đã đầy EXP
+        guiGraphics.fill(x, y, x + filledWidth, y + barHeight, 0xFFAA00AA);
+
+        float hpProgress = player.getHealth() / player.getMaxHealth(); // Giá trị từ 0.0 đến 1.0
+        int hpBarWidth = 65;
+        int hpBarHeight = 5;
+        int hpX = topLeftX + 17; // Vị trí X của thanh HP
+        int hpY = topLeftY + 150;  // Vị trí Y của thanh HP
+        int filledHpWidth = (int) (hpBarWidth * hpProgress);
+        // Viền hoặc nền thanh HP (màu tối)
+        guiGraphics.fill(hpX - 1, hpY - 1, hpX + hpBarWidth + 1, hpY + hpBarHeight + 1, 0xFF000000);
+        // Nền HP (màu xám)
+        guiGraphics.fill(hpX, hpY, hpX + hpBarWidth, hpY + hpBarHeight, 0xFF555555);
+        // Phần đã đầy HP
+        guiGraphics.fill(hpX, hpY, hpX + filledHpWidth, hpY + hpBarHeight, 0xFFFF0000);
+
+        float manaProgress = PlayerClientData.mana / PlayerClientData.maxMana; // Giá trị từ 0.0 đến 1.0
+        int manaBarWidth = 65;
+        int manaBarHeight = 5;
+        int manaX = topLeftX + 20; // Vị trí X của thanh Mana
+        int manaY = topLeftY + 160;  // Vị trí Y của thanh Mana
+        int filledManaWidth = (int) (manaBarWidth * manaProgress);
+        // Viền hoặc nền thanh Mana (màu tối)
+        guiGraphics.fill(manaX - 1, manaY - 1, manaX + manaBarWidth + 1, manaY + manaBarHeight + 1, 0xFF000000);
+        // Nền Mana (màu xám)
+        guiGraphics.fill(manaX, manaY, manaX + manaBarWidth, manaY + manaBarHeight, 0xFF555555);
+        // Phần đã đầy Mana
+        guiGraphics.fill(manaX, manaY, manaX + filledManaWidth, manaY + manaBarHeight, 0xFF0099FF);
+
+    }
+
+    private void drawText(GuiGraphics guiGraphics) {
+        // Text
+        float scaleT = 0.8f;
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().scale(scaleT, scaleT, 1.0f);  // scale to 80%
+
+        guiGraphics.drawString(
+                this.font,
+                Component.translatable("title.playerinfo").withStyle(ChatFormatting.DARK_GRAY),
+                (int) ((topLeftX + (float) (imageWidth - tabBtnH) / 2) - 38/ scaleT),
+                (int) ((topLeftY + 187) / scaleT),
+                0xFFAA00,
+                false
+        );
+        guiGraphics.drawString(
+                this.font,
+                Component.translatable("title.detailinfo").withStyle(ChatFormatting.DARK_GRAY),
+                (int) ((topLeftX + (float) (imageWidth - tabBtnH) / 2) / scaleT),
+                (int) ((topLeftY + 187) / scaleT),
+                0xFFAA00,
+                false
+        );
+        guiGraphics.drawString(
+                this.font,
+                Component.translatable("title.skillinfo").withStyle(ChatFormatting.DARK_GRAY),
+                (int) ((topLeftX + (float) (imageWidth - tabBtnH) / 2) + 120/ scaleT),
+                (int) ((topLeftY + 187) / scaleT),
+                0xFFAA00,
+                false
+        );
+
+        if (this.selectedDetail == DetailType.UUID) {
+            drawInfoText(guiGraphics, topLeftX, topLeftY, scaleT,
+                    Component.literal(player.getStringUUID())
+                            .withStyle(ChatFormatting.WHITE));
+
+        }
+        if (this.selectedDetail == DetailType.STRENGTH) {
+            drawInfoText(guiGraphics, topLeftX, topLeftY, scaleT,
+                    Component.translatable("sentence.detail.strength")
+                            .withStyle(ChatFormatting.WHITE));
+
+        }
+        else if (this.selectedDetail == DetailType.VITALITY) {
+            drawInfoText(guiGraphics, topLeftX, topLeftY, scaleT,
+                    Component.translatable("sentence.detail.vitality")
+                            .withStyle(ChatFormatting.WHITE));
+        }
+        else if (this.selectedDetail == DetailType.AGILITY) {
+            drawInfoText(guiGraphics, topLeftX, topLeftY, scaleT,
+                    Component.translatable("sentence.detail.agility")
+                            .withStyle(ChatFormatting.WHITE));
+        }
+        else if (this.selectedDetail == DetailType.INTELLIGENCE) {
+            drawInfoText(guiGraphics, topLeftX, topLeftY, scaleT,
+                    Component.translatable("sentence.detail.intelligence")
+                            .withStyle(ChatFormatting.DARK_GRAY));
+        }
+        else if (this.selectedDetail == DetailType.PERCEPTION) {
+            drawInfoText(guiGraphics, topLeftX, topLeftY, scaleT,
+                    Component.translatable("sentence.detail.perception")
+                            .withStyle(ChatFormatting.DARK_GRAY));
+        }
+        else if (this.selectedDetail == DetailType.LEVEL) {
+            drawInfoText(guiGraphics, topLeftX, topLeftY, scaleT,
+                    Component.translatable("sentence.detail.level")
+                            .withStyle(ChatFormatting.DARK_GRAY));
+        }
+
+        guiGraphics.drawString(
+                this.font,
+                Component.translatable("title.str").withStyle(ChatFormatting.DARK_GRAY)
+                        .append(Component.literal(": " + PlayerClientData.StrPoint)),
+                (int) ((topLeftX + 121) / scaleT),
+                (int) ((topLeftY + 69) / scaleT),
+                0xFFAA00, // Color for text
+                false
+        );
+        guiGraphics.drawString(
+                this.font,
+                Component.literal("" + PlayerClientData.TotalStr).withStyle(ChatFormatting.DARK_GRAY),
+                (int) ((topLeftX + 160) / scaleT),
+                (int) ((topLeftY + 69) / scaleT),
+                0xFFAA00,
+                false
+        );
+        guiGraphics.drawString(
+                this.font,
+                Component.translatable("title.vit").withStyle(ChatFormatting.DARK_GRAY)
+                        .append(Component.literal(": " + PlayerClientData.VitPoint)),
+                (int) ((topLeftX + 121) / scaleT),
+                (int) ((topLeftY + 87) / scaleT),
+                0xFFAA00,
+                false
+        );
+        guiGraphics.drawString(
+                this.font,
+                Component.translatable("title.agi").withStyle(ChatFormatting.DARK_GRAY)
+                        .append(Component.literal(": " + PlayerClientData.AgiPoint)),
+                (int) ((topLeftX + 121) / scaleT),
+                (int) ((topLeftY + 102) / scaleT),
+                0xFFAA00,
+                false
+        );
+        guiGraphics.drawString(
+                this.font,
+                Component.translatable("title.int").withStyle(ChatFormatting.DARK_GRAY)
+                        .append(Component.literal(": " + PlayerClientData.IntPoint)),
+                (int) ((topLeftX + 121) / scaleT),
+                (int) ((topLeftY + 117) / scaleT),
+                0xFFAA00,
+                false
+        );
+        guiGraphics.drawString(
+                this.font,
+                Component.translatable("title.per").withStyle(ChatFormatting.DARK_GRAY)
+                        .append(Component.literal(": " + PlayerClientData.PerPoint)),
+                (int) ((topLeftX + 121) / scaleT),
+                (int) ((topLeftY + 132) / scaleT),
+                0xFFAA00,
+                false
+        );
+
+        guiGraphics.drawString(
+                this.font,
+                Component.translatable("title.name").withStyle(ChatFormatting.DARK_GRAY)
+                        .append(Component.literal(player.getName().getString())),
+                (int) ((topLeftX + 121) / scaleT),
+                (int) ((topLeftY + 10) / scaleT),
+                0xFFAA00,
+                false
+        );
+        guiGraphics.drawString(
+                this.font,
+                Component.literal("UUID: ").withStyle(ChatFormatting.DARK_GRAY)
+                        .append(Component.translatable("sentence.playerinfo.uuid")),
+                (int) ((topLeftX + 121) / scaleT),
+                (int) ((topLeftY + 25) / scaleT),
+                0xFFAA00,
+                false
+        );
+        guiGraphics.drawString(
+                this.font,
+                Component.translatable("title.sect").withStyle(ChatFormatting.DARK_GRAY)
+                        .append(Component.literal(": ").append(PlayerClientData.sect.translatableName())),
+                (int) ((topLeftX + 121) / scaleT),
+                (int) ((topLeftY + 38) / scaleT),
+                0xFFAA00,
+                false
+        );
+        guiGraphics.drawString(
+                this.font,
+                Component.translatable("title.title").withStyle(ChatFormatting.DARK_GRAY)
+                        .append(Component.literal(": Not yet")),
+                (int) ((topLeftX + 121) / scaleT),
+                (int) ((topLeftY + 53) / scaleT),
+                0xFFAA00,
+                false
+        );
+        guiGraphics.drawString(
+                this.font,
+                Component.translatable("title.statpoints").withStyle(ChatFormatting.DARK_GRAY)
+                        .append(Component.literal(": " + PlayerClientData.availableAttPoint + "    "))
+                        .append(Component.translatable("title.used"))
+                        .append(Component.literal(": " + PlayerClientData.usedAttPoint)),
+                (int) ((topLeftX + 121) / scaleT),
+                (int) ((topLeftY + 150) / scaleT),
+                0xFFAA00,
+                false
+        );
+        guiGraphics.drawString(
+                this.font,
+                Component.translatable("title.level").withStyle(ChatFormatting.DARK_GRAY)
+                        .append(Component.literal(": " + PlayerClientData.primeLevel)),
+                (int) ((topLeftX + 121) / scaleT),
+                (int) ((topLeftY + 168) / scaleT),
+                0xFFAA00,
+                false
+        );
+//        guiGraphics.drawString(
+//                this.font,
+//                Component.literal("Prime Exp: " + PlayerDataScreen.primeExp).withStyle(ChatFormatting.DARK_PURPLE).withStyle(ChatFormatting.BOLD),
+//                (int) ((topLeftX + 121) / scaleT),
+//                (int) ((topLeftY + 183) / scaleT),
+//                0xFFAA00,
+//                false
+//        );
+        guiGraphics.drawString(
+                this.font,
+                Component.translatable("title.hp").withStyle(ChatFormatting.GOLD)
+                        .append(Component.literal(": " + player.getHealth() + " / " + player.getMaxHealth())),
+                (int) ((topLeftX + 30) / scaleT),
+                (int) ((topLeftY + 150) / scaleT),
+                0xFFAA00,
+                false
+        );
+        guiGraphics.drawString(
+                this.font,
+                Component.translatable("title.mp").withStyle(ChatFormatting.GOLD)
+                        .append(Component.literal(": " + PlayerClientData.mana + " / " + PlayerClientData.maxMana)),
+                (int) ((topLeftX + 30) / scaleT),
+                (int) ((topLeftY + 160) / scaleT),
+                0xFFAA00,
+                false
+        );
+        guiGraphics.drawString(
+                this.font,
+                Component.translatable("title.exp").withStyle(ChatFormatting.LIGHT_PURPLE)
+                        .append(Component.literal(": " + PlayerClientData.expInCurrentLevel + " / " + PlayerClientData.expToNextLevel)),
+                (int) ((topLeftX + 35) / scaleT),
+                (int) ((topLeftY + 175) / scaleT),
+                0xFFAA00,
+                false
+        );
+
+        guiGraphics.pose().popPose();
+
+    }
+
+    private enum DetailType {
+        STRENGTH,
+        VITALITY,
+        AGILITY,
+        INTELLIGENCE,
+        PERCEPTION,
+        UUID, LEVEL
     }
 }

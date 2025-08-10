@@ -1,0 +1,50 @@
+package com.github.shinjoy991.superskillssystem.helpers.skill;
+
+public enum SkillTags {
+    ATK_FLAT("atk_flat"), ATK_PERCENT("atk_percent"), // (Player ATK + weapon ATK) * perfect rate
+    RANGE_FLAT("range_flat"), RANGE_PERCENT("range_percent"), // (Base damage + pull power * RangeDmg) * perfect rate
+    MAGIC_FLAT("magic_flat"), MAGIC_PERCENT("magic_percent"),
+    WEAPON_DMG_PERCENT("weapon_dmg_percent"), // Weapon dmg = tooltip show - 1 (player hand dmg), etc. iron sword = 5
+
+    DEF_PERCENT("def_percent"), DEF_FLAT("def_flat"), // Aside from armor,armor toughness, enchantments, effects.
+    MAGIC_DEF_PERCENT("magic_def_percent"), MAGIC_DEF_FLAT("magic_def_flat"),
+
+    HP_FLAT("health_flat"), HP_PERCENT("health_percent"), // add transient modifier to player max health
+    MANA_FLAT("mana_flat"), MANA_PERCENT("mana_percent"),
+    STR_FLAT("str_flat"), STR_PERCENT("str_percent"),
+    VIT_FLAT("vit_flat"), VIT_PERCENT("vit_percent"),
+    AGI_FLAT("agi_flat"), AGI_PERCENT("agi_percent"),
+    INT_FLAT("int_flat"), INT_PERCENT("int_percent"),
+    PER_FLAT("per_flat"), PER_PERCENT("per_percent"),
+
+    ATK_SPD("attack_speed"), SPEED("speed"),
+    CRIT_CHANCE("crit_chance"), PERFECTION("perfection"), COUNTER_CHANCE("counter_chance"),
+
+    DEF_PEN_PERCENT("def_pen_percent"), DEF_PEN_FLAT("def_pen_flat"),
+    MAGIC_PEN_PERCENT("magic_pen_percent"), MAGIC_PEN_FLAT("magic_pen_flat"),
+
+    LIFE_STEAL("life_steal"), MANA_STEAL("mana_steal"),
+    HEAL_REGEN("heal_regen"), MANA_REGEN("mana_regen"),
+
+    EVASION("evasion"), ACCURACY("accuracy"),
+    DMG_REDUCTION("damage_reduction"),
+    RESISTANCE("resistance"),
+    MAGIC_RESISTANCE("magic_resistance"),
+
+    DMG_REDUCTION_PEN("damage_reduction_pen"),
+    RESISTANCE_PEN("resistance_pen"),
+    MAGIC_RESISTANCE_PEN("magic_resistance_pen"),
+   ;
+    private final String tag;
+
+    SkillTags(String tag) {
+        this.tag = tag;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+    public static SkillTags fromName(String name) {
+        return SkillTags.valueOf(name);
+    }
+}
