@@ -22,9 +22,9 @@ import static com.github.shinjoy991.superskillssystem.gui.screen.ScreenHelper.ad
 @OnlyIn(Dist.CLIENT)
 public class PlayerInfoSkillScreen extends Screen {
     private static final ResourceLocation DETAIL_SCREEN_LOC =
-            new ResourceLocation(SSS.MODID, "textures/gui/player_info_skill.png");
+            ResourceLocation.fromNamespaceAndPath(SSS.MODID, "textures/gui/player_info_skill.png");
     private static final ResourceLocation PLAYER_INFO_WIDGET_LOC =
-            new ResourceLocation(SSS.MODID, "textures/gui/player_info_widget.png");
+            ResourceLocation.fromNamespaceAndPath(SSS.MODID, "textures/gui/player_info_widget.png");
 
     private final Player player;
 
@@ -96,7 +96,6 @@ public class PlayerInfoSkillScreen extends Screen {
                 (btn) -> this.minecraft.setScreen(new PlayerInfoDetailScreen())
         ));
 
-//        screenData.passiveSkills.sort(Comparator.comparingInt(skill -> extractSkillNumber(skill.getName())));
         PlayerClientData.passiveSkills.sort(Comparator.comparing(skill -> skill.getName().toLowerCase()));
         maxPassivePage = (PlayerClientData.passiveSkills.size()  + SKILLS_PER_COL - 1) / SKILLS_PER_COL;
         maxActivePage  = (PlayerClientData.activeSkills.size()  + SKILLS_PER_COL - 1) / SKILLS_PER_COL;
@@ -302,13 +301,13 @@ public class PlayerInfoSkillScreen extends Screen {
     private void drawInfoText(GuiGraphics guiGraphics, int type, float scaleT) {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().scale(scaleT, scaleT, 1.0f);
-        int dialogWidth = 100;
+        int dialogWidth = 600;
 
         Component text = getSkillInfo(type);
 
         guiGraphics.drawWordWrap(this.font, text,
-                (int) ((topLeftX + 240) / scaleT),
-                (int) ((topLeftY + 50) / scaleT),
+                (int) ((topLeftX + 20) / scaleT),
+                (int) ((topLeftY + 10) / scaleT),
                 dialogWidth - 10, // max width in pixels
                 0xFF0000
         );

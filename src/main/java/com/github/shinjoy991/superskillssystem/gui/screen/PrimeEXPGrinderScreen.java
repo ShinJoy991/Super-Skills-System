@@ -13,7 +13,7 @@ import com.github.shinjoy991.superskillssystem.gui.menu.PrimeEXPGrinderMenu;
 
 @OnlyIn(Dist.CLIENT)
 public class PrimeEXPGrinderScreen extends AbstractContainerScreen<PrimeEXPGrinderMenu> {
-    private static final ResourceLocation PRIME_EXP_GRINDER_LOC = new ResourceLocation(SSS.MODID, "textures/gui/container/prime_exp_grinder.png");
+    private static final ResourceLocation PRIME_EXP_GRINDER_LOC = ResourceLocation.fromNamespaceAndPath(SSS.MODID, "textures/gui/container/prime_exp_grinder.png");
 
     public PrimeEXPGrinderScreen(PrimeEXPGrinderMenu p_98782_, Inventory p_98783_, Component p_98784_) {
         super(p_98782_, p_98783_, p_98784_);

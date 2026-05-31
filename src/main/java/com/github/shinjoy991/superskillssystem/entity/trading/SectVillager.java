@@ -40,6 +40,11 @@ public class SectVillager extends Villager {
 
     public SectVillager(EntityType<? extends Villager> type, Level level) {
         super(type, level);
+        this.setVillagerData(
+                this.getVillagerData()
+                        .setProfession(ModVillagers.SECT_MASTER.get())
+                        .setLevel(5) // Level nghề
+        );
     }
 
     @Override
@@ -73,11 +78,11 @@ public class SectVillager extends Villager {
                     player.awardStat(Stats.TALKED_TO_VILLAGER);
                 }
 
-                if (flag) {
+                if (!flag) {
                     return InteractionResult.sidedSuccess(super.level().isClientSide);
                 }
                 else {
-                    if (!super.level().isClientSide && !super.offers.isEmpty()) {
+                    if (!super.level().isClientSide) {
                         this.startTrading(player);
                     }
 

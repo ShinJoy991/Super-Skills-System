@@ -3,21 +3,19 @@ package com.github.shinjoy991.superskillssystem.gui.screen;
 import com.github.shinjoy991.superskillssystem.SSS;
 import com.github.shinjoy991.superskillssystem.gui.menu.SectVillagerMenu;
 import com.github.shinjoy991.superskillssystem.helpers.PlayerClientData;
-import com.github.shinjoy991.superskillssystem.helpers.skill.PassiveSkill;
 import com.github.shinjoy991.superskillssystem.network.ModNetworking;
 import com.github.shinjoy991.superskillssystem.network.server.SectSelectTradePacketC2S;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.MerchantScreen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ServerboundSelectTradePacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.npc.VillagerData;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.MerchantOffer;
@@ -25,32 +23,30 @@ import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import java.util.List;
-
 @OnlyIn(Dist.CLIENT)
 public class SectVillagerScreen extends AbstractContainerScreen<SectVillagerMenu> {
 
     private static final ResourceLocation SECT_VILLAGER_LOC =
             ResourceLocation.fromNamespaceAndPath(SSS.MODID, "textures/gui/container/sect_villager.png");
 
-    private static final int TEXTURE_WIDTH = 512;
-    private static final int TEXTURE_HEIGHT = 256;
-    private static final int MERCHANT_MENU_PART_X = 99;
-    private static final int PROGRESS_BAR_X = 136;
-    private static final int PROGRESS_BAR_Y = 16;
-    private static final int SELL_ITEM_1_X = 5;
-    private static final int SELL_ITEM_2_X = 35;
-    private static final int BUY_ITEM_X = 68;
-    private static final int LABEL_Y = 6;
-    private static final int NUMBER_OF_OFFER_BUTTONS = 7;
-    private static final int TRADE_BUTTON_X = 5;
-    private static final int TRADE_BUTTON_HEIGHT = 20;
-    private static final int TRADE_BUTTON_WIDTH = 88;
-    private static final int SCROLLER_HEIGHT = 27;
-    private static final int SCROLLER_WIDTH = 6;
-    private static final int SCROLL_BAR_HEIGHT = 139;
-    private static final int SCROLL_BAR_TOP_POS_Y = 18;
-    private static final int SCROLL_BAR_START_X = 94;
+//    private static final int TEXTURE_WIDTH = 512;
+//    private static final int TEXTURE_HEIGHT = 256;
+//    private static final int MERCHANT_MENU_PART_X = 99;
+//    private static final int PROGRESS_BAR_X = 136;
+//    private static final int PROGRESS_BAR_Y = 16;
+//    private static final int SELL_ITEM_1_X = 5;
+//    private static final int SELL_ITEM_2_X = 35;
+//    private static final int BUY_ITEM_X = 68;
+//    private static final int LABEL_Y = 6;
+//    private static final int NUMBER_OF_OFFER_BUTTONS = 7;
+//    private static final int TRADE_BUTTON_X = 5;
+//    private static final int TRADE_BUTTON_HEIGHT = 20;
+//    private static final int TRADE_BUTTON_WIDTH = 88;
+//    private static final int SCROLLER_HEIGHT = 27;
+//    private static final int SCROLLER_WIDTH = 6;
+//    private static final int SCROLL_BAR_HEIGHT = 139;
+//    private static final int SCROLL_BAR_TOP_POS_Y = 18;
+//    private static final int SCROLL_BAR_START_X = 94;
     private static final Component SKILLS_LABEL = Component.translatable("label.sect_villager.skills");
     private static final Component SKILL_MASTER_LABEL = Component.translatable("label.sect_villager.skill_master");
     private static final Component LEVEL_SEPARATOR = Component.literal(" - ");
@@ -59,7 +55,7 @@ public class SectVillagerScreen extends AbstractContainerScreen<SectVillagerMenu
     private final SectVillagerScreen.TradeOfferButton[] tradeOfferButtons = new SectVillagerScreen.TradeOfferButton[7];
     int scrollOff;
     private boolean isDragging;
-    private int selectedTradeIndex = 0;
+    private int selectedTradeIndex = -1;
 
     public SectVillagerScreen(SectVillagerMenu p_99123_, Inventory p_99124_, Component title) {
         super(p_99123_, p_99124_, title);
@@ -185,41 +181,44 @@ public class SectVillagerScreen extends AbstractContainerScreen<SectVillagerMenu
                 guiGraphics.renderItemDecorations(this.font, itemstack3, i + 5 + 68 + newOffsetResult, j1);
 
                 guiGraphics.pose().popPose();
+
+                // Kiểm tra vùng hover cho price1
+                if (isMouseOverPrice1(mouseX, mouseY)) {
+                    MerchantOffer offer = merchantoffers.get(selectedTradeIndex);
+                    ItemStack price1 = offer.getBaseCostA();
+                    guiGraphics.renderTooltip(this.font, price1, mouseX, mouseY);
+                }
+
+                // Kiểm tra vùng hover cho price2
+                if (isMouseOverPrice2(mouseX, mouseY)) {
+                    MerchantOffer offer = merchantoffers.get(selectedTradeIndex);
+                    ItemStack price2 = offer.getCostB();
+                    guiGraphics.renderTooltip(this.font, price2, mouseX, mouseY);
+                }
+
+                // Kiểm tra vùng hover cho result
+                if (isMouseOverResult(mouseX, mouseY)) {
+                    MerchantOffer offer = merchantoffers.get(selectedTradeIndex);
+                    ItemStack result = offer.getResult();
+                    guiGraphics.renderTooltip(this.font, result, mouseX, mouseY);
+                }
             }
 
-            // Kiểm tra vùng hover cho price1
-            if (isMouseOverPrice1(mouseX, mouseY)) {
-                MerchantOffer offer = merchantoffers.get(selectedTradeIndex);
-                ItemStack price1 = offer.getBaseCostA();
-                guiGraphics.renderTooltip(this.font, price1, mouseX, mouseY);
+            // render trade offer buttons
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().scale(0.5f, 0.5f, 1.0f);
+            for(SectVillagerScreen.TradeOfferButton btn : this.tradeOfferButtons) {
+                btn.visible = btn.index < merchantoffers.size();
+                // draw text on the button
+                if (btn.visible) {
+                    btn.setMessage(PlayerClientData.warriorGlobalPassiveSkills.get(btn.index).getTranslatableName());
+                }
             }
+            guiGraphics.pose().popPose();
 
-            // Kiểm tra vùng hover cho price2
-            if (isMouseOverPrice2(mouseX, mouseY)) {
-                MerchantOffer offer = merchantoffers.get(selectedTradeIndex);
-                ItemStack price2 = offer.getCostB();
-                guiGraphics.renderTooltip(this.font, price2, mouseX, mouseY);
-            }
-
-            // Kiểm tra vùng hover cho result
-            if (isMouseOverResult(mouseX, mouseY)) {
-                MerchantOffer offer = merchantoffers.get(selectedTradeIndex);
-                ItemStack result = offer.getResult();
-                guiGraphics.renderTooltip(this.font, result, mouseX, mouseY);
-            }
             RenderSystem.enableDepthTest();
         }
 
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().scale(0.7f, 0.7f, 1.0f);
-        for(SectVillagerScreen.TradeOfferButton btn : this.tradeOfferButtons) {
-            btn.visible = btn.index < merchantoffers.size();
-            // draw text on the button
-            if (btn.visible) {
-                btn.setMessage(PlayerClientData.warriorGlobalPassiveSkills.get(btn.index).getTranslatableName());
-            }
-        }
-        guiGraphics.pose().popPose();
 
         this.renderTooltip(guiGraphics, mouseX, mouseY);
     }
@@ -252,15 +251,15 @@ public class SectVillagerScreen extends AbstractContainerScreen<SectVillagerMenu
                 mouseY >= resultY && mouseY < resultY + height;
     }
 
-    private void renderButtonArrows(GuiGraphics p_283020_, MerchantOffer p_281926_, int p_282752_, int p_282179_) {
-        RenderSystem.enableBlend();
-        if (p_281926_.isOutOfStock()) {
-            p_283020_.blit(SECT_VILLAGER_LOC, p_282752_ + 5 + 35 + 20, p_282179_ + 3, 0, 25.0F, 171.0F, 10, 9, 512, 256);
-        } else {
-            p_283020_.blit(SECT_VILLAGER_LOC, p_282752_ + 5 + 35 + 20, p_282179_ + 3, 0, 15.0F, 171.0F, 10, 9, 512, 256);
-        }
-
-    }
+//    private void renderButtonArrows(GuiGraphics p_283020_, MerchantOffer p_281926_, int p_282752_, int p_282179_) {
+//        RenderSystem.enableBlend();
+//        if (p_281926_.isOutOfStock()) {
+//            p_283020_.blit(SECT_VILLAGER_LOC, p_282752_ + 5 + 35 + 20, p_282179_ + 3, 0, 25.0F, 171.0F, 10, 9, 512, 256);
+//        } else {
+//            p_283020_.blit(SECT_VILLAGER_LOC, p_282752_ + 5 + 35 + 20, p_282179_ + 3, 0, 15.0F, 171.0F, 10, 9, 512, 256);
+//        }
+//
+//    }
 
     private void renderAndDecorateCostA(GuiGraphics p_281357_, ItemStack p_283466_, ItemStack p_282046_, int p_282403_, int p_283601_) {
         p_281357_.renderFakeItem(p_283466_, p_282403_, p_283601_);
@@ -344,22 +343,69 @@ public class SectVillagerScreen extends AbstractContainerScreen<SectVillagerMenu
             return this.index;
         }
 
-        public void renderToolTip(GuiGraphics graphics, int mouseX, int mouseY) {
-            if (this.isHovered && SectVillagerScreen.this.menu.getOffers().size() > this.index + SectVillagerScreen.this.scrollOff) {
-                if (mouseX < this.getX() + 20) {
-                    ItemStack itemstack = SectVillagerScreen.this.menu.getOffers().get(this.index + SectVillagerScreen.this.scrollOff).getCostA();
-                    graphics.renderTooltip(SectVillagerScreen.this.font, itemstack, mouseX, mouseY);
-                } else if (mouseX < this.getX() + 50 && mouseX > this.getX() + 30) {
-                    ItemStack itemstack2 = SectVillagerScreen.this.menu.getOffers().get(this.index + SectVillagerScreen.this.scrollOff).getCostB();
-                    if (!itemstack2.isEmpty()) {
-                        graphics.renderTooltip(SectVillagerScreen.this.font, itemstack2, mouseX, mouseY);
-                    }
-                } else if (mouseX > this.getX() + 65) {
-                    ItemStack itemstack1 = SectVillagerScreen.this.menu.getOffers().get(this.index + SectVillagerScreen.this.scrollOff).getResult();
-                    graphics.renderTooltip(SectVillagerScreen.this.font, itemstack1, mouseX, mouseY);
-                }
+        @Override
+        protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+            Minecraft minecraft = Minecraft.getInstance();
+            guiGraphics.setColor(1.0F, 1.0F, 1.0F, this.alpha);
+            RenderSystem.enableBlend();
+            RenderSystem.enableDepthTest();
+            guiGraphics.blitNineSliced(WIDGETS_LOCATION, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, this.getTextureY());
+            guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+            int color = getFGColor() | Mth.ceil(this.alpha * 255.0F) << 24;
+            float scale = 0.5f;
+            PoseStack pose = guiGraphics.pose();
+            pose.pushPose();
+            pose.scale(scale, scale, 1.0f);
+            float centerX = (this.getX() + this.getWidth() / 2f) / scale;
+            float centerY = (this.getY() + (this.getHeight() - 4) / 2f) / scale;
+
+            guiGraphics.drawCenteredString(minecraft.font, this.getMessage(), (int) centerX, (int) centerY, color);
+
+            pose.popPose();
+        }
+
+        private int getTextureY() {
+            int i = 1;
+            if (!this.active) {
+                i = 0;
+            } else if (this.isHoveredOrFocused()) {
+                i = 2;
             }
 
+            return 46 + i * 20;
         }
+//        @Override
+//        protected void renderWidget(GuiGraphics p_281670_, int p_282682_, int p_281714_, float p_282542_) {
+//            Minecraft minecraft = Minecraft.getInstance();
+//            p_281670_.setColor(1.0F, 1.0F, 1.0F, this.alpha);
+//            RenderSystem.enableBlend();
+//            RenderSystem.enableDepthTest();
+//            p_281670_.blitNineSliced(WIDGETS_LOCATION, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, this.getTextureY());
+//            p_281670_.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+//            int i = getFGColor();
+//            PoseStack pose = p_281670_.pose();
+//            pose.pushPose();
+//            pose.scale(0.5f, 0.5f, 1.0f);
+//            this.renderString(p_281670_, minecraft.font, i | Mth.ceil(this.alpha * 255.0F) << 24);
+//            pose.popPose();
+//        }
+
+//        public void renderToolTip(GuiGraphics graphics, int mouseX, int mouseY) {
+//            if (this.isHovered && SectVillagerScreen.this.menu.getOffers().size() > this.index + SectVillagerScreen.this.scrollOff) {
+//                if (mouseX < this.getX() + 20) {
+//                    ItemStack itemstack = SectVillagerScreen.this.menu.getOffers().get(this.index + SectVillagerScreen.this.scrollOff).getCostA();
+//                    graphics.renderTooltip(SectVillagerScreen.this.font, itemstack, mouseX, mouseY);
+//                } else if (mouseX < this.getX() + 50 && mouseX > this.getX() + 30) {
+//                    ItemStack itemstack2 = SectVillagerScreen.this.menu.getOffers().get(this.index + SectVillagerScreen.this.scrollOff).getCostB();
+//                    if (!itemstack2.isEmpty()) {
+//                        graphics.renderTooltip(SectVillagerScreen.this.font, itemstack2, mouseX, mouseY);
+//                    }
+//                } else if (mouseX > this.getX() + 65) {
+//                    ItemStack itemstack1 = SectVillagerScreen.this.menu.getOffers().get(this.index + SectVillagerScreen.this.scrollOff).getResult();
+//                    graphics.renderTooltip(SectVillagerScreen.this.font, itemstack1, mouseX, mouseY);
+//                }
+//            }
+//
+//        }
     }
 }

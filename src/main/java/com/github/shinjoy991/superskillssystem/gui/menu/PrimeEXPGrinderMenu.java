@@ -1,5 +1,6 @@
 package com.github.shinjoy991.superskillssystem.gui.menu;
 
+import com.github.shinjoy991.superskillssystem.helpers.AllPlayersInfo;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,16 +17,17 @@ import net.minecraft.world.item.ItemStack;
 import com.github.shinjoy991.superskillssystem.register.RegisterBlock;
 import com.github.shinjoy991.superskillssystem.register.RegisterItem;
 import com.github.shinjoy991.superskillssystem.register.RegisterMenu;
+import org.jetbrains.annotations.NotNull;
 
 public class PrimeEXPGrinderMenu extends AbstractContainerMenu {
-    public static final int MAX_NAME_LENGTH = 35;
-    public static final int INPUT_SLOT = 0;
-    public static final int ADDITIONAL_SLOT = 1;
-    public static final int RESULT_SLOT = 2;
-    private static final int INV_SLOT_START = 3;
-    private static final int INV_SLOT_END = 30;
-    private static final int USE_ROW_SLOT_START = 30;
-    private static final int USE_ROW_SLOT_END = 39;
+//    public static final int MAX_NAME_LENGTH = 35;
+//    public static final int INPUT_SLOT = 0;
+//    public static final int ADDITIONAL_SLOT = 1;
+//    public static final int RESULT_SLOT = 2;
+//    private static final int INV_SLOT_START = 3;
+//    private static final int INV_SLOT_END = 30;
+//    private static final int USE_ROW_SLOT_START = 30;
+//    private static final int USE_ROW_SLOT_END = 39;
     private final Container resultSlots = new ResultContainer();
     final Container repairSlots = new SimpleContainer(2) {
         public void setChanged() {
@@ -76,6 +78,11 @@ public class PrimeEXPGrinderMenu extends AbstractContainerMenu {
                     level.levelEvent(1042, pos, 0);
                 });
 
+                // Lấy số lượng item từ input slots
+                ItemStack input1 = PrimeEXPGrinderMenu.this.repairSlots.getItem(0);
+                ItemStack input2 = PrimeEXPGrinderMenu.this.repairSlots.getItem(1);
+                int totalCount = input1.getCount() + input2.getCount();
+
                 // Xóa input sau khi lấy
                 PrimeEXPGrinderMenu.this.repairSlots.setItem(0, ItemStack.EMPTY);
                 PrimeEXPGrinderMenu.this.repairSlots.setItem(1, ItemStack.EMPTY);
@@ -86,6 +93,7 @@ public class PrimeEXPGrinderMenu extends AbstractContainerMenu {
                 if (player instanceof ServerPlayer serverPlayer) {
                     serverPlayer.connection.send(new ClientboundSetCarriedItemPacket(serverPlayer.getInventory().selected)); // sync slot
                     serverPlayer.containerMenu.setCarried(ItemStack.EMPTY); // xóa khỏi chuột
+                    AllPlayersInfo.get(serverPlayer.getUUID()).addPrimeExp(totalCount);
                 }
             }
 
@@ -139,10 +147,10 @@ public class PrimeEXPGrinderMenu extends AbstractContainerMenu {
         return stillValid(this.access, p_39572_, RegisterBlock.PRIME_EXP_GRINDER.get());
     }
 
-    public ItemStack quickMoveStack(Player p_39588_, int p_39589_) {
+    public ItemStack quickMoveStack(@NotNull Player p_39588_, int p_39589_) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.slots.get(p_39589_);
-        if (slot != null && slot.hasItem()) {
+        if (slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
             ItemStack itemstack2 = this.repairSlots.getItem(0);

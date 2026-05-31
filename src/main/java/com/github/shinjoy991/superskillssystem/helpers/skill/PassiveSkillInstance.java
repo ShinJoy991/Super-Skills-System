@@ -4,11 +4,13 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class PassiveSkillInstance {
     private final PassiveSkill skill;
     private int level;
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("+#.##;-#.##");
 
     public PassiveSkillInstance(PassiveSkill skill, int level) {
         this.skill = skill;
@@ -57,25 +59,28 @@ public class PassiveSkillInstance {
         MutableComponent result = Component.literal("");
         MutableComponent nameLine = Component.translatable("skill.name." + skill.name)
                 .withStyle(isSectMatch ? ChatFormatting.GOLD : ChatFormatting.GRAY);
-        result.append(nameLine).append("\n");
+        result.append(nameLine).append("    ");
 
-        // Dòng phụ màu đen
-        result.append(Component.literal("").withStyle(ChatFormatting.BLACK));
+//        // Dòng phụ màu đen
+//        result.append(Component.literal("").withStyle(ChatFormatting.BLACK));
 
         result.append(Component.translatable("skill.type.passive")).append("\n");
         for (SkillTags tag : skill.tags) {
-            result.append(getInfoBaseOnTag(tag)).append("\n");
+            result.append(getInfoBaseOnTag(tag));
+            result.append("\n");
         }
         return result;
     }
+
     private Component getInfoBaseOnTag(SkillTags tag) {
-        float value = getValue(tag);
-        return switch (tag) {
-            case ATK_FLAT -> Component.translatable("skill.info.atk", value);
-            case DEF_FLAT -> Component.translatable("skill.info.defense", value);
-            case SPEED -> Component.translatable("skill.info.speed", value);
-            default -> Component.translatable("skill.info.unknown", tag.getTag());
-        };
+        float value = this.getValue(tag);
+        // Format số (tự động thêm + và bỏ 0 thừa)
+        String text = DECIMAL_FORMAT.format(value);
+        if (tag.isPercentage()) {
+            text += "%";
+        }
+        MutableComponent appendValue = Component.literal(text);
+        return Component.translatable("skill.info." + tag.value()).append(appendValue);
     }
 
     public SectTypes getSectType() {

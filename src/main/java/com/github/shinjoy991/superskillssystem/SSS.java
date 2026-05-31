@@ -3,6 +3,7 @@ package com.github.shinjoy991.superskillssystem;
 import com.github.shinjoy991.superskillssystem.config.CreateJson;
 import com.github.shinjoy991.superskillssystem.entity.trading.ModVillagers;
 import com.github.shinjoy991.superskillssystem.entity.trading.SectVillager;
+import com.github.shinjoy991.superskillssystem.gui.screen.PrimeEXPGrinderScreen;
 import com.github.shinjoy991.superskillssystem.gui.screen.SectVillagerScreen;
 import com.github.shinjoy991.superskillssystem.register.*;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -51,6 +52,7 @@ public class SSS {
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {
+        MenuScreens.register(RegisterMenu.PRIME_EXP_GRINDER_MENU.get(), PrimeEXPGrinderScreen::new);
         MenuScreens.register(RegisterMenu.SECT_VILLAGER_MENU.get(), SectVillagerScreen::new);
     }
 

@@ -4,9 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.FileWriter;
@@ -16,6 +13,8 @@ import java.nio.file.Path;
 import java.util.*;
 
 import static com.github.shinjoy991.superskillssystem.SSS.LOGGER;
+import static com.github.shinjoy991.superskillssystem.helpers.skill.SkillTags.ATK_PERCENT;
+import static com.github.shinjoy991.superskillssystem.helpers.skill.SkillTags.RANGE_PERCENT;
 
 public class CreateJson {
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
@@ -43,8 +42,32 @@ public class CreateJson {
 
         jsonData.put("__comment", comments);
 
-        jsonData.put("overlord_sutra", createData1());
-        jsonData.put("tyrant_body_divine_technique", createData2());
+
+        jsonData.put("overlord_sutra", createData(
+                "warrior",
+                Arrays.asList("MANA_PERCENT", "def"),
+                Map.of("MANA_PERCENT", 10, "def", 1),
+                Map.of("MANA_PERCENT", 1, "DEF", 1)
+        ));
+
+        jsonData.put("tyrant_body_divine_technique", createData(
+                "warrior",
+                Arrays.asList("hp", "def"),
+                Map.of("hp", 1, "def", 2),
+                Map.of("hp", 1, "def", 2)
+        ));
+
+        jsonData.put("war_technique", createData(
+                "warrior",
+                Arrays.asList(ATK_PERCENT.value(), RANGE_PERCENT.value()),
+                Map.of(ATK_PERCENT.value(), 10, RANGE_PERCENT.value(), 10),
+                Map.of(ATK_PERCENT.value(), 2, RANGE_PERCENT.value(), 2)
+        ));
+
+
+
+
+
 
         try (FileWriter writer = new FileWriter(configFile.toFile())) {
             GSON.toJson(jsonData, writer);
@@ -54,50 +77,32 @@ public class CreateJson {
     }
 
 
-    private static JsonObject createData1() {
+    private static JsonObject createData(
+            String sect,
+            List<String> tagsList,
+            Map<String, Number> baseMap,
+            Map<String, Number> bonusMap
+    ) {
         JsonObject root = new JsonObject();
-
-//        root.addProperty("name", "skill.overlord_sutra");
-        root.addProperty("sect", "warrior");
+        root.addProperty("sect", sect);
 
         JsonArray tags = new JsonArray();
-        tags.add("MANA_PERCENT");
-        tags.add("def");
+        for (String tag : tagsList) {
+            tags.add(tag);
+        }
         root.add("tags", tags);
 
         JsonObject base = new JsonObject();
-        base.addProperty("MANA_PERCENT", 10);
-        base.addProperty("def", 1);
+        for (Map.Entry<String, Number> entry : baseMap.entrySet()) {
+            base.addProperty(entry.getKey(), entry.getValue());
+        }
         root.add("base", base);
 
-        JsonObject bonuses = new JsonObject();
-        bonuses.addProperty("MANA_PERCENT", 1);
-        bonuses.addProperty("DEF", 1);
-        root.add("bonus", bonuses);
-
-        return root;
-    }
-
-    private static JsonObject createData2() {
-        JsonObject root = new JsonObject();
-
-//        root.addProperty("name", "tyrant_body_divine_technique");
-        root.addProperty("sect", "warrior");
-
-        JsonArray tags = new JsonArray();
-        tags.add("hp");
-        tags.add("def");
-        root.add("tags", tags);
-
-        JsonObject base = new JsonObject();
-        base.addProperty("hp", 1);
-        base.addProperty("def", 2);
-        root.add("base", base);
-
-        JsonObject bonuses = new JsonObject();
-        bonuses.addProperty("hp", 1);
-        bonuses.addProperty("def", 2);
-        root.add("bonus", bonuses);
+        JsonObject bonus = new JsonObject();
+        for (Map.Entry<String, Number> entry : bonusMap.entrySet()) {
+            bonus.addProperty(entry.getKey(), entry.getValue());
+        }
+        root.add("bonus", bonus);
 
         return root;
     }

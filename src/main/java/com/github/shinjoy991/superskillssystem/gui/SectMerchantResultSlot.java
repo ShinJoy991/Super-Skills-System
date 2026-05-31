@@ -27,28 +27,6 @@ public class SectMerchantResultSlot extends Slot {
         this.slots = p_40085_;
     }
 
-    public boolean mayPlace(ItemStack p_40095_) {
-        return false;
-    }
-
-    public ItemStack remove(int p_40090_) {
-        if (this.hasItem()) {
-            this.removeCount += Math.min(p_40090_, this.getItem().getCount());
-        }
-
-        return super.remove(p_40090_);
-    }
-
-    protected void onQuickCraft(ItemStack p_40097_, int p_40098_) {
-        this.removeCount += p_40098_;
-        this.checkTakeAchievements(p_40097_);
-    }
-
-    protected void checkTakeAchievements(ItemStack p_40100_) {
-        p_40100_.onCraftedBy(this.player.level(), this.player, this.removeCount);
-        this.removeCount = 0;
-    }
-
 //    public void onTake(Player p_150631_, ItemStack p_150632_) {
 //        this.checkTakeAchievements(p_150632_);
 //        MerchantOffer merchantoffer = this.slots.getActiveOffer();
@@ -68,9 +46,9 @@ public class SectMerchantResultSlot extends Slot {
 //    }
 
     public void onTake(Player player, ItemStack stack) {
-        System.out.println("onTake called in SectVillagerMenu,  is client player:" + player.level().isClientSide);
+//        System.out.println("onTake called in SectVillagerMenu,  is client player:" + player.level().isClientSide);
 
-        this.checkTakeAchievements(stack);
+//        this.checkTakeAchievements(stack);
         MerchantOffer merchantoffer = this.slots.getActiveOffer();
         if (merchantoffer != null) {
             ItemStack itemstack = this.slots.getItem(0);
@@ -131,4 +109,32 @@ public class SectMerchantResultSlot extends Slot {
 //            }
 //        }
     }
+
+
+    // Not changed methods
+
+    public boolean mayPlace(ItemStack p_40095_) {
+        return false;
+    }
+
+    public ItemStack remove(int p_40090_) {
+        if (this.hasItem()) {
+            this.removeCount += Math.min(p_40090_, this.getItem().getCount());
+        }
+
+        return super.remove(p_40090_);
+    }
+
+    protected void onQuickCraft(ItemStack p_40097_, int p_40098_) {
+        this.removeCount += p_40098_;
+        this.checkTakeAchievements(p_40097_);
+    }
+
+    protected void checkTakeAchievements(ItemStack p_40100_) {
+        p_40100_.onCraftedBy(this.player.level(), this.player, this.removeCount);
+        this.removeCount = 0;
+    }
+
+    // Not changed methods end
+
 }

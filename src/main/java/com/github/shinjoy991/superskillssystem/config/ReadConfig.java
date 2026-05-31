@@ -110,17 +110,17 @@ public class ReadConfig {
 //        }
 //    }
 
-    public static int reloadConfig() {
-        try {
-            String jsonString = new String(Files.readAllBytes(CreateJson.configFile),
-                    StandardCharsets.UTF_8);
-            jsonObject = new JsonParser().parse(jsonString).getAsJsonObject();
-
-            return 0;
-        } catch (IOException e) {
-            LOGGER.error("[Super Skills System] Config reload error " + e);
-            return 1;
-        }
-    }
+//    public static int reloadConfig() {
+//        try {
+//            String jsonString = new String(Files.readAllBytes(CreateJson.configFile),
+//                    StandardCharsets.UTF_8);
+//            jsonObject = new JsonParser().parse(jsonString).getAsJsonObject();
+//
+//            return 0;
+//        } catch (IOException e) {
+//            LOGGER.error("[Super Skills System] Config reload error " + e);
+//            return 1;
+//        }
+//    }
 
 }

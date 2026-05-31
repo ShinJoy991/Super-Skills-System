@@ -30,6 +30,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,17 +38,17 @@ import java.util.List;
 import java.util.Map;
 
 public class SectVillagerMenu extends AbstractContainerMenu {
-    protected static final int PAYMENT1_SLOT = 0;
-    protected static final int PAYMENT2_SLOT = 1;
-    protected static final int RESULT_SLOT = 2;
-    private static final int INV_SLOT_START = 3;
-    private static final int INV_SLOT_END = 30;
-    private static final int USE_ROW_SLOT_START = 30;
-    private static final int USE_ROW_SLOT_END = 39;
-    private static final int SELLSLOT1_X = 136;
-    private static final int SELLSLOT2_X = 162;
-    private static final int BUYSLOT_X = 220;
-    private static final int ROW_Y = 37;
+//    protected static final int PAYMENT1_SLOT = 0;
+//    protected static final int PAYMENT2_SLOT = 1;
+//    protected static final int RESULT_SLOT = 2;
+//    private static final int INV_SLOT_START = 3;
+//    private static final int INV_SLOT_END = 30;
+//    private static final int USE_ROW_SLOT_START = 30;
+//    private static final int USE_ROW_SLOT_END = 39;
+//    private static final int SELLSLOT1_X = 136;
+//    private static final int SELLSLOT2_X = 162;
+//    private static final int BUYSLOT_X = 220;
+//    private static final int ROW_Y = 37;
     private final Merchant trader;
     private final SectMerchantContainer tradeContainer;
     private final Container resultContainer = new ResultContainer();
@@ -175,27 +176,30 @@ public class SectVillagerMenu extends AbstractContainerMenu {
         return false;
     }
 
-    public ItemStack quickMoveStack(Player p_40053_, int p_40054_) {
+    public ItemStack quickMoveStack(@NotNull Player player, int slotId) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(p_40054_);
-        if (slot != null && slot.hasItem()) {
+        Slot slot = this.slots.get(slotId);
+        if (slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
-            if (p_40054_ == 2) {
-                if (!this.moveItemStackTo(itemstack1, 3, 39, true)) {
-                    return ItemStack.EMPTY;
-                }
-
+            if (slotId == 2) {
+//                if (!this.moveItemStackTo(itemstack1, 3, 39, true)) {
+//                    return ItemStack.EMPTY;
+//                }
+                slot.set(ItemStack.EMPTY);
+                slot.onTake(player, itemstack1);
+//                return ItemStack.EMPTY;
+//
                 slot.onQuickCraft(itemstack1, itemstack);
                 this.playTradeSound();
             }
-            else if (p_40054_ != 0 && p_40054_ != 1) {
-                if (p_40054_ >= 3 && p_40054_ < 30) {
+            else if (slotId != 0 && slotId != 1) {
+                if (slotId >= 3 && slotId < 30) {
                     if (!this.moveItemStackTo(itemstack1, 30, 39, false)) {
                         return ItemStack.EMPTY;
                     }
                 }
-                else if (p_40054_ >= 30 && p_40054_ < 39 && !this.moveItemStackTo(itemstack1, 3, 30, false)) {
+                else if (slotId >= 30 && slotId < 39 && !this.moveItemStackTo(itemstack1, 3, 30, false)) {
                     return ItemStack.EMPTY;
                 }
             }
@@ -214,7 +218,7 @@ public class SectVillagerMenu extends AbstractContainerMenu {
                 return ItemStack.EMPTY;
             }
 
-            slot.onTake(p_40053_, itemstack1);
+            slot.onTake(player, itemstack1);
         }
 
         return itemstack;
@@ -315,6 +319,56 @@ public class SectVillagerMenu extends AbstractContainerMenu {
     public void setSelectedCategory(int category) {
         this.selectedCategory = category;
     }
+    public int getSelectedCategory() {
+        return this.selectedCategory;
+    }
+    public MerchantOffers getOffers() {
+        return this.cachedOffers;
+//        List<PassiveSkill> listPassiveSkills = this.trader.isClientSide()
+//                ? PlayerClientData.warriorGlobalPassiveSkills
+//                : ReadConfig.passiveSkills;
+//
+//        // Map skillName -> level
+//        Map<String, Integer> skillLevelMap = new HashMap<>();
+//        for (PassiveSkillInstance psi : this.playerPassiveSkills) {
+//            skillLevelMap.put(psi.getName(), psi.getLevel());
+//        }
+//        MerchantOffers offers = new MerchantOffers();
+//        for (PassiveSkill skill : listPassiveSkills) {
+//            int playerLevel = skillLevelMap.getOrDefault(skill.name, 0);
+//
+//            int emeraldCost = 3 + playerLevel * 2;
+//            int diamondCost = 2 + playerLevel * 2;
+//
+//            ItemStack costA = new ItemStack(Items.EMERALD, emeraldCost);
+//            ItemStack costB = diamondCost > 0 ? new ItemStack(Items.DIAMOND, diamondCost) : ItemStack.EMPTY;
+//
+//            ItemStack result = new ItemStack(Items.BOOK, 2);
+//            result.setHoverName(
+//                    skill.getTranslatableName()
+//                            .copy()
+//                            .setStyle(Style.EMPTY.withItalic(false))
+//                            .append(Component.literal(" - Lv." + (playerLevel + 1)))
+//            );
+//
+//            CompoundTag nbt = result.getOrCreateTag();
+//            nbt.putString("SkillName", skill.name);
+//            nbt.putInt("SkillLevel", playerLevel + 1);
+//
+//            offers.add(new MerchantOffer(costA, costB, result, 9999, 0, 0));
+//        }
+//        return offers;
+    }
+
+    public boolean showProgressBar() {
+        return false;
+    }
+
+    public int getMaxCategories() {
+        // Trả về số lượng category bạn muốn hiển thị
+        return 3; // Ví dụ: 3 category
+    }
+
 
     public void rebuildOffersByPassiveSkillNameAndLevelChange(String skillName, int level) {
         boolean found = false;
@@ -389,57 +443,4 @@ public class SectVillagerMenu extends AbstractContainerMenu {
         }
         this.cachedOffers = offers;
     }
-
-    public MerchantOffers getOffers() {
-        return this.cachedOffers;
-//        List<PassiveSkill> listPassiveSkills = this.trader.isClientSide()
-//                ? PlayerClientData.warriorGlobalPassiveSkills
-//                : ReadConfig.passiveSkills;
-//
-//        // Map skillName -> level
-//        Map<String, Integer> skillLevelMap = new HashMap<>();
-//        for (PassiveSkillInstance psi : this.playerPassiveSkills) {
-//            skillLevelMap.put(psi.getName(), psi.getLevel());
-//        }
-//        MerchantOffers offers = new MerchantOffers();
-//        for (PassiveSkill skill : listPassiveSkills) {
-//            int playerLevel = skillLevelMap.getOrDefault(skill.name, 0);
-//
-//            int emeraldCost = 3 + playerLevel * 2;
-//            int diamondCost = 2 + playerLevel * 2;
-//
-//            ItemStack costA = new ItemStack(Items.EMERALD, emeraldCost);
-//            ItemStack costB = diamondCost > 0 ? new ItemStack(Items.DIAMOND, diamondCost) : ItemStack.EMPTY;
-//
-//            ItemStack result = new ItemStack(Items.BOOK, 2);
-//            result.setHoverName(
-//                    skill.getTranslatableName()
-//                            .copy()
-//                            .setStyle(Style.EMPTY.withItalic(false))
-//                            .append(Component.literal(" - Lv." + (playerLevel + 1)))
-//            );
-//
-//            CompoundTag nbt = result.getOrCreateTag();
-//            nbt.putString("SkillName", skill.name);
-//            nbt.putInt("SkillLevel", playerLevel + 1);
-//
-//            offers.add(new MerchantOffer(costA, costB, result, 9999, 0, 0));
-//        }
-//        return offers;
-    }
-
-
-    public boolean showProgressBar() {
-        return false;
-    }
-
-    public int getSelectedCategory() {
-        return this.selectedCategory;
-    }
-
-    public int getMaxCategories() {
-        // Trả về số lượng category bạn muốn hiển thị
-        return 3; // Ví dụ: 3 category
-    }
-
 }

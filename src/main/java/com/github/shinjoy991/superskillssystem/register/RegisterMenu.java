@@ -19,10 +19,7 @@ public class RegisterMenu {
                     () -> IForgeMenuType.create(SectVillagerMenu::new));
     public static final RegistryObject<MenuType<PrimeEXPGrinderMenu>> PRIME_EXP_GRINDER_MENU = MENU_TYPES.register("prime_exp_grinder_menu",
             () -> IForgeMenuType.create(PrimeEXPGrinderMenu::new));
-    public static final RegistryObject<MenuType<PlayerInfoMenu>> PLAYER_INFO_MENU = MENU_TYPES.register("player_info_menu",
-            () -> IForgeMenuType.create(PlayerInfoMenu::new));
+//    public static final RegistryObject<MenuType<PlayerInfoMenu>> PLAYER_INFO_MENU = MENU_TYPES.register("player_info_menu",
+//            () -> IForgeMenuType.create(PlayerInfoMenu::new));
 
-
-//    public static final RegistryObject<MenuType<SectVillagerMenu>> SECT_VILLAGER_MENU = MENU_TYPES.register("sect_villager_menu",
-//            () -> IForgeMenuType.create((id, inv, data) -> new SectVillagerMenu(id, inv )));
 }

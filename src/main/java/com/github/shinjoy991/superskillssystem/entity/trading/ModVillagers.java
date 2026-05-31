@@ -27,6 +27,17 @@ public class ModVillagers {
                     holder -> holder.get() == SOUND_POI.get(), holder -> holder.get() == SOUND_POI.get(),
                     ImmutableSet.of(), ImmutableSet.of(), SoundEvents.VILLAGER_WORK_ARMORER));
 
+    public static final RegistryObject<VillagerProfession> SECT_MASTER =
+            VILLAGER_PROFESSIONS.register("sect_master",
+                    () -> new VillagerProfession(
+                            "sect_master",
+                            poi -> false, // Không yêu cầu POI
+                            poi -> false, // Không tìm kiếm POI
+                            ImmutableSet.of(),
+                            ImmutableSet.of(),
+                            SoundEvents.VILLAGER_CELEBRATE // Hoặc âm thanh khác
+                    )
+            );
 
     public static void register(IEventBus eventBus) {
         POI_TYPES.register(eventBus);

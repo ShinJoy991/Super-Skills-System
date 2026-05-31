@@ -26,6 +26,8 @@ public class SectMerchantContainer implements Container {
         this.menu = menu;
     }
 
+    // not changed methods
+
     public int getContainerSize() {
         return this.itemStacks.size();
     }
@@ -53,7 +55,6 @@ public class SectMerchantContainer implements Container {
             ItemStack itemstack1 = ContainerHelper.removeItem(this.itemStacks, p_40010_, p_40011_);
             if (!itemstack1.isEmpty() && this.isPaymentSlot(p_40010_)) {
                 this.updateSellItem();
-//                System.out.println("removeitem");
             }
 
             return itemstack1;
@@ -89,8 +90,27 @@ public class SectMerchantContainer implements Container {
 
     public void setChanged() {
         this.updateSellItem();
-//        System.out.println("setChanged");
     }
+
+    @Nullable
+    public MerchantOffer getActiveOffer() {
+        return this.activeOffer;
+    }
+
+    public void setSelectionHint(int p_40021_) {
+        this.selectionHint = p_40021_;
+        this.updateSellItem();
+    }
+
+    public void clearContent() {
+        this.itemStacks.clear();
+    }
+
+    public int getFutureXp() {
+        return this.futureXp;
+    }
+
+    // Not changed methods end
 
     public void updateSellItem() {
         this.activeOffer = null;
@@ -137,24 +157,5 @@ public class SectMerchantContainer implements Container {
 
             this.merchant.notifyTradeUpdated(this.getItem(2));
         }
-    }
-
-    @Nullable
-    public MerchantOffer getActiveOffer() {
-        return this.activeOffer;
-    }
-
-    public void setSelectionHint(int p_40021_) {
-        this.selectionHint = p_40021_;
-        this.updateSellItem();
-//        System.out.println("setSelectionHint" );
-    }
-
-    public void clearContent() {
-        this.itemStacks.clear();
-    }
-
-    public int getFutureXp() {
-        return this.futureXp;
     }
 }
