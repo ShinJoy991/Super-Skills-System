@@ -26,13 +26,7 @@ public class PlayerMixin {
             ordinal = 2
     )
     private boolean modifyCritChance(boolean original) {
-        Player self = (Player) (Object) this;
-
-        // Tăng tỉ lệ chí mạng lên 50%
-        if (original) {
-            return self.level().random.nextFloat() < 0.5f;
-        }
-        return false;
+            return false;
     }
 
     @ModifyVariable(
@@ -43,13 +37,10 @@ public class PlayerMixin {
     // only player melee attack
     private float injectAttackDamageBonus(float original) {
         Player self = (Player) (Object) this;
-
         if (self.level().isClientSide) {
             return original; // Không thay đổi gì nếu là client, có thể sai nếu sau đó dùng giá trị này để render
         }
-        if (original < 2) {
-            return original; // Không thay đổi gì nếu giá trị gốc quá nhỏ
-        }
+
         PlayerInfo info = AllPlayersInfo.get(self.getUUID());
         float atk = info.getAtkDmg();
         // get damage of item of player
@@ -65,7 +56,7 @@ public class PlayerMixin {
     // Áp dụng bonus:
         weaponDmgAddByPercent *= (0.01f * info.getWeaponPercentDmgBonus());
 //        System.out.println("PlayerMixin.injectAttackDamageBonus: atk = " + atk + ", weaponDmgAddByPercent = " + weaponDmgAddByPercent + ", original = " + original);
-        return (float) (atk + weaponDmgAddByPercent + original);
+        return (float) (atk + weaponDmgAddByPercent + original - 1);
 //        return (float) ((atk + weaponDmgAddByPercent) * (0.8F + self.level().random.nextFloat() * 0.4F + info.getPerfection()));
 //            return original; // Trả về giá trị gốc nếu không có thay đổi nào
     }

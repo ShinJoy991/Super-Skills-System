@@ -1,5 +1,6 @@
 package com.github.shinjoy991.superskillssystem.gui.menu;
 
+import com.github.shinjoy991.superskillssystem.Config;
 import com.github.shinjoy991.superskillssystem.config.ReadConfig;
 import com.github.shinjoy991.superskillssystem.gui.SectMerchantContainer;
 import com.github.shinjoy991.superskillssystem.gui.SectMerchantResultSlot;
@@ -420,19 +421,49 @@ public class SectVillagerMenu extends AbstractContainerMenu {
         MerchantOffers offers = new MerchantOffers();
         for (PassiveSkill skill : listPassiveSkills) {
             int playerLevel = skillLevelMap.getOrDefault(skill.name, 0);
+            int nextLevel = playerLevel + 1;
+            int emeraldCost;
+            int diamondCost;
+            if (nextLevel > 20) {
+                nextLevel = 20;
+                emeraldCost = 0;
+                diamondCost = 0;
+            }
+            else {
+                if (nextLevel < 6) {
+                    emeraldCost = nextLevel;
+                    diamondCost = nextLevel;
+                }
+                else if (nextLevel < 11) {
+                    emeraldCost = nextLevel;
+                    diamondCost = nextLevel - 2;
+                }
+                else if (nextLevel < 16) {
+                    emeraldCost = nextLevel + 3;
+                    diamondCost = nextLevel - 3;
+                }
+                else if (nextLevel < 20) {
+                    emeraldCost = (int) Math.round(nextLevel * 1.2);
+                    diamondCost = (int) Math.round(nextLevel * 0.85);
+                }
+                else {
+                    emeraldCost = nextLevel * 2;
+                    diamondCost = nextLevel * 2;
+                }
+                emeraldCost = Math.max(1, (int) (emeraldCost * Config.SECT_PRICE_MULTIPLIER));
+                diamondCost = Math.max(1, (int) (diamondCost * Config.SECT_PRICE_MULTIPLIER));
+            }
 
-            int emeraldCost = 3 + playerLevel * 2;
-            int diamondCost = 2 + playerLevel * 2;
 
             ItemStack costA = new ItemStack(Items.EMERALD, emeraldCost);
             ItemStack costB = diamondCost > 0 ? new ItemStack(Items.DIAMOND, diamondCost) : ItemStack.EMPTY;
 
-            ItemStack result = new ItemStack(Items.BOOK, 2);
+            ItemStack result = new ItemStack(Items.BOOK, nextLevel);
             result.setHoverName(
                     skill.getTranslatableName()
                             .copy()
                             .setStyle(Style.EMPTY.withItalic(false))
-                            .append(Component.literal(" - Lv." + (playerLevel + 1)).withStyle(ChatFormatting.GRAY))
+                            .append(Component.literal(" - Lv." + (nextLevel)).withStyle(ChatFormatting.GRAY))
             );
 
             CompoundTag nbt = result.getOrCreateTag();
@@ -441,6 +472,25 @@ public class SectVillagerMenu extends AbstractContainerMenu {
 
             offers.add(new MerchantOffer(costA, costB, result, 9999, 0, 0));
         }
+
+        // Add ActSkillThrust at the end
+        ItemStack thrustCostA = new ItemStack(Items.EMERALD, 5);
+        ItemStack thrustCostB = new ItemStack(Items.DIAMOND, 3);
+
+        ItemStack thrustResult = new ItemStack(Items.BOOK, 1);
+        thrustResult.setHoverName(
+                Component.translatable("skill.name.thrust")
+                        .copy()
+                        .setStyle(Style.EMPTY.withItalic(false))
+                        .withStyle(ChatFormatting.GOLD)
+        );
+
+        CompoundTag thrustNbt = thrustResult.getOrCreateTag();
+        thrustNbt.putString("SkillName", "thrust");
+        thrustNbt.putString("SkillId", "sss:thrust");
+
+        offers.add(new MerchantOffer(thrustCostA, thrustCostB, thrustResult, 9999, 0, 0));
+
         this.cachedOffers = offers;
     }
 }

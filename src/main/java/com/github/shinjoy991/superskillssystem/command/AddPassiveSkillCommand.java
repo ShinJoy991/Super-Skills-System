@@ -26,13 +26,14 @@ public class AddPassiveSkillCommand {
 
     public AddPassiveSkillCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
-                Commands.literal("addpassiveskill")
+                Commands.literal("SSS")
+                        .then(Commands.literal("addpassiveskill")
                         .requires(source -> source.hasPermission(4)) // permission level
                         .then(Commands.argument("skill_name", StringArgumentType.word())
                                 .suggests(SKILL_NAME_SUGGESTIONS)
                                 .then(Commands.argument("level", IntegerArgumentType.integer(-20))
                                         .executes(this::addPassiveSkill)))
-        );
+        ));
     }
 
     private int addPassiveSkill(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

@@ -71,7 +71,14 @@ public class SectMerchantResultSlot extends Slot {
                 sectMenu.rebuildOffersByPassiveSkillNameAndLevelChange(skillName, 1);
 
                 if (player instanceof ServerPlayer serverPlayer) {
-                    AllPlayersInfo.get(serverPlayer.getUUID()).addPassiveSkill(skillName, 1);
+                    String skillId = tag.getString("SkillId");
+                   // AllPlayersInfo.get(serverPlayer.getUUID()).addPassiveSkill(skillName, 1);
+                    if (skillId.isEmpty()) {
+                        AllPlayersInfo.get(serverPlayer.getUUID()).addPassiveSkill(skillName, 1);
+                    } else {
+                        // active skill
+                        AllPlayersInfo.get(serverPlayer.getUUID()).addActiveSkill(skillId, 1);
+                    }
                     serverPlayer.connection.send(new ClientboundSetCarriedItemPacket(serverPlayer.getInventory().selected)); // sync slot
                     serverPlayer.containerMenu.setCarried(ItemStack.EMPTY); // xóa khỏi chuột
 

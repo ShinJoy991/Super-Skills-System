@@ -21,9 +21,9 @@ import static com.github.shinjoy991.superskillssystem.gui.screen.ScreenHelper.ad
 @OnlyIn(Dist.CLIENT)
 public class PlayerInfoDetailScreen extends Screen {
     private static final ResourceLocation DETAIL_SCREEN_LOC =
-            new ResourceLocation(SSS.MODID, "textures/gui/player_info_detail.png");
+            ResourceLocation.fromNamespaceAndPath(SSS.MODID, "textures/gui/player_info_detail.png");
     private static final ResourceLocation PLAYER_INFO_WIDGET_LOC =
-            new ResourceLocation(SSS.MODID, "textures/gui/player_info_widget.png");
+            ResourceLocation.fromNamespaceAndPath(SSS.MODID, "textures/gui/player_info_widget.png");
 
     private final Player player;
 
@@ -42,12 +42,13 @@ public class PlayerInfoDetailScreen extends Screen {
 
     private int topLeftX;
     private int topLeftY;
-    private int textOffsetTopLeftX = 10;
-    private int textOffsetTopLeftY = 30;
-    private int textSpacingX = 120;
-    private int textSpacingY = 17;
+    private int textOffsetTopLeftX = 23;
+    private int textOffsetTopLeftY = 38;
+    private int textSpacingX = 112;
+    private int textSpacingY = 16;
 
-    private int detailBtnTopLeftX = 90;
+    private int detailBtnTopLeftX = 95;
+    private int detailBtnTopLeftY = textOffsetTopLeftY - 5;
 
     // Detail flags
     private DetailType selectedDetail = null;
@@ -70,8 +71,8 @@ public class PlayerInfoDetailScreen extends Screen {
         int buttonImageHeight = 256;
         int buttonImageWidth = 256;
         infoButton = new ImageButton(
-                topLeftX + (imageWidth - 50) / 2 - 80,
-                topLeftY + 185
+                topLeftX + (imageWidth - tabBtnW) / 2 - 80,
+                topLeftY + 184
                 , 50, 13,
                 0, 0, 13,  // u, v, hoverOffsetV
                 PLAYER_INFO_WIDGET_LOC, buttonImageHeight, buttonImageWidth,
@@ -80,8 +81,8 @@ public class PlayerInfoDetailScreen extends Screen {
         this.addRenderableWidget(infoButton);
 
         skillBtn = new ImageButton(
-                topLeftX + (imageWidth - 50) / 2 + 80,
-                topLeftY + 185,
+                topLeftX + (imageWidth - tabBtnW) / 2 + 80,
+                topLeftY + 184,
                 50, 13,
                 0, 0, 13,  // u, v, hoverOffsetV
                 PLAYER_INFO_WIDGET_LOC, buttonImageHeight, buttonImageWidth,
@@ -90,7 +91,7 @@ public class PlayerInfoDetailScreen extends Screen {
         this.addRenderableWidget(skillBtn);
         // Add Detail button
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX, topLeftY + textOffsetTopLeftY,
+                topLeftX + detailBtnTopLeftX, topLeftY + detailBtnTopLeftY,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -100,7 +101,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX, topLeftY + textOffsetTopLeftY + textSpacingY,
+                topLeftX + detailBtnTopLeftX, topLeftY + detailBtnTopLeftY + textSpacingY,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -110,7 +111,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX, topLeftY + textOffsetTopLeftY + textSpacingY * 2,
+                topLeftX + detailBtnTopLeftX, topLeftY + detailBtnTopLeftY + textSpacingY * 2,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -120,7 +121,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX, topLeftY + textOffsetTopLeftY + textSpacingY * 3,
+                topLeftX + detailBtnTopLeftX, topLeftY + detailBtnTopLeftY + textSpacingY * 3,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -130,7 +131,17 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX, topLeftY + textOffsetTopLeftY + textSpacingY * 4,
+                topLeftX + detailBtnTopLeftX, topLeftY + detailBtnTopLeftY + textSpacingY * 4,
+                detailBtnW, detailBtnH, 0, 48, detailBtnH,
+                PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
+                0.3f, false,
+                () -> {
+                    this.selectedDetail = DetailType.PERFECTION;
+                    spawnSparklesAt(lastMouseX, lastMouseY);
+                }
+        ));
+        this.addRenderableWidget(addBtn(
+                topLeftX + detailBtnTopLeftX, topLeftY + detailBtnTopLeftY + textSpacingY * 5,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -140,7 +151,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX, topLeftY + textOffsetTopLeftY + textSpacingY * 5,
+                topLeftX + detailBtnTopLeftX, topLeftY + detailBtnTopLeftY + textSpacingY * 6,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -150,7 +161,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX, topLeftY + textOffsetTopLeftY + textSpacingY * 6,
+                topLeftX + detailBtnTopLeftX, topLeftY + detailBtnTopLeftY + textSpacingY * 7,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -160,7 +171,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX, topLeftY + textOffsetTopLeftY + textSpacingY * 7,
+                topLeftX + detailBtnTopLeftX, topLeftY + detailBtnTopLeftY + textSpacingY * 8,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -170,7 +181,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX, topLeftY + textOffsetTopLeftY + textSpacingY * 8,
+                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + detailBtnTopLeftY,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -180,17 +191,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + textOffsetTopLeftY,
-                detailBtnW, detailBtnH, 0, 48, detailBtnH,
-                PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
-                0.3f, false,
-                () -> {
-                    this.selectedDetail = DetailType.CRIT_DMG;
-                    spawnSparklesAt(lastMouseX, lastMouseY);
-                }
-        ));
-        this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + textOffsetTopLeftY + textSpacingY,
+                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + detailBtnTopLeftY + textSpacingY,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -200,7 +201,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + textOffsetTopLeftY + textSpacingY * 2,
+                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + detailBtnTopLeftY + textSpacingY * 2,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -210,7 +211,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + textOffsetTopLeftY + textSpacingY * 3,
+                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + detailBtnTopLeftY + textSpacingY * 3,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -220,7 +221,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + textOffsetTopLeftY + textSpacingY * 4,
+                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + detailBtnTopLeftY + textSpacingY * 4,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -230,7 +231,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + textOffsetTopLeftY + textSpacingY * 5,
+                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + detailBtnTopLeftY + textSpacingY * 5,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -240,7 +241,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + textOffsetTopLeftY + textSpacingY * 6,
+                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + detailBtnTopLeftY + textSpacingY * 6,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -250,7 +251,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + textOffsetTopLeftY + textSpacingY * 7,
+                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + detailBtnTopLeftY + textSpacingY * 7,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -260,7 +261,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + textOffsetTopLeftY + textSpacingY * 8,
+                topLeftX + detailBtnTopLeftX + textSpacingX, topLeftY + detailBtnTopLeftY + textSpacingY * 8,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -270,7 +271,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX + textSpacingX * 2, topLeftY + textOffsetTopLeftY,
+                topLeftX + detailBtnTopLeftX + textSpacingX * 2, topLeftY + detailBtnTopLeftY,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -280,7 +281,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX + textSpacingX * 2, topLeftY + textOffsetTopLeftY + textSpacingY,
+                topLeftX + detailBtnTopLeftX + textSpacingX * 2, topLeftY + detailBtnTopLeftY + textSpacingY,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -290,7 +291,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX + textSpacingX * 2, topLeftY + textOffsetTopLeftY + textSpacingY * 2,
+                topLeftX + detailBtnTopLeftX + textSpacingX * 2, topLeftY + detailBtnTopLeftY + textSpacingY * 2,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -300,7 +301,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX + textSpacingX * 2, topLeftY + textOffsetTopLeftY + textSpacingY * 3,
+                topLeftX + detailBtnTopLeftX + textSpacingX * 2, topLeftY + detailBtnTopLeftY + textSpacingY * 3,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -310,7 +311,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX + textSpacingX * 2, topLeftY + textOffsetTopLeftY + textSpacingY * 4,
+                topLeftX + detailBtnTopLeftX + textSpacingX * 2, topLeftY + detailBtnTopLeftY + textSpacingY * 4,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -320,7 +321,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX + textSpacingX * 2, topLeftY + textOffsetTopLeftY + textSpacingY * 5,
+                topLeftX + detailBtnTopLeftX + textSpacingX * 2, topLeftY + detailBtnTopLeftY + textSpacingY * 5,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -330,7 +331,7 @@ public class PlayerInfoDetailScreen extends Screen {
                 }
         ));
         this.addRenderableWidget(addBtn(
-                topLeftX + detailBtnTopLeftX + textSpacingX * 2, topLeftY + textOffsetTopLeftY + textSpacingY * 6,
+                topLeftX + detailBtnTopLeftX + textSpacingX * 2, topLeftY + detailBtnTopLeftY + textSpacingY * 6,
                 detailBtnW, detailBtnH, 0, 48, detailBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWidth, buttonImageHeight,
                 0.3f, false,
@@ -374,16 +375,17 @@ public class PlayerInfoDetailScreen extends Screen {
 
     private void drawTitles(GuiGraphics guiGraphics) {
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().scale(0.8f, 0.8f, 1.0f);
+        float scale = 0.7f;
+        guiGraphics.pose().scale(scale, scale, 1.0f);
         guiGraphics.drawString(this.font, Component.literal("Player Info").withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((topLeftX + (float) (imageWidth - tabBtnH) / 2) - 31 / 0.8f),
-                (int) ((topLeftY + 189) / 0.8f), 0xFFAA00, false);
-        guiGraphics.drawString(this.font, Component.literal("Detail Info").withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((topLeftX + (float) (imageWidth - tabBtnH) / 2) / 0.8f),
-                (int) ((topLeftY + 189) / 0.8f), 0xFFAA00, false);
+                (int) (((topLeftX + (float) (imageWidth - tabBtnW) / 2) - 76) / scale),
+                (int) ((topLeftY + 188) / scale), 0xFFAA00, false);
+        guiGraphics.drawString(this.font, Component.literal("Detail Info").withStyle(ChatFormatting.WHITE),
+                (int) (((topLeftX + (float) (imageWidth - tabBtnW) / 2) + 7) / scale),
+                (int) ((topLeftY + 188) / scale), 0xFFAA00, false);
         guiGraphics.drawString(this.font, Component.literal("Skill Info").withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((topLeftX + (float) (imageWidth - tabBtnH) / 2) + 120/ 0.8f),
-                (int) ((topLeftY + 190) / 0.8f),
+                (int) (((topLeftX + (float) (imageWidth - tabBtnW) / 2) + 90) / scale),
+                (int) ((topLeftY + 188) / scale),
                 0xFFAA00, false);
         guiGraphics.pose().popPose();
     }
@@ -393,16 +395,16 @@ public class PlayerInfoDetailScreen extends Screen {
         float scaleT = 0.55f;
         guiGraphics.pose().scale(scaleT, scaleT, 1.0f);
 
-        drawStat(guiGraphics, "Weapon Damage: " + String.format("%.2f", PlayerClientData.WeaponDmg) + " (" + String.format("%.2f", PlayerClientData.WeaponDmgBonus / 100.0) + ")", 0, 0);
-        drawStat(guiGraphics, "Attack Damage: " + String.format("%.2f", PlayerClientData.AtkDmg) + " (" + String.format("%.2f", (PlayerClientData.bonusDmg)) + ")", 0, 1);
+        drawStat(guiGraphics, "Weapon Damage: " + String.format("%.2f", (PlayerClientData.WeaponDmg * (1 + (PlayerClientData.WeaponDmgBonus / 100.0)))) + " (" + String.format("%.2f", PlayerClientData.WeaponDmg) + ")", 0, 0);
+        drawStat(guiGraphics, "Attack Damage: " + String.format("%.2f", (PlayerClientData.AtkDmg + PlayerClientData.bonusDmg)), 0, 1);
         drawStat(guiGraphics, "Range Damage: " + String.format("%.2f", PlayerClientData.RangeDmg), 0, 2);
         drawStat(guiGraphics, "Magic Damage: " + String.format("%.2f", PlayerClientData.MagicDmg), 0, 3);
-        drawStat(guiGraphics, "Def: " + String.format("%.2f", PlayerClientData.Def), 0, 4);
-        drawStat(guiGraphics, "Def Penetration: " + String.format("%.2f", PlayerClientData.DefPen), 0, 5);
-        drawStat(guiGraphics, "Magic Def: " + String.format("%.2f", PlayerClientData.MagicDef), 0, 6);
-        drawStat(guiGraphics, "Magic Penetration: " + String.format("%.2f", PlayerClientData.MagicPen), 0, 7);
-        drawStat(guiGraphics, "Critical Chance: " + String.format("%.2f", PlayerClientData.CritChance) + "%", 0, 8);
-        drawStat(guiGraphics, "Perfection: " + String.format("%.2f", PlayerClientData.Perfection) + "%", 1, 0);
+        drawStat(guiGraphics, "Perfection: " + String.format("%.2f", PlayerClientData.Perfection) + "%", 0, 4);
+        drawStat(guiGraphics, "Def: " + String.format("%.2f", PlayerClientData.Def), 0, 5);
+        drawStat(guiGraphics, "Def Penetration: " + String.format("%.2f", PlayerClientData.DefPen), 0, 6);
+        drawStat(guiGraphics, "Magic Def: " + String.format("%.2f", PlayerClientData.MagicDef), 0, 7);
+        drawStat(guiGraphics, "Magic Penetration: " + String.format("%.2f", PlayerClientData.MagicPen), 0, 8);
+        drawStat(guiGraphics, "Critical Chance: " + String.format("%.2f", PlayerClientData.CritChance) + "%", 1, 0);
         drawStat(guiGraphics, "Attack Speed: " + String.format("%.2f", PlayerClientData.AttackSpeed), 1, 1);
         drawStat(guiGraphics, "Speed: " + String.format("%.2f", PlayerClientData.Speed), 1, 2);
         drawStat(guiGraphics, "Damage Reduction: " + String.format("%.2f", PlayerClientData.DmgRed) + "%", 1, 3);
@@ -413,11 +415,11 @@ public class PlayerInfoDetailScreen extends Screen {
         drawStat(guiGraphics, "Resistance: " + String.format("%.2f", PlayerClientData.Resistance) + "%", 1, 8);
         drawStat(guiGraphics, "Life Steal: " + String.format("%.2f", PlayerClientData.LifeSteal) + "%", 2, 0);
         drawStat(guiGraphics, "Mana Steal: " + String.format("%.2f", PlayerClientData.ManaSteal) + "%", 2, 1);
-        drawStat(guiGraphics, "Health Regeneration: " + String.format("%.2f", PlayerClientData.HealRegen) + "/s", 2, 2);
-        drawStat(guiGraphics, "Mana Regeneration: " + String.format("%.2f", PlayerClientData.ManaRegen) + "/s", 2, 3);
-        drawStat(guiGraphics, "Damage Reduction Penetration: " + String.format("%.2f", PlayerClientData.DmgRedPen) + "%", 2, 4);
-        drawStat(guiGraphics, "Magic Resistance Penetration: " + String.format("%.2f", PlayerClientData.MagicResistPen) + "%", 2, 5);
-        drawStat(guiGraphics, "Resistance Penetration: " + String.format("%.2f", PlayerClientData.ResistancePen) + "%", 2, 6);
+        drawStat(guiGraphics, "Health Regen: " + String.format("%.2f", PlayerClientData.HealRegen) + "/s", 2, 2);
+        drawStat(guiGraphics, "Mana Regen: " + String.format("%.2f", PlayerClientData.ManaRegen) + "/s", 2, 3);
+        drawStat(guiGraphics, "Damage Red Pen: " + String.format("%.2f", PlayerClientData.DmgRedPen) + "%", 2, 4);
+        drawStat(guiGraphics, "Magic Res Pen: " + String.format("%.2f", PlayerClientData.MagicResistPen) + "%", 2, 5);
+        drawStat(guiGraphics, "Resistance Pen: " + String.format("%.2f", PlayerClientData.ResistancePen) + "%", 2, 6);
 
 
         guiGraphics.pose().popPose();
@@ -433,38 +435,38 @@ public class PlayerInfoDetailScreen extends Screen {
     private void drawInfoText(GuiGraphics guiGraphics, DetailType type, float scaleT) {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().scale(scaleT, scaleT, 1.0f);
-        int dialogWidth = 600;
+        int dialogWidth = 580;
 //        int dialogHeight = 100;
 
 //        guiGraphics.fill((int) ((i + 224) / scaleT), (int) (j / scaleT),
 //                (int) ((i + 200 + dialogWidth) / scaleT), j + 65 + dialogHeight, 0xCC000000);
         Component text;
         switch (type) {
-            case WEAPON_DMG -> text = Component.literal("Strength affects physical damage, some defense");
-            case ATK_DMG -> text = Component.literal("Vitality affects health and some defense");
-            case RANGE_DMG -> text = Component.literal("Dexterity affects ranged damage, accuracy, and evasion");
-            case MAGIC_DMG -> text = Component.literal("Intelligence affects magic damage, magic Def, and magic resistance");
-            case DEF -> text = Component.literal("Def reduces physical damage taken");
-            case DEF_PEN -> text = Component.literal("Def Penetration ignores a percentage of the target's Def");
-            case MAGIC_DEF -> text = Component.literal("Magic Def reduces magic damage taken");
-            case MAGIC_PEN -> text = Component.literal("Magic Penetration ignores a percentage of the target's magic Def");
-            case CRIT_CHANCE -> text = Component.literal("Critical Chance increases the chance to deal critical damage");
-            case CRIT_DMG -> text = Component.literal("Critical Damage increases the damage dealt by critical hits");
-            case ATTACK_SPEED -> text = Component.literal("Attack Speed increases the speed of basic attacks");
-            case SPEED -> text = Component.literal("Speed increases movement speed");
-            case DMG_RED -> text = Component.literal("Damage Reduction reduces incoming damage");
-            case MAGIC_RESIST -> text = Component.literal("Magic Resistance reduces incoming magic damage");
-            case EVASION -> text = Component.literal("Evasion increases the chance to avoid attacks");
-            case ACCURACY -> text = Component.literal("Accuracy increases the chance to hit with attacks");
-            case COUNTER_CHANCE -> text = Component.literal("Counter Chance increases the chance to counter an attack");
-            case RESISTANCE -> text = Component.literal("Resistance reduces the duration of negative effects");
-            case LIFE_STEAL -> text = Component.literal("Life Steal converts a percentage of damage dealt into health");
-            case MANA_STEAL -> text = Component.literal("Mana Steal converts a percentage of damage dealt into mana");
-            case HEAL_REGEN -> text = Component.literal("Health Regeneration restores health over time");
-            case MANA_REGEN -> text = Component.literal("Mana Regeneration restores mana over time");
-            case DMG_RED_PEN -> text = Component.literal("Damage Reduction Penetration ignores a percentage of the target's damage reduction");
-            case MAGIC_RESIST_PEN -> text = Component.literal("Magic Resistance Penetration ignores a percentage of the target's magic resistance");
-            case RESISTANCE_PEN -> text = Component.literal("Resistance jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjPenetration ignores a percentage of the target's resistance");
+            case WEAPON_DMG -> text = Component.translatable("sentence.detail.weapon_dmg");
+            case ATK_DMG -> text = Component.translatable("sentence.detail.atk_dmg");
+            case RANGE_DMG -> text = Component.translatable("sentence.detail.range_dmg");
+            case MAGIC_DMG -> text = Component.translatable("sentence.detail.magic_dmg");
+            case DEF -> text = Component.translatable("sentence.detail.def");
+            case DEF_PEN -> text = Component.translatable("sentence.detail.def_pen");
+            case MAGIC_DEF -> text = Component.translatable("sentence.detail.magic_def");
+            case MAGIC_PEN -> text = Component.translatable("sentence.detail.magic_pen");
+            case CRIT_CHANCE -> text = Component.translatable("sentence.detail.crit_chance");
+            case PERFECTION -> text = Component.translatable("sentence.detail.perfection");
+            case ATTACK_SPEED -> text = Component.translatable("sentence.detail.attack_speed");
+            case SPEED -> text = Component.translatable("sentence.detail.speed");
+            case DMG_RED -> text = Component.translatable("sentence.detail.dmg_red");
+            case MAGIC_RESIST -> text = Component.translatable("sentence.detail.magic_resist");
+            case EVASION -> text = Component.translatable("sentence.detail.evasion");
+            case ACCURACY -> text = Component.translatable("sentence.detail.accuracy");
+            case COUNTER_CHANCE -> text = Component.translatable("sentence.detail.counter_chance");
+            case RESISTANCE -> text = Component.translatable("sentence.detail.resistance");
+            case LIFE_STEAL -> text = Component.translatable("sentence.detail.life_steal");
+            case MANA_STEAL -> text = Component.translatable("sentence.detail.mana_steal");
+            case HEAL_REGEN -> text = Component.translatable("sentence.detail.heal_regen");
+            case MANA_REGEN -> text = Component.translatable("sentence.detail.mana_regen");
+            case DMG_RED_PEN -> text = Component.translatable("sentence.detail.dmg_red_pen");
+            case MAGIC_RESIST_PEN -> text = Component.translatable("sentence.detail.magic_resist_pen");
+            case RESISTANCE_PEN -> text = Component.translatable("sentence.detail.resistance_pen");
             default -> {
                 return;
             }
@@ -472,10 +474,10 @@ public class PlayerInfoDetailScreen extends Screen {
 
 
             guiGraphics.drawWordWrap(this.font, text,
-                    (int) ((topLeftX + 12) / scaleT),
+                    (int) ((topLeftX + 23) / scaleT),
                     (int) ((topLeftY + 12) / scaleT),
-                    dialogWidth - 10, // max width in pixels
-                    0xFF0000
+                    dialogWidth, // max width in pixels
+                    0x000000
             );
         guiGraphics.pose().popPose();
 
@@ -495,12 +497,12 @@ public class PlayerInfoDetailScreen extends Screen {
         ATK_DMG,
         RANGE_DMG,
         MAGIC_DMG,
+        PERFECTION,
         DEF,
         DEF_PEN,
         MAGIC_DEF,
         MAGIC_PEN,
         CRIT_CHANCE,
-        CRIT_DMG,
         ATTACK_SPEED,
         SPEED,
         DMG_RED,

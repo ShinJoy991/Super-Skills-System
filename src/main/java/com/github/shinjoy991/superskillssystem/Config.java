@@ -21,18 +21,24 @@ public class Config {
     static {
         configDoubleValues.put("SCALE_DMG", BUILDER.comment("Scale damage dealt by players")
                 .defineInRange("scale_dmg", 1f, 0.0001f, 10000f));
+        configValues.put("MOB_MAX_CRIT", BUILDER.comment("Normal mob max Critical Chance")
+                .defineInRange("mob_max_crit", 20, 0, 100));
+        configValues.put("MOB_MIN_CRIT", BUILDER.comment("Normal mob min Critical Chance")
+                .defineInRange("mob_min_crit", 0, 0, 100));
         configValues.put("MOB_MAX_EVASION", BUILDER.comment("Normal mob max evasion")
-                .defineInRange("mob_max_evasion", 20, 0, 10000));
+                .defineInRange("mob_max_evasion", 20, 0, 100));
         configValues.put("MOB_MIN_EVASION", BUILDER.comment("Normal mob min evasion")
-                .defineInRange("mob_min_evasion", 0, 0, 10000));
+                .defineInRange("mob_min_evasion", 0, 0, 100));
         configValues.put("MOB_MAX_DMG_REDUCTION", BUILDER.comment("Normal mob max damage reduction")
-                .defineInRange("mob_max_dmg_reduction", 20, 0, 10000));
+                .defineInRange("mob_max_dmg_reduction", 20, 0, 100));
         configValues.put("MOB_MIN_DMG_REDUCTION", BUILDER.comment("Normal mob min damage reduction")
-                .defineInRange("mob_min_dmg_reduction", 0, 0, 10000));
+                .defineInRange("mob_min_dmg_reduction", 0, 0, 100));
         configValues.put("MOB_MAX_RESISTANCE", BUILDER.comment("Normal mob max resistance")
-                .defineInRange("mob_max_resistance", 20, 0, 500));
+                .defineInRange("mob_max_resistance", 20, 0, 100));
         configValues.put("MOB_MIN_RESISTANCE", BUILDER.comment("Normal mob min resistance")
-                .defineInRange("mob_min_resistance", 0, 0, 500));
+                .defineInRange("mob_min_resistance", 0, 0, 100));
+        configDoubleValues.put("SECT_PRICE_MULTIPLIER", BUILDER.comment("Price multiplier for sect master trades")
+                .defineInRange("sect_price_multiplier", 0.077f, 0.01f, 100f));
 
         SPEC = BUILDER.build();
     }
@@ -40,12 +46,16 @@ public class Config {
     static final ForgeConfigSpec SPEC;
 
     public static double SCALE_DMG;
+    public static int MOB_MAX_CRIT;
+    public static int MOB_MIN_CRIT;
     public static int MOB_MAX_EVASION;
     public static int MOB_MIN_EVASION;
     public static int MOB_MAX_DMG_REDUCTION;
     public static int MOB_MIN_DMG_REDUCTION;
     public static int MOB_MAX_RESISTANCE;
     public static int MOB_MIN_RESISTANCE;
+
+    public static double SECT_PRICE_MULTIPLIER;
 
 //    @SubscribeEvent
 //    static void onLoad(final ModConfigEvent event) {
@@ -77,12 +87,15 @@ public class Config {
 
             // Load giá trị sau khi set config
             SCALE_DMG = configDoubleValues.get("SCALE_DMG").get();
+            MOB_MAX_CRIT = configValues.get("MOB_MAX_CRIT").get();
+            MOB_MIN_CRIT = configValues.get("MOB_MIN_CRIT").get();
             MOB_MAX_EVASION = configValues.get("MOB_MAX_EVASION").get();
             MOB_MIN_EVASION = configValues.get("MOB_MIN_EVASION").get();
             MOB_MAX_DMG_REDUCTION = configValues.get("MOB_MAX_DMG_REDUCTION").get();
             MOB_MIN_DMG_REDUCTION = configValues.get("MOB_MIN_DMG_REDUCTION").get();
             MOB_MAX_RESISTANCE = configValues.get("MOB_MAX_RESISTANCE").get();
             MOB_MIN_RESISTANCE = configValues.get("MOB_MIN_RESISTANCE").get();
+            SECT_PRICE_MULTIPLIER = configDoubleValues.get("SECT_PRICE_MULTIPLIER").get();
 
         } catch (IOException e) {
             SSS.LOGGER.error("Failed to load custom config file", e);

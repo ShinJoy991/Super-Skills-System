@@ -14,10 +14,13 @@ import net.minecraft.server.level.ServerPlayer;
 public class ManaCommand {
 
     public ManaCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("AddMana")
-                .requires(commandSource -> commandSource.hasPermission(4)).executes((command) -> CustomCommand1a(command.getSource())));
+        dispatcher.register(
+                Commands.literal("SSS")
+                        .then(Commands.literal("AddMana")
+                                .requires(commandSource -> commandSource.hasPermission(4))
+                                .executes((command) -> CustomCommand1a(command.getSource()))
+                        ));
     }
-
     private int CustomCommand1a(CommandSourceStack source) throws CommandSyntaxException {
 
         ServerPlayer player = source.getPlayerOrException();

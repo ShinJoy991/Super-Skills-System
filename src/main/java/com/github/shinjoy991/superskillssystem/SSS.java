@@ -1,5 +1,6 @@
 package com.github.shinjoy991.superskillssystem;
 
+import com.github.shinjoy991.superskillssystem.activeskills.ModSkills;
 import com.github.shinjoy991.superskillssystem.config.CreateJson;
 import com.github.shinjoy991.superskillssystem.entity.trading.ModVillagers;
 import com.github.shinjoy991.superskillssystem.entity.trading.SectVillager;
@@ -40,6 +41,7 @@ public class SSS {
         RegisterItem.CREATIVE_MODE_TAB.register(bus);
         RegisterMenu.MENU_TYPES.register(bus);
         RegisterEntity.ENTITY_TYPES.register(bus);
+        ModSkills.register();
 //        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 //        InitClientEvents.init();
 //        ModLootModifiers.register(bus);

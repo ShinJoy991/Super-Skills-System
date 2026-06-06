@@ -1,18 +1,28 @@
 package com.github.shinjoy991.superskillssystem.helpers;
 
 import com.github.shinjoy991.superskillssystem.config.ReadConfig;
+import com.github.shinjoy991.superskillssystem.helpers.skill.ActiveSkill;
 import com.github.shinjoy991.superskillssystem.helpers.skill.PassiveSkill;
 import com.github.shinjoy991.superskillssystem.helpers.skill.PassiveSkillInstance;
 import com.github.shinjoy991.superskillssystem.helpers.skill.SectTypes;
 import com.github.shinjoy991.superskillssystem.helpers.skill.SkillTags;
+import com.github.shinjoy991.superskillssystem.helpers.skill.SkillRegistry;
+import com.github.shinjoy991.superskillssystem.network.ModNetworking;
+import com.github.shinjoy991.superskillssystem.network.server.UpdateWheelSlotC2S;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.*;
 
 import static com.github.shinjoy991.superskillssystem.helpers.Calculation.*;
@@ -49,7 +59,7 @@ public class PlayerClientData {
     public static double WeaponDmgBonus;
     public static double Perfection;
     public static double AtkDmg;
-    public static double RangeDmg; // Total = base arrow dmg * speed (block per tick)
+    public static double RangeDmg;
     public static double MagicDmg;
 
     public static double Def;
@@ -79,12 +89,16 @@ public class PlayerClientData {
     public static double ResistancePen; // Resistance Penetration
 
     public static List<PassiveSkillInstance> passiveSkills = new ArrayList<>();
-    public static List<PassiveSkillInstance> activeSkills = new ArrayList<>();
+    public static List<ActiveSkill> activeSkills = new ArrayList<>();
 
     public static List<PassiveSkill> warriorGlobalPassiveSkills = new ArrayList<>();
 
+    public static ResourceLocation activeSkillSlot1;
+    public static ResourceLocation activeSkillSlot2;
+    public static ResourceLocation activeSkillSlot3;
+    public static ResourceLocation activeSkillSlot4;
 
-    public PlayerClientData (LocalPlayer player, CompoundTag tag) {
+    public PlayerClientData (LocalPlayer player, CompoundTag tag, CompoundTag passiveSkillTag, CompoundTag skillSlotsTag) {
         PlayerClientData.player = player;
         name = player.getName().getString();
         this.uuid = player.getUUID();
@@ -134,13 +148,15 @@ public class PlayerClientData {
         MagicResistPen = tag.getFloat(SterilizeTags.MAGIC_RESIST_PEN.name());
         ResistancePen = tag.getFloat(SterilizeTags.RESISTANCE_PEN.name());
 
-        ListTag skillList = tag.getList("PassiveSkills", Tag.TAG_COMPOUND);
+        updateGlobalSkills(passiveSkillTag);
+        updateSkillSlots(skillSlotsTag);
 
+        ListTag skillList = tag.getList("PassiveSkills", Tag.TAG_COMPOUND);
         for (Tag t : skillList) {
             CompoundTag skillTag = (CompoundTag) t;
             String name = skillTag.getString("SkillName");
             int level = skillTag.getInt("Level");
-            PassiveSkill skill = ReadConfig.passiveSkills.stream()
+            PassiveSkill skill = warriorGlobalPassiveSkills.stream()
                     .filter(s -> s.name.equals(name))
                     .findFirst()
                     .orElse(null);
@@ -149,13 +165,16 @@ public class PlayerClientData {
             }
         }
 
+        syncActiveSkillList(tag);
+
         mana = tag.getInt(SterilizeTags.MANA.name());
         maxMana = tag.getInt(SterilizeTags.MAX_MANA.name());
 
     }
 
     public static void updateGlobalSkills(CompoundTag tag) {
-        List<PassiveSkill> warriorSkills = new ArrayList<>();
+        // Passive skills
+        List<PassiveSkill> clientPassiveSkillList = new ArrayList<>();
 
         if (tag.contains("warrior", Tag.TAG_LIST)) {
             ListTag warriorList = tag.getList("warrior", Tag.TAG_COMPOUND);
@@ -180,11 +199,20 @@ public class PlayerClientData {
                     bonuses.put(SkillTags.valueOf(key), bonusesTag.getFloat(key));
                 }
 
-                PassiveSkill skill = new PassiveSkill(name, sect, new ArrayList<>(), base, bonuses);
-                warriorSkills.add(skill);
+                // Đọc tags
+                List<SkillTags> tags = new ArrayList<>();
+                if (warriorSkillTag.contains("tags", Tag.TAG_LIST)) {
+                    ListTag tagsList = warriorSkillTag.getList("tags", Tag.TAG_STRING);
+                    for (Tag tagEntry : tagsList) {
+                        tags.add(SkillTags.valueOf(tagEntry.getAsString()));
+                    }
+                }
+
+                PassiveSkill skill = new PassiveSkill(name, sect, tags, base, bonuses);
+                clientPassiveSkillList.add(skill);
             }
         }
-        warriorGlobalPassiveSkills = warriorSkills;
+        warriorGlobalPassiveSkills = clientPassiveSkillList;
         System.out.println("Warrior global skills updated: " + warriorGlobalPassiveSkills.size() + " skills loaded.");
     }
 
@@ -222,7 +250,7 @@ public class PlayerClientData {
                     case WEAPON_DMG_BONUS -> WeaponDmgBonus = tag.getFloat(sterilizeTag.name());
                     case ATK_DMG -> {
                         AtkDmg = tag.getFloat(sterilizeTag.name());
-//                        System.out.println("AtkDmg updated: " + AtkDmg);
+//                        System.out.println("AtkDmg updated in client: " + AtkDmg);
                     }
                     case RANGE_DMG -> RangeDmg = tag.getFloat(sterilizeTag.name());
                     case MAGIC_DMG -> MagicDmg = tag.getFloat(sterilizeTag.name());
@@ -250,23 +278,226 @@ public class PlayerClientData {
                 }
             }
         }
+
+        // TODO: Only update specific skills instead of clearing all and re-adding
         if (tag.contains("PassiveSkills", Tag.TAG_LIST)) {
+//            player.sendSystemMessage(Component.literal("Updating passive skills..."+passiveSkills.size() + " first skill name" + (passiveSkills.isEmpty() ? "" : passiveSkills.get(0).getName())));
             ListTag skillList = tag.getList("PassiveSkills", Tag.TAG_COMPOUND);
-            passiveSkills.clear(); // ✔ Luôn xóa
+//            player.sendSystemMessage(Component.literal("Tag Extract: " + skillList));
+            passiveSkills.clear(); // Luôn xóa
 
             for (Tag t : skillList) {
                 CompoundTag skillTag = (CompoundTag) t;
                 String name = skillTag.getString("SkillName");
                 int level = skillTag.getInt("Level");
-                PassiveSkill skill = ReadConfig.passiveSkills.stream()
+//                player.sendSystemMessage(Component.literal("Skill read from tag: " + name + " level " + level));
+                PassiveSkill skill = warriorGlobalPassiveSkills.stream()
                         .filter(s -> s.name.equals(name))
                         .findFirst()
                         .orElse(null);
                 if (skill != null) {
+//                    player.sendSystemMessage(Component.literal("Skill found in config: " + skill.name));
                     passiveSkills.add(new PassiveSkillInstance(skill, level));
                 }
             }
+            passiveSkills.sort(Comparator.comparing(s -> s.getName().toLowerCase()));
+//            player.sendSystemMessage(Component.literal("Passive skills updated, total " + passiveSkills.size() + " skills. First skill: " + (passiveSkills.isEmpty() ? "None" : passiveSkills.get(0).getName())));
         }
-//        System.out.println("BonusDmg updated: " + bonusDmg);
+        syncActiveSkillList(tag);
+        System.out.println("Client Data updated");
+    }
+
+    public static void syncActiveSkillList(CompoundTag tag) {
+        if (!tag.contains("ActiveSkills", Tag.TAG_LIST)) {
+            return;
+        }
+        // TODO: Only update specific skills instead of clearing all and re-adding
+        // todo only sync skill name, level, id, and some basic info, not instance
+        activeSkills.clear();
+        ListTag skillList = tag.getList("ActiveSkills", Tag.TAG_COMPOUND);
+        if (skillList.isEmpty()) {return;}
+        for (Tag t : skillList) {
+            if (!(t instanceof CompoundTag skillTag)) {
+                continue;
+            }
+            ResourceLocation skillId = resolveActiveSkillId(skillTag);
+            Class<? extends ActiveSkill> skillClass = skillId == null ? null : SkillRegistry.get(skillId);
+            if (skillClass == null) {
+                continue;
+            }
+            int level = skillTag.contains("Level") ? skillTag.getInt("Level") : 1;
+            ActiveSkill skill = createActiveSkill(skillClass, level);
+            if (skill != null) {
+                activeSkills.add(skill);
+            }
+        }
+        activeSkills.sort(Comparator.comparing(s -> s.getName().toLowerCase()));
+        System.out.println("Active skill list synced, total " + activeSkills.size() + " skills.");
+    }
+
+    private static ActiveSkill createActiveSkill(Class<? extends ActiveSkill> clazz, int level) {
+        LocalPlayer clientPlayer = player != null ? player : Minecraft.getInstance().player;
+        if (clientPlayer == null) {
+            return null;
+        }
+
+        try {
+            Constructor<? extends ActiveSkill> ctor = clazz.getConstructor(LivingEntity.class, int.class);
+            return ctor.newInstance(clientPlayer, level);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static ResourceLocation resolveActiveSkillId(CompoundTag skillTag) {
+        String[] candidates = {
+                skillTag.getString("SkillId"),
+                skillTag.getString("skillId"),
+                skillTag.getString("ClassName"),
+                skillTag.getString("className"),
+                skillTag.getString("SkillName"),
+                skillTag.getString("skillName")
+        };
+
+        for (String candidate : candidates) {
+            ResourceLocation id = resolveActiveSkillId(candidate);
+            if (id != null) {
+                return id;
+            }
+        }
+
+        return null;
+    }
+
+    private static ResourceLocation resolveActiveSkillId(String skillName) {
+        if (skillName == null || skillName.isBlank()) {
+            return null;
+        }
+
+        try {
+            ResourceLocation parsed = ResourceLocation.parse(skillName);
+            if (SkillRegistry.get(parsed) != null) {
+                return parsed;
+            }
+        } catch (Exception ignored) {
+        }
+
+        for (Map.Entry<ResourceLocation, Class<? extends ActiveSkill>> entry : SkillRegistry.SKILLS.entrySet()) {
+            Class<? extends ActiveSkill> clazz = entry.getValue();
+            String simpleName = clazz.getSimpleName();
+            String className = clazz.getName();
+            if (simpleName.equalsIgnoreCase(skillName) || className.equals(skillName) || className.endsWith("." + skillName)) {
+                return entry.getKey();
+            }
+
+            try {
+                Field idField = clazz.getDeclaredField("ID");
+                idField.setAccessible(true);
+                Object value = idField.get(null);
+                if (value instanceof ResourceLocation rl) {
+                    if (rl.toString().equalsIgnoreCase(skillName) || rl.getPath().equalsIgnoreCase(skillName)) {
+                        return entry.getKey();
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+
+            ActiveSkill skill = createActiveSkill(clazz, 1);
+            if (skill != null) {
+                if (skill.getName().equalsIgnoreCase(skillName)
+                        || skill.getId().toString().equalsIgnoreCase(skillName)
+                        || skill.getId().getPath().equalsIgnoreCase(skillName)) {
+                    return entry.getKey();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static ResourceLocation readResourceLocation(CompoundTag tag, String key) {
+        String value = tag.getString(key);
+        if (value.isBlank()) {
+            return null;
+        }
+        try {
+            return ResourceLocation.parse(value);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    // Align with hovered sector logic in SkillWheelScreen to cast skill
+    public static ResourceLocation getWheelSkillId(int hovered) {
+        switch (hovered) {
+            case 1 -> {
+                return activeSkillSlot1;
+            }
+            case 2 -> {
+                return activeSkillSlot2;
+            }
+            case 3 -> {
+                return activeSkillSlot3;
+            }
+            case 4 -> {
+                return activeSkillSlot4;
+            }
+            default -> {
+                return null;
+            }
+        }
+
+    }
+    public static void setWheelSlot(int slot, ResourceLocation skillId) {
+        switch (slot) {
+            case 1 -> activeSkillSlot1 = skillId;
+            case 2 -> activeSkillSlot2 = skillId;
+            case 3 -> activeSkillSlot3 = skillId;
+            case 4 -> activeSkillSlot4 = skillId;
+        }
+        CompoundTag tag = getWheelSlotTag();
+        ModNetworking.INSTANCE.sendToServer(new UpdateWheelSlotC2S(tag));
+    }
+    // Get tag to send to server
+    public static CompoundTag getWheelSlotTag() {
+        CompoundTag tag = new CompoundTag();
+        if (activeSkillSlot1 != null) {
+            tag.putString("ActiveSkillSlot1", activeSkillSlot1.toString());
+        } else {
+            tag.putString("ActiveSkillSlot1", "");
+        }
+        if (activeSkillSlot2 != null) {
+            tag.putString("ActiveSkillSlot2", activeSkillSlot2.toString());
+        } else {
+            tag.putString("ActiveSkillSlot2", "");
+        }
+        if (activeSkillSlot3 != null) {
+            tag.putString("ActiveSkillSlot3", activeSkillSlot3.toString());
+        } else {
+            tag.putString("ActiveSkillSlot3", "");
+        }
+        if (activeSkillSlot4 != null) {
+            tag.putString("ActiveSkillSlot4", activeSkillSlot4.toString());
+        } else {
+            tag.putString("ActiveSkillSlot4", "");
+        }
+        return tag;
+    }
+
+
+    // Update skill slots from server data
+    public static void updateSkillSlots(CompoundTag skillSlotsTag) {
+        if (skillSlotsTag.contains("ActiveSkillSlot1")) {
+            activeSkillSlot1 = readResourceLocation(skillSlotsTag, "ActiveSkillSlot1");
+        }
+        if (skillSlotsTag.contains("ActiveSkillSlot2")) {
+            activeSkillSlot2 = readResourceLocation(skillSlotsTag, "ActiveSkillSlot2");
+        }
+        if (skillSlotsTag.contains("ActiveSkillSlot3")) {
+            activeSkillSlot3 = readResourceLocation(skillSlotsTag, "ActiveSkillSlot3");
+        }
+        if (skillSlotsTag.contains("ActiveSkillSlot4")) {
+            activeSkillSlot4 = readResourceLocation(skillSlotsTag, "ActiveSkillSlot4");
+        }
     }
 }

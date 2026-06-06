@@ -31,6 +31,7 @@ public class RequestUpdateInfoC2S {
             ServerPlayer player = context.getSender();
             if (player instanceof ServerPlayer) {
                 CompoundTag sendTag = AllPlayersInfo.get(player.getUUID()).saveToNBT();
+//                System.out.println("Atk in server: " + sendTag.getFloat("atk_dmg"));
                 ModNetworking.INSTANCE.sendTo(new InfoChangeUpdateS2C(sendTag), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
             }
         });

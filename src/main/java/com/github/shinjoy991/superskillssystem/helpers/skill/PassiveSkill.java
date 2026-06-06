@@ -4,6 +4,7 @@ import com.github.shinjoy991.superskillssystem.config.ReadConfig;
 import com.github.shinjoy991.superskillssystem.helpers.PlayerClientData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -23,6 +24,7 @@ public class PassiveSkill {
         this.tags = tags;
         this.base = base;
         this.bonuses = bonuses;
+        System.out.println("Loaded passive skill: " + name + " tags is " + tags);
     }
 
     public static List<PassiveSkill> getGlobalPassiveSkillsListBySect(SectTypes sectType) {
@@ -55,6 +57,13 @@ public class PassiveSkill {
                     bonusesTag.putFloat(entry.getKey().name(), entry.getValue());
                 }
                 warriorSkillTag.put("bonuses", bonusesTag);
+
+                // Sterilize tags list
+                ListTag tagsList = new ListTag();
+                for (SkillTags skillTag : skill.tags) {
+                    tagsList.add(StringTag.valueOf(skillTag.name()));
+                }
+                warriorSkillTag.put("tags", tagsList);
 
                 warriorList.add(warriorSkillTag);
             }

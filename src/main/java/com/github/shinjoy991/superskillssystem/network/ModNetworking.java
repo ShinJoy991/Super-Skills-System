@@ -15,11 +15,11 @@ import com.github.shinjoy991.superskillssystem.SSS;
 
 public class ModNetworking {
     private static final String PROTOCOL_VERSION = "1";
-    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation(SSS.MODID, "main"), () -> "1", "1"::equals, "1"::equals);
+    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(ResourceLocation.fromNamespaceAndPath(SSS.MODID, "main"), () -> "1", "1"::equals, "1"::equals);
     // encode, decode = C2S
     // toByte = S2C
     public static void registerPackets() {
-        INSTANCE.registerMessage(0, PlayerDataC2S.class, PlayerDataC2S::encode, PlayerDataC2S::decode, PlayerDataC2S::handle);
+//        INSTANCE.registerMessage(0, PlayerDataC2S.class, PlayerDataC2S::encode, PlayerDataC2S::decode, PlayerDataC2S::handle);
         INSTANCE.registerMessage(1, PlayerDataClientInit.class, PlayerDataClientInit::toBytes, PlayerDataClientInit::new, PlayerDataClientInit::handle);
         INSTANCE.registerMessage(2, AttPointChangeRequestC2S.class, AttPointChangeRequestC2S::encode, AttPointChangeRequestC2S::decode, AttPointChangeRequestC2S::handle);
         INSTANCE.registerMessage(3, InfoChangeUpdateS2C.class, InfoChangeUpdateS2C::toBytes, InfoChangeUpdateS2C::new, InfoChangeUpdateS2C::handle);
@@ -27,17 +27,11 @@ public class ModNetworking {
         INSTANCE.registerMessage(5, SectVillagerNextPageC2S.class, SectVillagerNextPageC2S::encode, SectVillagerNextPageC2S::decode, SectVillagerNextPageC2S::handle);
         INSTANCE.registerMessage(6, SectVillagerOffersS2C.class, SectVillagerOffersS2C::toBytes, SectVillagerOffersS2C::new, SectVillagerOffersS2C::handle);
         INSTANCE.registerMessage(7, SectSelectTradePacketC2S.class, SectSelectTradePacketC2S::encode, SectSelectTradePacketC2S::decode, SectSelectTradePacketC2S::handle);
-
-
-
-//        INSTANCE.registerMessage(3, ShootActionPacket.class, ShootActionPacket::encode, ShootActionPacket::decode, ShootActionPacket::handle);
-//        INSTANCE.registerMessage(4, RightClickBlockGodModPacket.class, RightClickBlockGodModPacket::encode, RightClickBlockGodModPacket::decode, RightClickBlockGodModPacket::handle);
-//        INSTANCE.registerMessage(5, LeftClickEmptyGodPacket.class, LeftClickEmptyGodPacket::encode, LeftClickEmptyGodPacket::decode, LeftClickEmptyGodPacket::handle);
-//        INSTANCE.registerMessage(6, RightClickMushPunchPacket.class, RightClickMushPunchPacket::encode, RightClickMushPunchPacket::decode, RightClickMushPunchPacket::handle);
-//        INSTANCE.registerMessage(7, ResponseFovModifierPacket.class, ResponseFovModifierPacket::toBytes, ResponseFovModifierPacket::new, ResponseFovModifierPacket::handle);
-//        INSTANCE.registerMessage(8, ExplosionGodPacket.class, ExplosionGodPacket::toBytes, ExplosionGodPacket::new, ExplosionGodPacket::handle);
-//        INSTANCE.registerMessage(9, GodConfuseParticlePacket.class, GodConfuseParticlePacket::toBytes, GodConfuseParticlePacket::new, GodConfuseParticlePacket::handle);
-//        INSTANCE.registerMessage(10, MushPunchParticlePacket.class, MushPunchParticlePacket::toBytes, MushPunchParticlePacket::new, MushPunchParticlePacket::handle);
+        INSTANCE.registerMessage(8, DeleteSkillC2S.class, DeleteSkillC2S::encode, DeleteSkillC2S::decode, DeleteSkillC2S::handle);
+        INSTANCE.registerMessage(9, CastSkillC2S.class, CastSkillC2S::encode, CastSkillC2S::decode, CastSkillC2S::handle);
+        INSTANCE.registerMessage(10, ActiveSkillSlotsC2S.class, ActiveSkillSlotsC2S::encode, ActiveSkillSlotsC2S::decode, ActiveSkillSlotsC2S::handle);
+        INSTANCE.registerMessage(11, UpdateWheelSlotC2S.class, UpdateWheelSlotC2S::encode, UpdateWheelSlotC2S::decode, UpdateWheelSlotC2S::handle);
+        INSTANCE.registerMessage(12, NotifyC2S.class, NotifyC2S::encode, NotifyC2S::decode, NotifyC2S::handle);
     }
 
     public static void sendToServer(Object message) {

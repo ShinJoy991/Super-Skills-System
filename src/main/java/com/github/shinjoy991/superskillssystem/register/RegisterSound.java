@@ -13,7 +13,7 @@
 //
 //    static {
 //        SOUND_EVENTS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, "mushroom_edition");
-//        EXPLOSION_GOD_RES = new ResourceLocation("mushroom_edition", "explosion_god");
+//        EXPLOSION_GOD_RES = ResourceLocation.fromNamespaceAndPath("mushroom_edition", "explosion_god");
 //        EXPLOSION_GOD = SOUND_EVENTS.register("explosion_god", () -> SoundEvent.createVariableRangeEvent(EXPLOSION_GOD_RES));
 //    }
 //}

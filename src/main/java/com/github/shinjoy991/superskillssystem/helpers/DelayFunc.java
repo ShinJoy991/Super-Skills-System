@@ -9,7 +9,8 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber
 public class DelayFunc {
-    private static int tick = 0;
+    public static int tick = 0;
+
     public static final ArrayListMultimap<Integer, Runnable> pendingTasks = ArrayListMultimap.create();
 
     public static void delayedTask(int ticksToWait, Runnable run) {

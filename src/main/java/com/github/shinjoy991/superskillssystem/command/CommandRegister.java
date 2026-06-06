@@ -14,7 +14,8 @@ public class CommandRegister {
     public static void onCommandsRegister(RegisterCommandsEvent event) {
 
         new ReloadCommand(event.getDispatcher());
-        new ResetPrimeExpCommand(event.getDispatcher());
+        new ResetPlayerLevel(event.getDispatcher());
+        new AddPrimeLevelCommand(event.getDispatcher());
         new ManaCommand(event.getDispatcher());
         new SubManaCommand(event.getDispatcher());
         new AddPassiveSkillCommand(event.getDispatcher());

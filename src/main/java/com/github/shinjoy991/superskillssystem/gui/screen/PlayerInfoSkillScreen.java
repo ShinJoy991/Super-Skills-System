@@ -3,20 +3,28 @@ package com.github.shinjoy991.superskillssystem.gui.screen;
 import com.github.shinjoy991.superskillssystem.SSS;
 import com.github.shinjoy991.superskillssystem.gui.ScaledStatImageButton;
 import com.github.shinjoy991.superskillssystem.helpers.PlayerClientData;
+import com.github.shinjoy991.superskillssystem.helpers.skill.ActiveSkill;
 import com.github.shinjoy991.superskillssystem.helpers.skill.PassiveSkillInstance;
+import com.github.shinjoy991.superskillssystem.network.ModNetworking;
+import com.github.shinjoy991.superskillssystem.network.server.DeleteSkillC2S;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.*;
 
+import static com.github.shinjoy991.superskillssystem.SSS.MODID;
 import static com.github.shinjoy991.superskillssystem.gui.screen.ScreenHelper.addBtn;
 
 @OnlyIn(Dist.CLIENT)
@@ -25,6 +33,8 @@ public class PlayerInfoSkillScreen extends Screen {
             ResourceLocation.fromNamespaceAndPath(SSS.MODID, "textures/gui/player_info_skill.png");
     private static final ResourceLocation PLAYER_INFO_WIDGET_LOC =
             ResourceLocation.fromNamespaceAndPath(SSS.MODID, "textures/gui/player_info_widget.png");
+    private static final ResourceLocation PIE_LOC =
+            ResourceLocation.fromNamespaceAndPath(MODID, "textures/gui/skill/skill_pie_button.png");
 
     private final Player player;
 
@@ -44,25 +54,48 @@ public class PlayerInfoSkillScreen extends Screen {
 
     private int topLeftX;
     private int topLeftY;
-    private int textOffsetTopLeftX = 10;
-    private int textOffsetTopLeftY = 50;
-    private int textSpacingX = 120;
-    private int textSpacingY = 17;
+    private int textOffsetTopLeftX = 23;
+    private int textOffsetTopLeftY = 38;
+    private int textSpacingX = 112;
+    private int textSpacingY = 16;
 
-    private int detailBtnTopLeftX = 90;
+    private int detailBtnTopLeftX = 95;
+    private int detailBtnTopLeftY = textOffsetTopLeftY - 5;
 
-    private static final int MAX_ROWS = 8;
-    private static final int SKILLS_PER_COL = MAX_ROWS;   // 8 items per column
-    private static final int TOTAL_DETAIL_BTNS = SKILLS_PER_COL * 2; // 16 buttons
+    private static final int MAX_ROWS = 9;
+
+    private static final int PASSIVE_COLS = 2;
+    private static final int ACTIVE_COLS = 1;
+
+    private static final int TOTAL_PASSIVE_BTNS = MAX_ROWS * PASSIVE_COLS;      // 18
+    private static final int TOTAL_ACTIVE_BTNS = MAX_ROWS * ACTIVE_COLS;       // 9
+
     private int currentPassivePage = 1, maxPassivePage;
     private int currentActivePage = 1,  maxActivePage;
 
     // Detail flags
     private int selectedDetail = -1;
+
     private final Map<Integer, ScaledStatImageButton> detailBtnMap = new HashMap<>();
 
     private final List<GuiSparkleParticle> sparkleParticles = new ArrayList<>();
     private int lastMouseX, lastMouseY;
+
+    // Delete skill button
+    private ImageButton deleteSkillButton;
+
+    // Pie button
+    private ImageButton pieBtn1;
+    private ImageButton pieBtn2;
+    private ImageButton pieBtn3;
+    private ImageButton pieBtn4;
+
+    private final int pieImgSize = 256;
+    private int pieSize = 126;
+    private int halfPieSize = pieSize / 2;
+    private float pieScale = 1/7f;
+    private int pieOffset = 11;
+
 
     public PlayerInfoSkillScreen() {
         super(Component.literal("Player Info Skills"));
@@ -78,8 +111,8 @@ public class PlayerInfoSkillScreen extends Screen {
 
         // Add info button
         this.addRenderableWidget(infoButton = new ImageButton(
-                topLeftX + (imageWidth - 50) / 2 - 80,
-                topLeftY + 185
+                topLeftX + (imageWidth - tabBtnW) / 2 - 80,
+                topLeftY + 184
                 , tabBtnW, tabBtnH,
                 0, 0, tabBtnH,  // u, v, hoverOffsetV
                 PLAYER_INFO_WIDGET_LOC, buttonImageWH, buttonImageWH,
@@ -88,8 +121,8 @@ public class PlayerInfoSkillScreen extends Screen {
 
         // Add detail button
         this.addRenderableWidget(new ImageButton(
-                topLeftX + (imageWidth - tabBtnH) / 2,
-                topLeftY + 185,
+                topLeftX + (imageWidth - tabBtnW) / 2,
+                topLeftY + 184,
                 tabBtnW, tabBtnH,
                 0, 0, tabBtnH,  // u, v, hover state OffsetV
                 PLAYER_INFO_WIDGET_LOC, buttonImageWH, buttonImageWH,
@@ -97,73 +130,177 @@ public class PlayerInfoSkillScreen extends Screen {
         ));
 
         PlayerClientData.passiveSkills.sort(Comparator.comparing(skill -> skill.getName().toLowerCase()));
-        maxPassivePage = (PlayerClientData.passiveSkills.size()  + SKILLS_PER_COL - 1) / SKILLS_PER_COL;
-        maxActivePage  = (PlayerClientData.activeSkills.size()  + SKILLS_PER_COL - 1) / SKILLS_PER_COL;
+        maxPassivePage = (PlayerClientData.passiveSkills.size() + TOTAL_PASSIVE_BTNS - 1) / TOTAL_PASSIVE_BTNS;
+        maxPassivePage = Math.max(1, maxPassivePage);
 
-//        this.maxActivePage = screenData.activeSkills.size() / 8 + 1;
+        maxActivePage = (PlayerClientData.activeSkills.size() + MAX_ROWS - 1) / MAX_ROWS;
+        if (maxActivePage <= 0) maxActivePage = 1;
 
-        // Add page buttons for active skills
-        addBtn(
-                topLeftX + 360, topLeftY + 66, statBtnW, statBtnH,
-                64, 0, statBtnH,
-                PLAYER_INFO_WIDGET_LOC, buttonImageWH, buttonImageWH,
-                0.5f, true,
-                () -> {
-                    this.currentActivePage = Math.min(maxActivePage, this.currentActivePage + 1);
-                }
-        );
-        addBtn(
-                topLeftX + 350, topLeftY + 66, statBtnW, statBtnH,
-                78, 0, statBtnH,
-                PLAYER_INFO_WIDGET_LOC, buttonImageWH, buttonImageWH,
-                0.5f, true,
-                () -> {
-                    this.currentActivePage = Math.max(1, this.currentActivePage - 1);
-                }
-        );
-        // Add page buttons for passive skills
-        addBtn(
-                topLeftX + 190, topLeftY + 66, statBtnW, statBtnH,
+        // Add page buttons for skills
+        this.addRenderableWidget(addBtn(
+                topLeftX + 330, topLeftY + 160, statBtnW, statBtnH,
                 64, 0, statBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWH, buttonImageWH,
                 0.5f, true,
                 () -> {
                     this.currentPassivePage = Math.min(maxPassivePage, this.currentPassivePage + 1);
+                    this.currentActivePage = Math.min(maxActivePage, this.currentActivePage + 1);
                 }
-        );
-        addBtn(
-                topLeftX + 180, topLeftY + 66, statBtnW, statBtnH,
+        ));
+        this.addRenderableWidget(addBtn(
+                topLeftX + 320, topLeftY + 160, statBtnW, statBtnH,
                 78, 0, statBtnH,
                 PLAYER_INFO_WIDGET_LOC, buttonImageWH, buttonImageWH,
                 0.5f, true,
                 () -> {
                     this.currentPassivePage = Math.max(1, this.currentPassivePage - 1);
+                    this.currentActivePage = Math.max(1, this.currentActivePage - 1);
                 }
-        );
+        ));
 
         // Add detail buttons for both
         int number = 0;
-        for (int col = 0; col < 2; col++) {
+
+        for (int col = 0; col < 3; col++) {
             for (int row = 0; row < MAX_ROWS; row++) {
                 int x = topLeftX + detailBtnTopLeftX + textSpacingX * col;
-                int y = topLeftY + textOffsetTopLeftY + textSpacingY * row;
+                int y = topLeftY + detailBtnTopLeftY + textSpacingY * row;
 
                 int finalNumber = number;
-                ScaledStatImageButton btn = (ScaledStatImageButton) addBtn(
-                        x, y,
-                        detailBtnW, detailBtnH, 0, 48, detailBtnH,
-                        PLAYER_INFO_WIDGET_LOC, buttonImageWH, buttonImageWH,
-                        0.3f, false, false,
-                        () -> {
-                            this.selectedDetail = finalNumber;
-                            spawnSparklesAt(lastMouseX, lastMouseY);
-                        }
-                );
+                ScaledStatImageButton btn =
+                        (ScaledStatImageButton) addBtn(
+                                x, y,
+                                detailBtnW, detailBtnH,
+                                0, 48,
+                                detailBtnH, PLAYER_INFO_WIDGET_LOC,
+                                buttonImageWH, buttonImageWH,
+                                0.3f, false, false,
+                                () -> {
+                                    if (finalNumber < 18) {
+                                        pieBtn1.visible = false;
+                                        pieBtn2.visible = false;
+                                        pieBtn3.visible = false;
+                                        pieBtn4.visible = false;
+                                        selectedDetail = (currentPassivePage - 1) * TOTAL_PASSIVE_BTNS + finalNumber;
+                                    } else {
+                                        pieBtn1.visible = true;
+                                        pieBtn2.visible = true;
+                                        pieBtn3.visible = true;
+                                        pieBtn4.visible = true;
+                                        selectedDetail = 100000 + (currentActivePage - 1) * TOTAL_ACTIVE_BTNS + (finalNumber - 18);
+                                    }
+                                    spawnSparklesAt(lastMouseX, lastMouseY
+                                    );
+                                });
                 this.addRenderableWidget(btn);
                 detailBtnMap.put(number, btn);
                 number++;
             }
         }
+
+        // add delete skill button (hiding)
+        deleteSkillButton = new ImageButton(
+                topLeftX + 320,
+                topLeftY + 14,
+                10, 10,
+                179, 0,
+                10,
+                PLAYER_INFO_WIDGET_LOC,
+                buttonImageWH, buttonImageWH,
+                btn -> {
+                    if (selectedDetail < 0) return;
+
+                    Minecraft.getInstance().setScreen(
+                            new net.minecraft.client.gui.screens.ConfirmScreen(
+                                    this::onDeleteConfirm,
+                                    Component.translatable("title.popup.delete_skill"),
+                                    Component.translatable("sentence.popup.delete_skill")
+                            )
+                    );
+                }
+        );
+
+        deleteSkillButton.visible = false;
+        this.addRenderableWidget(deleteSkillButton);
+
+
+        // Add pie buttons
+        int x = topLeftX + 320 - 40;
+        int y = topLeftY + 14 - 5;
+//
+//        int imgSize = 256;
+//        int size = 126;
+//        int half = size / 2;
+//        float scale = 1/7f;
+//        int offset = 11;
+
+        // TL
+        this.pieBtn1 = (ImageButton) addBtn(
+                x, y,
+                halfPieSize, halfPieSize, 0, 0, 126,
+                PIE_LOC,
+                pieImgSize, pieImgSize,
+                pieScale, false, false,
+                () -> {
+//                    System.out.println("Pie Btn 1 clicked");
+                    if (selectedDetail < 100000) return; // chỉ nhận active skill
+                    int idx = selectedDetail - 100000;
+                    if (idx >= PlayerClientData.activeSkills.size()) return;
+                    PlayerClientData.setWheelSlot(1, PlayerClientData.activeSkills.get(idx).getId());
+                }
+        );
+        this.addRenderableWidget(this.pieBtn1);
+
+        // TR
+        this.pieBtn2 = (ImageButton) addBtn(
+                x + pieOffset, y,
+                halfPieSize, halfPieSize, halfPieSize, 0, 126,
+                PIE_LOC,
+                pieImgSize, pieImgSize,
+                pieScale, false, false,
+                () -> {
+//                    System.out.println("Pie Btn 2 clicked");
+                    if (selectedDetail < 100000) return; // chỉ nhận active skill
+                    int idx = selectedDetail - 100000;
+                    if (idx >= PlayerClientData.activeSkills.size()) return;
+                    PlayerClientData.setWheelSlot(2, PlayerClientData.activeSkills.get(idx).getId());
+                }
+        );
+        this.addRenderableWidget(this.pieBtn2);
+
+        // BL
+        this.pieBtn4 = (ImageButton) addBtn(
+                x, y + pieOffset,
+                halfPieSize, halfPieSize, 0, halfPieSize, 126,
+                PIE_LOC,
+                pieImgSize, pieImgSize,
+                pieScale, false, false,
+                () -> {
+//                    System.out.println("Pie Btn 4 clicked");
+                    if (selectedDetail < 100000) return; // chỉ nhận active skill
+                    int idx = selectedDetail - 100000;
+                    if (idx >= PlayerClientData.activeSkills.size()) return;
+                    PlayerClientData.setWheelSlot(4, PlayerClientData.activeSkills.get(idx).getId());
+                }
+        );
+        this.addRenderableWidget(this.pieBtn4);
+
+        // BR
+        this.pieBtn3 = (ImageButton) addBtn(
+                x + pieOffset, y + pieOffset,
+                halfPieSize, halfPieSize, halfPieSize, halfPieSize, 126,
+                PIE_LOC,
+                pieImgSize, pieImgSize,
+                pieScale, false, false,
+                () -> {
+//                    System.out.println("Pie Btn 3 clicked");
+                    if (selectedDetail < 100000) return; // chỉ nhận active skill
+                    int idx = selectedDetail - 100000;
+                    if (idx >= PlayerClientData.activeSkills.size()) return;
+                    PlayerClientData.setWheelSlot(3, PlayerClientData.activeSkills.get(idx).getId());
+                }
+        );
+        this.addRenderableWidget(this.pieBtn3);
 
     }
 
@@ -178,9 +315,12 @@ public class PlayerInfoSkillScreen extends Screen {
         drawSparkles(guiGraphics);
         drawTitles(guiGraphics);
         drawSkillNames(guiGraphics);
-//        drawActiveSkillNames(guiGraphics);
+        drawActiveSkillNames(guiGraphics);
         if (selectedDetail > -1) {
+            deleteSkillButton.visible = true;
             drawInfoText(guiGraphics, selectedDetail, 0.55f);
+        } else {
+            deleteSkillButton.visible = false;
         }
     }
 
@@ -198,16 +338,17 @@ public class PlayerInfoSkillScreen extends Screen {
 
     private void drawTitles(GuiGraphics guiGraphics) {
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().scale(0.8f, 0.8f, 1.0f);
+        float scale = 0.7f;
+        guiGraphics.pose().scale(scale, scale, 1.0f);
         guiGraphics.drawString(this.font, Component.literal("Player Info").withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((topLeftX + (float) (imageWidth - tabBtnH) / 2) - 31 / 0.8f),
-                (int) ((topLeftY + 189) / 0.8f), 0xFFAA00, false);
+                (int) (((topLeftX + (float) (imageWidth - tabBtnW) / 2) - 76) / scale),
+                (int) ((topLeftY + 188) / scale), 0xFFAA00, false);
         guiGraphics.drawString(this.font, Component.literal("Detail Info").withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((topLeftX + (float) (imageWidth - tabBtnH) / 2) / 0.8f),
-                (int) ((topLeftY + 189) / 0.8f), 0xFFAA00, false);
-        guiGraphics.drawString(this.font, Component.literal("Skill Info").withStyle(ChatFormatting.DARK_GRAY),
-                (int) ((topLeftX + (float) (imageWidth - tabBtnH) / 2) + 120 / 0.8f),
-                (int) ((topLeftY + 190) / 0.8f),
+                (int) (((topLeftX + (float) (imageWidth - tabBtnW) / 2) + 7) / scale),
+                (int) ((topLeftY + 188) / scale), 0xFFAA00, false);
+        guiGraphics.drawString(this.font, Component.literal("Skill Info").withStyle(ChatFormatting.WHITE),
+                (int) (((topLeftX + (float) (imageWidth - tabBtnW) / 2) + 90) / scale),
+                (int) ((topLeftY + 188) / scale),
                 0xFFAA00, false);
         guiGraphics.pose().popPose();
     }
@@ -216,58 +357,86 @@ public class PlayerInfoSkillScreen extends Screen {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().scale(0.55f, 0.55f, 1f);
 
-        int pageOffset = (currentPassivePage - 1) * SKILLS_PER_COL;
-        for (int row = 0; row < SKILLS_PER_COL; row++) {
-            int globalIdx = pageOffset + row;
-            ScaledStatImageButton btn = detailBtnMap.get(row);
-            boolean hasSkill = globalIdx < PlayerClientData.passiveSkills.size();
+        int pageOffset = (currentPassivePage - 1) * TOTAL_PASSIVE_BTNS;
 
-            // Ẩn/hiện nút
-            if (btn != null) btn.visible = hasSkill;
+        for (int col = 0; col < 2; col++) {
+            for (int row = 0; row < MAX_ROWS; row++) {
 
-            if (!hasSkill) continue;
-            PassiveSkillInstance skill = PlayerClientData.passiveSkills.get(globalIdx);
-            String name = skill.getName();
-            int lvl = skill.getLevel();
+                int globalIdx = pageOffset + col * MAX_ROWS + row;
 
-            int x = (int)((topLeftX + textOffsetTopLeftX) / 0.55f);
-            int y = (int)((topLeftY + textOffsetTopLeftY + row * textSpacingY) / 0.55f);
+                int btnKey = col * MAX_ROWS + row;
+                ScaledStatImageButton btn = detailBtnMap.get(btnKey);
 
-            guiGraphics.drawString(this.font,
-                    Component.literal(name + " " + lvl).withStyle(ChatFormatting.DARK_GRAY),
-                    x, y, 0xFFAA00, false);
+                boolean hasSkill =
+                        globalIdx < PlayerClientData.passiveSkills.size();
+
+                if (btn != null) btn.visible = hasSkill;
+
+                if (!hasSkill) continue;
+
+                PassiveSkillInstance skill =
+                        PlayerClientData.passiveSkills.get(globalIdx);
+
+                int lvl = skill.getLevel();
+
+                int x = (int)((topLeftX + textOffsetTopLeftX
+                        + col * textSpacingX) / 0.55f);
+
+                int y = (int)((topLeftY + textOffsetTopLeftY
+                        + row * textSpacingY) / 0.55f);
+
+                MutableComponent display =
+                        Component.translatable("skill.name." + skill.getName())
+                                .append(Component.literal(" Lv" + lvl))
+                                .withStyle(ChatFormatting.DARK_GRAY);
+
+                drawWordWrapWithSpacing(
+                        guiGraphics,
+                        this.font,
+                        display,
+                        x,
+                        y,
+                        130,
+                        0xFFAA00,
+                        3
+                );
+            }
         }
 
         guiGraphics.pose().popPose();
+    }
+    public void drawWordWrapWithSpacing(GuiGraphics guiGraphics, Font font,
+                                        FormattedText text, int x, int y, int maxWidth, int color, int extraSpacing) {
+        for (FormattedCharSequence line : font.split(text, maxWidth)) {
+            guiGraphics.drawString(font, line, x, y, color, false);
+            y += 9 + extraSpacing;
+        }
     }
     private void drawActiveSkillNames(GuiGraphics guiGraphics) {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().scale(0.55f, 0.55f, 1f);
 
-        int pageOffset = (currentActivePage - 1) * SKILLS_PER_COL;
-        for (int row = 0; row < SKILLS_PER_COL; row++) {
+        int pageOffset = (currentActivePage - 1) * TOTAL_ACTIVE_BTNS;
+
+        for (int row = 0; row < MAX_ROWS; row++) {
             int globalIdx = pageOffset + row;
-            int btnKey = SKILLS_PER_COL + row; // nút 8–15
+            int btnKey = 18 + row;
             ScaledStatImageButton btn = detailBtnMap.get(btnKey);
             boolean hasSkill = globalIdx < PlayerClientData.activeSkills.size();
 
-            // Ẩn/hiện nút
             if (btn != null) btn.visible = hasSkill;
-
             if (!hasSkill) continue;
-            PassiveSkillInstance skill = PlayerClientData.activeSkills.get(globalIdx);
-            String name = skill.getName();
-            int lvl = skill.getLevel();
 
-            // Dịch x sang cột 1
-            int x = (int)((topLeftX + textOffsetTopLeftX + textSpacingX) / 0.55f);
+            ActiveSkill skill = PlayerClientData.activeSkills.get(globalIdx);
+
+            int x = (int)((topLeftX + textOffsetTopLeftX + textSpacingX * 2) / 0.55f);
             int y = (int)((topLeftY + textOffsetTopLeftY + row * textSpacingY) / 0.55f);
 
             guiGraphics.drawString(this.font,
-                    Component.literal(name + " " + lvl).withStyle(ChatFormatting.DARK_GRAY),
-                    x, y, 0xFFAA00, false);
+                    Component.literal(skill.getName() + " Lv" + skill.getLevel()),
+                    x, y, 0xFFAA00, false
+            );
         }
-
         guiGraphics.pose().popPose();
     }
 
@@ -287,52 +456,36 @@ public class PlayerInfoSkillScreen extends Screen {
         return skill.getName();
     }
 
-    private Component getSkillInfo(int type) {
-        if (type > PlayerClientData.passiveSkills.size()) {
+    private Component getSkillInfo(int selectedDetail) {
+//        System.out.println("Getting info for selectedDetail: " + selectedDetail);
+        if (selectedDetail >= 100000) {
+            int idx = selectedDetail - 100000;
+            if (idx >= PlayerClientData.activeSkills.size()) {
+                return Component.literal("No skill info available.");
+            }
+            ActiveSkill activeSkill = PlayerClientData.activeSkills.get(idx);
+            return activeSkill.getInfo(activeSkill.getSectType() == PlayerClientData.sect);
+        }
+        if (selectedDetail < 0 || selectedDetail >= PlayerClientData.passiveSkills.size()) {
             return Component.literal("No skill info available.");
         }
-        PassiveSkillInstance skill = PlayerClientData.passiveSkills.get(type);
-        if (PlayerClientData.sect == skill.getSectType()) {
-            return skill.getInfo(true);
-        }
-        return skill.getInfo(false);
+        PassiveSkillInstance skill = PlayerClientData.passiveSkills.get(selectedDetail);
+        return skill.getInfo(PlayerClientData.sect == skill.getSectType());
     }
-
-    private void drawInfoText(GuiGraphics guiGraphics, int type, float scaleT) {
+    private void drawInfoText(GuiGraphics guiGraphics, int selectedDetail, float scaleT) {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().scale(scaleT, scaleT, 1.0f);
-        int dialogWidth = 600;
+        int dialogWidth = 450;
+        Component text = getSkillInfo(selectedDetail);
 
-        Component text = getSkillInfo(type);
-
-        guiGraphics.drawWordWrap(this.font, text,
-                (int) ((topLeftX + 20) / scaleT),
+        drawWordWrapWithSpacing(guiGraphics, this.font, text,
+                (int) ((topLeftX + 25) / scaleT),
                 (int) ((topLeftY + 10) / scaleT),
-                dialogWidth - 10, // max width in pixels
-                0xFF0000
-        );
+                dialogWidth, // max width in pixels
+                0xFF0000, 3);
         guiGraphics.pose().popPose();
 
     }
-
-    private void addDetailButton(int col, int row, int number) {
-        int x = topLeftX + detailBtnTopLeftX + textSpacingX * col;
-        int y = topLeftY + textOffsetTopLeftY + textSpacingY * row;
-
-        ScaledStatImageButton button = (ScaledStatImageButton) addBtn(
-                x, y,
-                detailBtnW, detailBtnH, 0, 48, detailBtnH,
-                PLAYER_INFO_WIDGET_LOC, buttonImageWH, buttonImageWH,
-                0.3f, false, false,
-                () -> {
-                    this.selectedDetail = number;
-                    spawnSparklesAt(lastMouseX, lastMouseY);
-                }
-        );
-        this.addRenderableWidget(button);
-        detailBtnMap.put(number, button);
-    }
-
 
     private void spawnSparklesAt(int x, int y) {
         for (int i = 0; i < 20; i++) {
@@ -343,14 +496,36 @@ public class PlayerInfoSkillScreen extends Screen {
         }
     }
 
-//    private int extractSkillNumber(String name) {
-//        try {
-//            // Tìm số đầu tiên trong chuỗi (ví dụ "Level 12" -> 12)
-//            String numberStr = name.replaceAll("[^0-9]", " ").trim().split("\\s+")[0];
-//            return Integer.parseInt(numberStr);
-//        } catch (Exception e) {
-//            return Integer.MAX_VALUE; // skill nào không có số thì đẩy ra sau
-//        }
-//    }
-
+    private void onDeleteConfirm(boolean confirmed) {
+        if (confirmed) {
+            if (selectedDetail >= 100000) {
+                int idx = selectedDetail - 100000;
+                if (idx < 0 || idx >= PlayerClientData.activeSkills.size()) return;
+                ActiveSkill skill = PlayerClientData.activeSkills.get(idx);
+                // remove wheel slot assignment if any
+                for (int slot = 1; slot <= 4; slot++) {
+                    if (PlayerClientData.getWheelSkillId(slot) != null
+                            && PlayerClientData.getWheelSkillId(slot).equals(skill.getId())) {
+                        PlayerClientData.setWheelSlot(slot, null);
+                    }
+                }
+                ModNetworking.INSTANCE.sendToServer(new DeleteSkillC2S(skill.getId().toString(), 1));
+                selectedDetail = -1;
+                Minecraft.getInstance().setScreen(new PlayerInfoSkillScreen());
+                return;
+            }
+            else if (selectedDetail < 0 || selectedDetail >= PlayerClientData.passiveSkills.size()) {
+                return;
+            }
+            String skillName =
+                    PlayerClientData.passiveSkills.get(selectedDetail).getName();
+//            System.out.println("Requesting deletion of skill: " + skillName);
+            // send packet to server here
+            ModNetworking.INSTANCE.sendToServer(new DeleteSkillC2S(skillName, 0));
+            selectedDetail = -1;
+            Minecraft.getInstance().setScreen(new PlayerInfoSkillScreen());
+        } else {
+            Minecraft.getInstance().setScreen(this);
+        }
+    }
 }

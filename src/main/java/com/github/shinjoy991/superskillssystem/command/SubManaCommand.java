@@ -14,8 +14,12 @@ import net.minecraft.server.level.ServerPlayer;
 public class SubManaCommand {
 
     public SubManaCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("SubMana")
-                .requires(commandSource -> commandSource.hasPermission(4)).executes((command) -> CustomCommand1a(command.getSource())));
+        dispatcher.register(
+                Commands.literal("SSS")
+                        .then(Commands.literal("SubMana")
+                                .requires(commandSource -> commandSource.hasPermission(4))
+                                .executes((command) -> CustomCommand1a(command.getSource()))
+                        ));
     }
 
     private int CustomCommand1a(CommandSourceStack source) throws CommandSyntaxException {

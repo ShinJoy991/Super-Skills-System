@@ -15,10 +15,13 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 public class ResetPassiveSkillCommand {
 
     public ResetPassiveSkillCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("ResetPassiveSkill")
-                .requires(commandSource -> commandSource.hasPermission(4)).executes((command) -> CustomCommand1a(command.getSource())));
+        dispatcher.register(
+                Commands.literal("SSS")
+                        .then(Commands.literal("ResetPassiveSkill")
+                                        .requires(commandSource -> commandSource.hasPermission(4))
+                                        .executes((command) -> CustomCommand1a(command.getSource()))
+                                ));
     }
-
     private int CustomCommand1a(CommandSourceStack source) throws CommandSyntaxException {
 
         ServerPlayer player = source.getPlayerOrException();

@@ -6,6 +6,7 @@ import com.github.shinjoy991.superskillssystem.helpers.skill.SkillTags;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.text2speech.Narrator;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -110,17 +111,13 @@ public class ReadConfig {
 //        }
 //    }
 
-//    public static int reloadConfig() {
-//        try {
-//            String jsonString = new String(Files.readAllBytes(CreateJson.configFile),
-//                    StandardCharsets.UTF_8);
-//            jsonObject = new JsonParser().parse(jsonString).getAsJsonObject();
-//
-//            return 0;
-//        } catch (IOException e) {
-//            LOGGER.error("[Super Skills System] Config reload error " + e);
-//            return 1;
-//        }
-//    }
-
+    public static boolean reloadConfig() {
+        try {
+            readJsonValue(CreateJson.configFile);
+            return true;
+        } catch (Exception e) {
+            LOGGER.error("[Super Skills System] Config reload error " + e);
+            return false;
+        }
+    }
 }

@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -32,6 +33,7 @@ public class InfoChangeUpdateS2C {
             if (FMLEnvironment.dist.isClient()) {
                 LocalPlayer player = Minecraft.getInstance().player;
                 if (player != null) {
+//                    player.sendSystemMessage(Component.literal("Received info update packet: " + packet.tag));
                     updateClientData(packet.tag);
                 }
             }

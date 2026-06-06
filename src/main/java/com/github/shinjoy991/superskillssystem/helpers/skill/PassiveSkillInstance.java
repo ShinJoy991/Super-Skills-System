@@ -3,6 +3,8 @@ package com.github.shinjoy991.superskillssystem.helpers.skill;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextColor;
+import org.checkerframework.checker.units.qual.C;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -56,23 +58,32 @@ public class PassiveSkillInstance {
     }
 
     public Component getInfo(boolean isSectMatch) {
+//        System.out.println("Getting info for skill: " + skill.tags);
         MutableComponent result = Component.literal("");
-        MutableComponent nameLine = Component.translatable("skill.name." + skill.name)
-                .withStyle(isSectMatch ? ChatFormatting.GOLD : ChatFormatting.GRAY);
+        MutableComponent nameLine = Component.translatable("skill.nameg." + skill.name)
+                .withStyle(ChatFormatting.BOLD)
+                .withStyle(style -> style.withColor(isSectMatch
+                        ? TextColor.fromLegacyFormat(ChatFormatting.DARK_RED)
+                        : TextColor.fromRgb(0x996600)));
         result.append(nameLine).append("    ");
 
-//        // Dòng phụ màu đen
-//        result.append(Component.literal("").withStyle(ChatFormatting.BLACK));
-
-        result.append(Component.translatable("skill.type.passive")).append("\n");
+        // Description passive
+        result.append(Component.translatable("skill.type.passive")).append("\n").withStyle(ChatFormatting.DARK_GRAY);
         for (SkillTags tag : skill.tags) {
             result.append(getInfoBaseOnTag(tag));
             result.append("\n");
         }
+
+
+
+
+
+
         return result;
     }
 
     private Component getInfoBaseOnTag(SkillTags tag) {
+//        System.out.println("Getting info for tag: " + tag);
         float value = this.getValue(tag);
         // Format số (tự động thêm + và bỏ 0 thừa)
         String text = DECIMAL_FORMAT.format(value);
@@ -80,6 +91,9 @@ public class PassiveSkillInstance {
             text += "%";
         }
         MutableComponent appendValue = Component.literal(text);
+        if (value > 0) {
+            appendValue.withStyle(ChatFormatting.DARK_GREEN);
+        }
         return Component.translatable("skill.info." + tag.value()).append(appendValue);
     }
 

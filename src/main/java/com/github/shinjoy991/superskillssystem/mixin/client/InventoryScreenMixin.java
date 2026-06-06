@@ -36,7 +36,7 @@
 //        int x = recipeBook.getRectangle().left();
 //        int y = recipeBook.getRectangle().bottom();
 //
-//        ResourceLocation TEXTURE = new ResourceLocation("sss", "textures/gui/button/prime_exp_button.png");
+//        ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath("sss", "textures/gui/button/prime_exp_button.png");
 //        this.addRenderableWidget(new ImageButton(
 //                x, y, 16, 16,
 //                0, 0, 16,

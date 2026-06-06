@@ -45,7 +45,7 @@ public class SavedTaskInfo {
         int delay = tag.getInt("Delay");
 //        ResourceKey<Level> levelKey = ResourceKey.create(
 //                Registries.DIMENSION,
-//                new ResourceLocation(tag.getString("level")));
+//                ResourceLocation.fromNamespaceAndPath(tag.getString("level")));
 //        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 //        ServerLevel level = server.getLevel(levelKey);
         String fallbackType = tag.getString("FallbackType");

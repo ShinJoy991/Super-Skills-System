@@ -26,10 +26,7 @@ public class BowItemMixin {
             )
     )
     private void disableArrowCrit(AbstractArrow instance, boolean crit) {
-        // Do nothing if true, allow false to go through (to clear crit flags when reused)
-        if (!crit) {
-            instance.setCritArrow(false);
-        }
+        // disable crit
     }
 
     @Inject(method = "releaseUsing",
@@ -39,6 +36,12 @@ public class BowItemMixin {
     private void injectPullStrength(CallbackInfo ci, @Local float f, @Local AbstractArrow arrow, @Local Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
             float perfection = AllPlayersInfo.get(serverPlayer.getUUID()).getPerfection();
+            float critChance = AllPlayersInfo.get(serverPlayer.getUUID()).getCritChance();
+            boolean isCrit = serverPlayer.level().random.nextInt(100) < critChance;
+            if (isCrit) {
+                arrow.getPersistentData().putBoolean("sss_crit", true);
+//                System.out.println("Arrow marked as critical");
+            }
             arrow.getPersistentData().putDouble("sss_perfection", perfection);
             arrow.getPersistentData().putFloat("sss_pullstr", f);
         }

@@ -24,13 +24,13 @@ public class AddSectTypeCommand {
 
     public AddSectTypeCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
-                Commands.literal("addsecttype")
+                Commands.literal("SSS")
+                        .then(Commands.literal("addsecttype")
                         .requires(source -> source.hasPermission(4))
-
                         .then(Commands.argument("sect_type", StringArgumentType.word())
                                 .suggests(SECT_TYPE_SUGGESTIONS)
                                         .executes(this::addSectType))
-        );
+                        ));
     }
 
     private int addSectType(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

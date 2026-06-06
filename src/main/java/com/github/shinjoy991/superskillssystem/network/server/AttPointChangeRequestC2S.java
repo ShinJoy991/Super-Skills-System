@@ -8,13 +8,19 @@ import com.github.shinjoy991.superskillssystem.network.client.InfoChangeUpdateS2
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+import static com.github.shinjoy991.superskillssystem.event.server.PlayerEvents.refreshPlayerHealth;
+
 public class AttPointChangeRequestC2S {
 
+
+    public static final int RESET_ALL = 999;
     private final int type;
     private final int amount;
 
@@ -41,6 +47,48 @@ public class AttPointChangeRequestC2S {
             ServerPlayer player = context.get().getSender();
             if (player != null) {
                 PlayerInfo playerInfo = AllPlayersInfo.get(player.getUUID());
+                if (type == RESET_ALL) {
+                    if (playerInfo.getUsedAttPoint() <= 0) {
+                        return;
+                    }
+                    // check diamond
+                    boolean foundDiamond = false;
+
+                    for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                        ItemStack stack = player.getInventory().getItem(i);
+
+                        if (stack.is(Items.DIAMOND)) {
+                            stack.shrink(1);
+//                            player.getInventory().setChanged();
+//                            player.containerMenu.broadcastChanges();
+                            foundDiamond = true;
+                            break;
+                        }
+                    }
+
+                    if (!foundDiamond) {
+                        return;
+                    }
+
+                    playerInfo.setStrPoint(0);
+                    playerInfo.setVitPoint(0);
+                    playerInfo.setAgiPoint(0);
+                    playerInfo.setIntPoint(0);
+                    playerInfo.setPerPoint(0);
+
+                    playerInfo.setUsedAttPoint(0);
+
+                    CompoundTag sendTag =
+                            AllPlayersInfo.get(player.getUUID()).saveToNBT();
+                    refreshPlayerHealth(player);
+                    ModNetworking.INSTANCE.sendTo(
+                            new InfoChangeUpdateS2C(sendTag),
+                            player.connection.connection,
+                            NetworkDirection.PLAY_TO_CLIENT
+                    );
+
+                    return;
+                }
                     if (amount == 0) return;
                     if (type < 0 || type > 4) {
                         // Invalid type, do nothing or send an error message

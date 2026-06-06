@@ -8,7 +8,9 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class PlayerAttPointSavedData extends SavedData {
+    // For Integer only
     // TotalAttPoint, UsedAttPoint, StrPoint, VitPoint, AgiPoint, IntPoint, PerPoint
+    // activeSkillSlot1, activeSkillSlot2, activeSkillSlot3, activeSkillSlot4
     private static final String DATA_NAME = "player_attribute_point_data";
 
     private final HashMap<UUID, CompoundTag> data = new HashMap<>();
@@ -49,14 +51,6 @@ public class PlayerAttPointSavedData extends SavedData {
     }
 
     // ======= Tổng và đã dùng =======
-    public int getTotalAttPoints(UUID uuid) {
-        return getAttribute(uuid, "TotalAttPoints");
-    }
-
-    public void addAttPoints(UUID uuid, int amount) {
-        addAttribute(uuid, "TotalAttPoints", amount);
-    }
-
     public int getUsedAttPoints(UUID uuid) {
         return getAttribute(uuid, "UsedAttPoints");
     }
@@ -69,17 +63,6 @@ public class PlayerAttPointSavedData extends SavedData {
         CompoundTag playerData = data.computeIfAbsent(uuid, k -> new CompoundTag());
         playerData.putInt("UsedAttPoints", amount);
         setDirty();
-    }
-
-    public int getAvailableAttPoints(UUID uuid) {
-        int total = getTotalAttPoints(uuid);
-        int used = getUsedAttPoints(uuid);
-        int available = total - used;
-        if (available < 0)
-        {
-            available = 0;
-        }
-        return available;
     }
     // ======= STR =======
     public int getStrPoint(UUID uuid) {
@@ -153,6 +136,37 @@ public class PlayerAttPointSavedData extends SavedData {
     public void setVitPoint(UUID uuid, int i) {
         CompoundTag playerData = data.computeIfAbsent(uuid, k -> new CompoundTag());
         playerData.putInt("VitPoint", i);
+        setDirty();
+    }
+
+    public void setAgiPoint(UUID uuid, int i) {
+        CompoundTag playerData = data.computeIfAbsent(uuid, k -> new CompoundTag());
+        playerData.putInt("AgiPoint", i);
+        setDirty();
+    }
+
+    public void setIntPoint(UUID uuid, int i) {
+        CompoundTag playerData = data.computeIfAbsent(uuid, k -> new CompoundTag());
+        playerData.putInt("IntPoint", i);
+        setDirty();
+    }
+
+    public void setPerPoint(UUID uuid, int i) {
+        CompoundTag playerData = data.computeIfAbsent(uuid, k -> new CompoundTag());
+        playerData.putInt("PerPoint", i);
+        setDirty();
+    }
+
+    public String getActiveSkillSlot(UUID uuid, int slot) {
+        CompoundTag playerData = data.get(uuid);
+        if (playerData != null) {
+            return playerData.getString("ActiveSkillSlot" + slot);
+        }
+        return "";
+    }
+    public void setActiveSkillSlot(UUID uuid, int slot, String skillId) {
+        CompoundTag playerData = data.computeIfAbsent(uuid, k -> new CompoundTag());
+        playerData.putString("ActiveSkillSlot" + slot, skillId);
         setDirty();
     }
 }

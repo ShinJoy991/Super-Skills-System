@@ -28,7 +28,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 
 import java.util.List;
-import java.util.OptionalInt;
 
 public class SectVillager extends Villager {
 

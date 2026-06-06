@@ -205,13 +205,25 @@ public class SectVillagerScreen extends AbstractContainerScreen<SectVillagerMenu
             }
 
             // render trade offer buttons
+//            guiGraphics.pose().pushPose();
+//            guiGraphics.pose().scale(0.5f, 0.5f, 1.0f);
+//            for(SectVillagerScreen.TradeOfferButton btn : this.tradeOfferButtons) {
+//                btn.visible = btn.index < merchantoffers.size();
+//                // draw text on the button
+//                if (btn.visible) {
+//                    btn.setMessage(PlayerClientData.warriorGlobalPassiveSkills.get(btn.index).getTranslatableName());
+//                }
+//            }
+//            guiGraphics.pose().popPose();
             guiGraphics.pose().pushPose();
             guiGraphics.pose().scale(0.5f, 0.5f, 1.0f);
-            for(SectVillagerScreen.TradeOfferButton btn : this.tradeOfferButtons) {
-                btn.visible = btn.index < merchantoffers.size();
-                // draw text on the button
+            for (SectVillagerScreen.TradeOfferButton btn : this.tradeOfferButtons) {
+                int indexWithScroll = btn.index + this.scrollOff;
+                btn.visible = indexWithScroll < merchantoffers.size();
                 if (btn.visible) {
-                    btn.setMessage(PlayerClientData.warriorGlobalPassiveSkills.get(btn.index).getTranslatableName());
+                    // Use the merchant offer result name to label the button (safe and in-sync)
+                    ItemStack resultStack = merchantoffers.get(indexWithScroll).getResult();
+                    btn.setMessage(resultStack.getHoverName());
                 }
             }
             guiGraphics.pose().popPose();
@@ -318,11 +330,20 @@ public class SectVillagerScreen extends AbstractContainerScreen<SectVillagerMenu
             this.isDragging = true;
         }
         // Kiểm tra click vào list trade
-        for (int k = 0; k < this.menu.getOffers().size(); ++k) {
-            int rowY = j + 18 + k * 20; // mỗi dòng cao 20px
-            if (mouseX > i + 10 && mouseX < i + 90 // vùng X của trade
-                    && mouseY > rowY && mouseY < rowY + 20) {
-                this.selectedTradeIndex = k;
+//        for (int k = 0; k < this.menu.getOffers().size(); ++k) {
+//            int rowY = j + 18 + k * 20; // mỗi dòng cao 20px
+//            if (mouseX > i + 10 && mouseX < i + 90 // vùng X của trade
+//                    && mouseY > rowY && mouseY < rowY + 20) {
+//                this.selectedTradeIndex = k;
+//                break;
+//            }
+//        }
+        int maxVisible = Math.min(7, this.menu.getOffers().size() - this.scrollOff);
+        int rowStartY = j + 16 + 2; // same start Y as creation/render of buttons
+        for (int k = 0; k < maxVisible; ++k) {
+            int rowY = rowStartY + k * 20; // each row is 20px tall
+            if (mouseX > i + 10 && mouseX < i + 90 && mouseY > rowY && mouseY < rowY + 20) {
+                this.selectedTradeIndex = k + this.scrollOff;
                 break;
             }
         }

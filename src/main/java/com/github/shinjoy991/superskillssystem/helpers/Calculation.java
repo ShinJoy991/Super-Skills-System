@@ -7,26 +7,39 @@ import java.util.List;
 
 public class Calculation {
     private static final int TARGET_LEVEL = 100;         // Cấp mục tiêu (ví dụ: 100)
-    private static final int TARGET_TOTAL_EXP = 100_00; // Tổng EXP cần để đạt cấp đó
+    private static final int TARGET_TOTAL_EXP = 1000; // Tổng EXP cần để đạt cấp đó
     private static final double BASE_EXP;
 
     static {
         // Tính BASE_EXP để sao cho calculateExpForLevel(100) ≈ 1_000_000
-        double sum = 0;
-        for (int i = 1; i <= TARGET_LEVEL; i++) {
-            sum += i * Math.log(i + 1);  // giữ hàm tăng EXP
+            double sum = 0;
+            for (int i = 1; i <= TARGET_LEVEL; i++) {
+                sum += Math.log(i + 1) * getMultiplier(i);
+            }
+            BASE_EXP = TARGET_TOTAL_EXP / sum;
         }
-        BASE_EXP = TARGET_TOTAL_EXP / sum;
+    private static double getMultiplier(int level) {
+        if (level <= 50) return 1.0;   // lv1
+        if (level <= 80) return 2.0;   // lv2
+        if (level <= 90) return 4.0;   // lv3
+        return 8.0;                     // lv4
     }
-
     /** Tổng EXP tích lũy để đạt tới một cấp nhất định */
     public static int calTotalExpForLevel(int level) {
         if (level <= 0) return 0;
+
         double totalExp = 0;
+
         for (int i = 1; i <= level; i++) {
-            totalExp += BASE_EXP * i * Math.log(i + 1);
+            totalExp += BASE_EXP
+                    * Math.log(i + 1)
+                    * getMultiplier(i);
         }
-        return (int) totalExp;
+
+        return Math.max(
+                calTotalExpForLevel(level - 1) + 1,
+                (int) Math.ceil(totalExp)
+        );
     }
     /** EXP cần để đạt cấp tiếp theo */
     public static int calExpForLevel(int level) {
@@ -35,17 +48,16 @@ public class Calculation {
     }
     /** Tính cấp hiện tại dựa trên tổng EXP */
     public static int calLevelByExp(int exp) {
-        if (exp < 0) return 0;
+        if (exp <= 0) return 0;  // đổi < thành <=, trả về 0 ngay
 
         int level = 0;
         while (true) {
             int nextLevelExp = calTotalExpForLevel(level + 1);
-            if (exp < nextLevelExp) break;
+            if (nextLevelExp <= 0 || exp < nextLevelExp) break;  // guard thêm nextLevelExp <= 0
             level++;
         }
         return level;
     }
-
     /** EXP hiện có trong cấp hiện tại */
     public static int calCurrentLevelExp(int totalExp) {
         int currentLevel = calLevelByExp(totalExp);

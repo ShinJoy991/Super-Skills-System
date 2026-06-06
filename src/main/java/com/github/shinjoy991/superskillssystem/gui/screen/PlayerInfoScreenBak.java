@@ -20,9 +20,9 @@
 //@OnlyIn(Dist.CLIENT)
 //public class PlayerInfoScreenBak extends Screen {
 //    private static final ResourceLocation PLAYER_INFO_LOC =
-//            new ResourceLocation(SSS.MODID, "textures/gui/player_info.png");
+//            ResourceLocation.fromNamespaceAndPath(SSS.MODID, "textures/gui/player_info.png");
 //    private static final ResourceLocation PLAYER_INFO_WIDGET_LOC =
-//            new ResourceLocation(SSS.MODID, "textures/gui/player_info_widget.png");
+//            ResourceLocation.fromNamespaceAndPath(SSS.MODID, "textures/gui/player_info_widget.png");
 //
 //
 //    private final Player player;
