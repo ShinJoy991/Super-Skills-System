@@ -5,17 +5,17 @@ import com.github.shinjoy991.superskillssystem.config.ReadConfig;
 import com.github.shinjoy991.superskillssystem.gui.SectMerchantContainer;
 import com.github.shinjoy991.superskillssystem.gui.SectMerchantResultSlot;
 import com.github.shinjoy991.superskillssystem.helpers.PlayerClientData;
-import com.github.shinjoy991.superskillssystem.helpers.skill.PassiveSkill;
-import com.github.shinjoy991.superskillssystem.helpers.skill.PassiveSkillInstance;
-import com.github.shinjoy991.superskillssystem.helpers.skill.SectTypes;
+import com.github.shinjoy991.superskillssystem.helpers.skill.*;
 import com.github.shinjoy991.superskillssystem.register.RegisterMenu;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
@@ -60,12 +60,22 @@ public class SectVillagerMenu extends AbstractContainerMenu {
     private List<PassiveSkillInstance> playerPassiveSkills;
     private MerchantOffers cachedOffers = new MerchantOffers();
 
+    // Active skill list nhận từ server khi mở menu (toàn bộ active skill của sect này)
+    private List<ResourceLocation> sectActiveSkillIds = new ArrayList<>();
+    // Level active skill của player (skillId string -> level)
+    private Map<String, Integer> playerActiveSkillLevels = new HashMap<>();
+
+
     // Server constructor
     public SectVillagerMenu(int p45298, Inventory p45299, Merchant sectVillager, SectTypes sectType,
-                            List<PassiveSkillInstance> playerPassiveSkills) {
+                            List<PassiveSkillInstance> playerPassiveSkills,
+                            List<ResourceLocation> sectActiveSkillIds,
+                            Map<String, Integer> playerActiveSkillLevels) {
         this(p45298, p45299, sectVillager);
         this.sectType = sectType;
         this.playerPassiveSkills = playerPassiveSkills;
+        this.sectActiveSkillIds = sectActiveSkillIds;
+        this.playerActiveSkillLevels = playerActiveSkillLevels;
         rebuildOffers(playerPassiveSkills);
     }
 
@@ -76,7 +86,9 @@ public class SectVillagerMenu extends AbstractContainerMenu {
                 inv,
                 new ClientSideMerchant(inv.player),
                 buf.readEnum(SectTypes.class),
-                readPlayerPassiveSkills(buf)
+                readPlayerPassiveSkills(buf),
+                readSectActiveSkillIds(buf),
+                readPlayerActiveSkillLevels(buf)
         );
     }
 
@@ -101,7 +113,7 @@ public class SectVillagerMenu extends AbstractContainerMenu {
     }
 
 
-    // Hàm static tách riêng để đọc dữ liệu
+    // Hàm static tách riêng để đọc dữ liệu (Only Client)
     private static List<PassiveSkillInstance> readPlayerPassiveSkills(FriendlyByteBuf buf) {
         List<PassiveSkillInstance> skills = new ArrayList<>();
 
@@ -126,17 +138,265 @@ public class SectVillagerMenu extends AbstractContainerMenu {
 
         return skills;
     }
+    private static List<ResourceLocation> readSectActiveSkillIds(FriendlyByteBuf buf) {
+        List<ResourceLocation> ids = new ArrayList<>();
+        CompoundTag tag = buf.readNbt();
+        if (tag != null && tag.contains("ActiveSkillIds", Tag.TAG_LIST)) {
+            ListTag list = tag.getList("ActiveSkillIds", Tag.TAG_STRING);
+            for (Tag t : list) {
+                ResourceLocation id = ResourceLocation.tryParse(t.getAsString());
+                if (id != null) ids.add(id);
+            }
+        }
+        return ids;
+    }
+    private static Map<String, Integer> readPlayerActiveSkillLevels(FriendlyByteBuf buf) {
+        Map<String, Integer> map = new HashMap<>();
+        CompoundTag tag = buf.readNbt();
+        if (tag != null && tag.contains("PlayerActiveSkills", Tag.TAG_LIST)) {
+            ListTag list = tag.getList("PlayerActiveSkills", Tag.TAG_COMPOUND);
+            for (Tag t : list) {
+                CompoundTag ct = (CompoundTag) t;
+                map.put(ct.getString("SkillId"), ct.getInt("Level"));
+            }
+        }
+        return map;
+    }
 
     public void setShowProgressBar(boolean p_40049_) {
         this.showProgressBar = false;
     }
 
+    // Client + Server
     @Override
     public void slotsChanged(Container p_40040_) {
         this.tradeContainer.updateSellItem();
         super.slotsChanged(p_40040_);
     }
+    public void tryMoveItems(int p_40073_) {
+        if (p_40073_ >= 0 && this.getOffers().size() > p_40073_) {
+//            System.out.println("trymove2 "+ this.trader.getTradingPlayer().level().isClientSide);
+            ItemStack itemstack = this.tradeContainer.getItem(0);
+            if (!itemstack.isEmpty()) {
+//                System.out.println("trymove3 "+ this.trader.getTradingPlayer().level().isClientSide);
+                if (!this.moveItemStackTo(itemstack, 3, 39, true)) {
+                    return;
+                }
 
+                this.tradeContainer.setItem(0, itemstack);
+            }
+
+            ItemStack itemstack1 = this.tradeContainer.getItem(1);
+//            System.out.println("trymove4 "+ this.trader.getTradingPlayer().level().isClientSide);
+            if (!itemstack1.isEmpty()) {
+//                System.out.println("trymove5 "+ this.trader.getTradingPlayer().level().isClientSide);
+                if (!this.moveItemStackTo(itemstack1, 3, 39, true)) {
+                    return;
+                }
+
+                this.tradeContainer.setItem(1, itemstack1);
+            }
+//            System.out.println("trymove6 "+ this.trader.getTradingPlayer().level().isClientSide);
+            if (this.tradeContainer.getItem(0).isEmpty() && this.tradeContainer.getItem(1).isEmpty()) {
+                ItemStack itemstack2 = this.getOffers().get(p_40073_).getCostA();
+                this.moveFromInventoryToPaymentSlot(0, itemstack2);
+                ItemStack itemstack3 = this.getOffers().get(p_40073_).getCostB();
+                this.moveFromInventoryToPaymentSlot(1, itemstack3);
+//                System.out.println("trymove7 "+ this.trader.getTradingPlayer().level().isClientSide);
+            }
+
+        }
+    }
+    private void moveFromInventoryToPaymentSlot(int p_40061_, ItemStack p_40062_) {
+        if (!p_40062_.isEmpty()) {
+            for (int i = 3; i < 39; ++i) {
+                ItemStack itemstack = this.slots.get(i).getItem();
+                if (!itemstack.isEmpty() && ItemStack.isSameItemSameTags(p_40062_, itemstack)) {
+                    ItemStack itemstack1 = this.tradeContainer.getItem(p_40061_);
+                    int j = itemstack1.isEmpty() ? 0 : itemstack1.getCount();
+                    int k = Math.min(p_40062_.getMaxStackSize() - j, itemstack.getCount());
+                    ItemStack itemstack2 = itemstack.copy();
+                    int l = j + k;
+                    itemstack.shrink(k);
+                    itemstack2.setCount(l);
+                    this.tradeContainer.setItem(p_40061_, itemstack2);
+                    if (l >= p_40062_.getMaxStackSize()) {
+                        break;
+                    }
+                }
+            }
+        }
+
+    }
+    public void rebuildOffers(List<PassiveSkillInstance> playerPassiveSkills) {
+        this.playerPassiveSkills = playerPassiveSkills;
+
+        // todo:
+        List<PassiveSkill> listPassiveSkills = PlayerClientData.warriorGlobalPassiveSkills;
+
+
+        // Map skillName -> level
+        Map<String, Integer> skillLevelMap = new HashMap<>();
+        for (PassiveSkillInstance psi : this.playerPassiveSkills) {
+            skillLevelMap.put(psi.getName(), psi.getLevel());
+        }
+        MerchantOffers offers = new MerchantOffers();
+        for (PassiveSkill skill : listPassiveSkills) {
+            int playerLevel = skillLevelMap.getOrDefault(skill.name, 0);
+            int nextLevel = playerLevel + 1;
+            int emeraldCost;
+            int diamondCost;
+            if (nextLevel > 20) {
+                nextLevel = 20;
+                emeraldCost = 0;
+                diamondCost = 0;
+            }
+            else {
+                if (nextLevel < 6) {
+                    emeraldCost = nextLevel;
+                    diamondCost = nextLevel;
+                }
+                else if (nextLevel < 11) {
+                    emeraldCost = nextLevel;
+                    diamondCost = nextLevel - 2;
+                }
+                else if (nextLevel < 16) {
+                    emeraldCost = nextLevel + 3;
+                    diamondCost = nextLevel - 3;
+                }
+                else if (nextLevel < 20) {
+                    emeraldCost = (int) Math.round(nextLevel * 1.2);
+                    diamondCost = (int) Math.round(nextLevel * 0.85);
+                }
+                else {
+                    emeraldCost = nextLevel * 2;
+                    diamondCost = nextLevel * 2;
+                }
+                emeraldCost = Math.max(1, (int) (emeraldCost * Config.SECT_PRICE_MULTIPLIER));
+                diamondCost = Math.max(1, (int) (diamondCost * Config.SECT_PRICE_MULTIPLIER));
+            }
+
+
+            ItemStack costA = new ItemStack(Items.EMERALD, emeraldCost);
+            ItemStack costB = diamondCost > 0 ? new ItemStack(Items.DIAMOND, diamondCost) : ItemStack.EMPTY;
+
+            ItemStack result = new ItemStack(Items.BOOK, nextLevel);
+            result.setHoverName(
+                    skill.getTranslatableName()
+                            .copy()
+                            .setStyle(Style.EMPTY.withItalic(false))
+                            .append(Component.literal(" - Lv." + (nextLevel)).withStyle(ChatFormatting.GRAY))
+            );
+
+            CompoundTag nbt = result.getOrCreateTag();
+            nbt.putString("SkillName", skill.name);
+            // Build lore từ PassiveSkillInstance.getInfo()
+            try {
+                PassiveSkillInstance tempInstance = new PassiveSkillInstance(skill, nextLevel);
+                List<Component> loreComponents = tempInstance.getLoreInfo(tempInstance.getSectType().equals(PlayerClientData.sect));
+
+                ListTag loreList = new ListTag();
+
+                for (Component line : loreComponents) {
+                    loreList.add(
+                            StringTag.valueOf(Component.Serializer.toJson(line))
+                    );
+                }
+                CompoundTag displayTag = result.getOrCreateTagElement("display");
+                displayTag.put("Lore", loreList);
+            } catch (Exception e) {
+                // ignore
+            }
+
+            offers.add(new MerchantOffer(costA, costB, result, 9999, 0, 0));
+        }
+
+        // Add active skills
+        for (ResourceLocation skillId : this.sectActiveSkillIds) {
+            // Tạo dummy instance trước để lấy name
+            Class<? extends ActiveSkill> clazz = SkillRegistry.get(skillId);
+            if (clazz == null) continue;
+
+            ActiveSkill dummy;
+            try {
+                dummy = clazz.getConstructor(net.minecraft.world.entity.LivingEntity.class, int.class)
+                        .newInstance(null, 1);
+            } catch (Exception e) {
+                continue;
+            }
+
+            String skillName = dummy.getName(); // lấy đúng name từ instance
+
+            int playerLevel = playerActiveSkillLevels.getOrDefault(skillId.toString(), 0);
+            int nextLevel = Math.min(playerLevel + 1, 20);
+
+            int emeraldCost;
+            int diamondCost;
+            if (playerLevel >= 20) {
+                emeraldCost = 0;
+                diamondCost = 0;
+            } else {
+                if (nextLevel < 6) {
+                    emeraldCost = nextLevel;
+                    diamondCost = nextLevel;
+                } else if (nextLevel < 11) {
+                    emeraldCost = nextLevel;
+                    diamondCost = nextLevel - 2;
+                } else if (nextLevel < 16) {
+                    emeraldCost = nextLevel + 3;
+                    diamondCost = nextLevel - 3;
+                } else if (nextLevel < 20) {
+                    emeraldCost = (int) Math.round(nextLevel * 1.2);
+                    diamondCost = (int) Math.round(nextLevel * 0.85);
+                } else {
+                    emeraldCost = nextLevel * 2;
+                    diamondCost = nextLevel * 2;
+                }
+                emeraldCost = Math.max(1, (int) (emeraldCost * Config.SECT_PRICE_MULTIPLIER));
+                diamondCost = Math.max(1, (int) (diamondCost * Config.SECT_PRICE_MULTIPLIER));
+            }
+
+            ItemStack costA = new ItemStack(Items.EMERALD, emeraldCost);
+            ItemStack costB = diamondCost > 0 ? new ItemStack(Items.DIAMOND, diamondCost) : ItemStack.EMPTY;
+
+            ItemStack result = new ItemStack(Items.BOOK, nextLevel);
+            result.setHoverName(
+                    Component.translatable("skill.name." + skillName)
+                            .copy()
+                            .setStyle(Style.EMPTY.withItalic(false))
+                            .withStyle(ChatFormatting.GOLD)
+                            .append(Component.literal(" - Lv." + nextLevel).withStyle(ChatFormatting.GRAY))
+            );
+
+            CompoundTag nbt = result.getOrCreateTag();
+            nbt.putString("SkillName", skillName);
+            nbt.putString("SkillId", skillId.toString());
+
+            // Build lore từ getInfo(), bỏ dòng đầu (name) và dòng level
+            try {
+                List<Component> loreComponents = dummy.getLoreInfo(dummy.getSectType().equals(PlayerClientData.sect));
+
+                ListTag loreList = new ListTag();
+
+                for (Component line : loreComponents) {
+                    loreList.add(
+                            StringTag.valueOf(
+                                    Component.Serializer.toJson(line)
+                            )
+                    );
+                }
+
+                CompoundTag displayTag = result.getOrCreateTagElement("display");
+                displayTag.put("Lore", loreList);
+            } catch (Exception e) {
+                // ignore
+            }
+
+            offers.add(new MerchantOffer(costA, costB, result, 9999, 0, 0));
+        }
+
+        this.cachedOffers = offers;
+    }
     public void setSelectionHint(int p_40064_) {
         this.tradeContainer.setSelectionHint(p_40064_);
     }
@@ -233,6 +493,7 @@ public class SectVillagerMenu extends AbstractContainerMenu {
 
     }
 
+    // Server
     public void removed(Player p_40051_) {
         super.removed(p_40051_);
         this.trader.setTradingPlayer((Player) null);
@@ -256,67 +517,12 @@ public class SectVillagerMenu extends AbstractContainerMenu {
         }
     }
 
-    public void tryMoveItems(int p_40073_) {
-        if (p_40073_ >= 0 && this.getOffers().size() > p_40073_) {
-//            System.out.println("trymove2 "+ this.trader.getTradingPlayer().level().isClientSide);
-                    ItemStack itemstack = this.tradeContainer.getItem(0);
-            if (!itemstack.isEmpty()) {
-//                System.out.println("trymove3 "+ this.trader.getTradingPlayer().level().isClientSide);
-                if (!this.moveItemStackTo(itemstack, 3, 39, true)) {
-                    return;
-                }
 
-                this.tradeContainer.setItem(0, itemstack);
-            }
 
-            ItemStack itemstack1 = this.tradeContainer.getItem(1);
-//            System.out.println("trymove4 "+ this.trader.getTradingPlayer().level().isClientSide);
-            if (!itemstack1.isEmpty()) {
-//                System.out.println("trymove5 "+ this.trader.getTradingPlayer().level().isClientSide);
-                if (!this.moveItemStackTo(itemstack1, 3, 39, true)) {
-                    return;
-                }
-
-                this.tradeContainer.setItem(1, itemstack1);
-            }
-//            System.out.println("trymove6 "+ this.trader.getTradingPlayer().level().isClientSide);
-            if (this.tradeContainer.getItem(0).isEmpty() && this.tradeContainer.getItem(1).isEmpty()) {
-                ItemStack itemstack2 = this.getOffers().get(p_40073_).getCostA();
-                this.moveFromInventoryToPaymentSlot(0, itemstack2);
-                ItemStack itemstack3 = this.getOffers().get(p_40073_).getCostB();
-                this.moveFromInventoryToPaymentSlot(1, itemstack3);
-//                System.out.println("trymove7 "+ this.trader.getTradingPlayer().level().isClientSide);
-            }
-
-        }
+    public void setOffers(MerchantOffers offers) {
+        this.cachedOffers = offers;
+        this.trader.overrideOffers(offers);
     }
-
-    private void moveFromInventoryToPaymentSlot(int p_40061_, ItemStack p_40062_) {
-        if (!p_40062_.isEmpty()) {
-            for (int i = 3; i < 39; ++i) {
-                ItemStack itemstack = this.slots.get(i).getItem();
-                if (!itemstack.isEmpty() && ItemStack.isSameItemSameTags(p_40062_, itemstack)) {
-                    ItemStack itemstack1 = this.tradeContainer.getItem(p_40061_);
-                    int j = itemstack1.isEmpty() ? 0 : itemstack1.getCount();
-                    int k = Math.min(p_40062_.getMaxStackSize() - j, itemstack.getCount());
-                    ItemStack itemstack2 = itemstack.copy();
-                    int l = j + k;
-                    itemstack.shrink(k);
-                    itemstack2.setCount(l);
-                    this.tradeContainer.setItem(p_40061_, itemstack2);
-                    if (l >= p_40062_.getMaxStackSize()) {
-                        break;
-                    }
-                }
-            }
-        }
-
-    }
-
-    public void setOffers(MerchantOffers p_40047_) {
-        this.trader.overrideOffers(p_40047_);
-    }
-
     public void setSelectedCategory(int category) {
         this.selectedCategory = category;
     }
@@ -325,40 +531,6 @@ public class SectVillagerMenu extends AbstractContainerMenu {
     }
     public MerchantOffers getOffers() {
         return this.cachedOffers;
-//        List<PassiveSkill> listPassiveSkills = this.trader.isClientSide()
-//                ? PlayerClientData.warriorGlobalPassiveSkills
-//                : ReadConfig.passiveSkills;
-//
-//        // Map skillName -> level
-//        Map<String, Integer> skillLevelMap = new HashMap<>();
-//        for (PassiveSkillInstance psi : this.playerPassiveSkills) {
-//            skillLevelMap.put(psi.getName(), psi.getLevel());
-//        }
-//        MerchantOffers offers = new MerchantOffers();
-//        for (PassiveSkill skill : listPassiveSkills) {
-//            int playerLevel = skillLevelMap.getOrDefault(skill.name, 0);
-//
-//            int emeraldCost = 3 + playerLevel * 2;
-//            int diamondCost = 2 + playerLevel * 2;
-//
-//            ItemStack costA = new ItemStack(Items.EMERALD, emeraldCost);
-//            ItemStack costB = diamondCost > 0 ? new ItemStack(Items.DIAMOND, diamondCost) : ItemStack.EMPTY;
-//
-//            ItemStack result = new ItemStack(Items.BOOK, 2);
-//            result.setHoverName(
-//                    skill.getTranslatableName()
-//                            .copy()
-//                            .setStyle(Style.EMPTY.withItalic(false))
-//                            .append(Component.literal(" - Lv." + (playerLevel + 1)))
-//            );
-//
-//            CompoundTag nbt = result.getOrCreateTag();
-//            nbt.putString("SkillName", skill.name);
-//            nbt.putInt("SkillLevel", playerLevel + 1);
-//
-//            offers.add(new MerchantOffer(costA, costB, result, 9999, 0, 0));
-//        }
-//        return offers;
     }
 
     public boolean showProgressBar() {
@@ -406,91 +578,15 @@ public class SectVillagerMenu extends AbstractContainerMenu {
         rebuildOffers(this.playerPassiveSkills);
     }
 
-
-    public void rebuildOffers(List<PassiveSkillInstance> playerPassiveSkills) {
-        this.playerPassiveSkills = playerPassiveSkills;
-        List<PassiveSkill> listPassiveSkills = this.trader.isClientSide()
-                ? PlayerClientData.warriorGlobalPassiveSkills
-                : ReadConfig.passiveSkills;
-
-        // Map skillName -> level
-        Map<String, Integer> skillLevelMap = new HashMap<>();
-        for (PassiveSkillInstance psi : this.playerPassiveSkills) {
-            skillLevelMap.put(psi.getName(), psi.getLevel());
+    public void rebuildOffersByActiveSkillIdAndLevelChange(String skillId, int levelDelta) {
+        // Đảm bảo map là mutable
+        if (!(this.playerActiveSkillLevels instanceof HashMap)) {
+            this.playerActiveSkillLevels = new HashMap<>(this.playerActiveSkillLevels);
         }
-        MerchantOffers offers = new MerchantOffers();
-        for (PassiveSkill skill : listPassiveSkills) {
-            int playerLevel = skillLevelMap.getOrDefault(skill.name, 0);
-            int nextLevel = playerLevel + 1;
-            int emeraldCost;
-            int diamondCost;
-            if (nextLevel > 20) {
-                nextLevel = 20;
-                emeraldCost = 0;
-                diamondCost = 0;
-            }
-            else {
-                if (nextLevel < 6) {
-                    emeraldCost = nextLevel;
-                    diamondCost = nextLevel;
-                }
-                else if (nextLevel < 11) {
-                    emeraldCost = nextLevel;
-                    diamondCost = nextLevel - 2;
-                }
-                else if (nextLevel < 16) {
-                    emeraldCost = nextLevel + 3;
-                    diamondCost = nextLevel - 3;
-                }
-                else if (nextLevel < 20) {
-                    emeraldCost = (int) Math.round(nextLevel * 1.2);
-                    diamondCost = (int) Math.round(nextLevel * 0.85);
-                }
-                else {
-                    emeraldCost = nextLevel * 2;
-                    diamondCost = nextLevel * 2;
-                }
-                emeraldCost = Math.max(1, (int) (emeraldCost * Config.SECT_PRICE_MULTIPLIER));
-                diamondCost = Math.max(1, (int) (diamondCost * Config.SECT_PRICE_MULTIPLIER));
-            }
-
-
-            ItemStack costA = new ItemStack(Items.EMERALD, emeraldCost);
-            ItemStack costB = diamondCost > 0 ? new ItemStack(Items.DIAMOND, diamondCost) : ItemStack.EMPTY;
-
-            ItemStack result = new ItemStack(Items.BOOK, nextLevel);
-            result.setHoverName(
-                    skill.getTranslatableName()
-                            .copy()
-                            .setStyle(Style.EMPTY.withItalic(false))
-                            .append(Component.literal(" - Lv." + (nextLevel)).withStyle(ChatFormatting.GRAY))
-            );
-
-            CompoundTag nbt = result.getOrCreateTag();
-            nbt.putString("SkillName", skill.name);
-//            nbt.putInt("SkillLevel", playerLevel + 1);
-
-            offers.add(new MerchantOffer(costA, costB, result, 9999, 0, 0));
-        }
-
-        // Add ActSkillThrust at the end
-        ItemStack thrustCostA = new ItemStack(Items.EMERALD, 5);
-        ItemStack thrustCostB = new ItemStack(Items.DIAMOND, 3);
-
-        ItemStack thrustResult = new ItemStack(Items.BOOK, 1);
-        thrustResult.setHoverName(
-                Component.translatable("skill.name.thrust")
-                        .copy()
-                        .setStyle(Style.EMPTY.withItalic(false))
-                        .withStyle(ChatFormatting.GOLD)
-        );
-
-        CompoundTag thrustNbt = thrustResult.getOrCreateTag();
-        thrustNbt.putString("SkillName", "thrust");
-        thrustNbt.putString("SkillId", "sss:thrust");
-
-        offers.add(new MerchantOffer(thrustCostA, thrustCostB, thrustResult, 9999, 0, 0));
-
-        this.cachedOffers = offers;
+        int current = this.playerActiveSkillLevels.getOrDefault(skillId, 0);
+        this.playerActiveSkillLevels.put(skillId, Math.min(current + levelDelta, 20));
+        rebuildOffers(this.playerPassiveSkills);
     }
+
+
 }

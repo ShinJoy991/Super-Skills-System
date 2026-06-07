@@ -94,7 +94,7 @@ public class SSS {
 
         @SubscribeEvent
         public static void onAttributeCreate(EntityAttributeCreationEvent event) {
-            event.put(RegisterEntity.SECT_WARRIOR_VILLAGER.get(), SectVillager.createAttributes().build());
+            event.put(RegisterEntity.SECT_VILLAGER.get(), SectVillager.createAttributes().build());
         }
     }
 
@@ -106,7 +106,7 @@ public class SSS {
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
-            event.registerEntityRenderer(RegisterEntity.SECT_WARRIOR_VILLAGER.get(), VillagerRenderer::new);
+            event.registerEntityRenderer(RegisterEntity.SECT_VILLAGER.get(), VillagerRenderer::new);
         }
 
 //        @SubscribeEvent

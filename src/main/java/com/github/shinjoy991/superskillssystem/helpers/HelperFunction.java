@@ -171,9 +171,13 @@ public class HelperFunction {
         });
     }
 
-    public static void sendActiveMessage(ServerPlayer player, String message, int color) {
-        player.sendSystemMessage(
-                Component.literal(message).withStyle(style -> style.withColor(TextColor.fromRgb(color)))
+    public static void sendActiveMessage(ServerPlayer player, Component message, int color) {
+        player.displayClientMessage(
+                message.copy().withStyle(style -> style.withColor(TextColor.fromRgb(color))),
+                true
         );
+    }
+    public static void sendActiveMessage(ServerPlayer player, Component message) {
+        player.displayClientMessage(message, true);
     }
 }

@@ -45,13 +45,13 @@ public class AddPassiveSkillCommand {
                 int level = IntegerArgumentType.getInteger(context, "level");
                 boolean success = AllPlayersInfo.get(player.getUUID()).addPassiveSkill(skillId, level);
                 if (success) {
-                    MutableComponent message = Component.literal("[Super Skills System]")
+                    MutableComponent message = Component.literal("[Super Skill System]")
                             .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD))
                             .append(Component.literal(" Added 1 Skill1").setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
                     player.sendSystemMessage(message);
 
                 } else {
-                    MutableComponent message = Component.literal("[Super Skills System]")
+                    MutableComponent message = Component.literal("[Super Skill System]")
                             .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD))
                             .append(Component.literal("Error!!").setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
                     player.sendSystemMessage(message);

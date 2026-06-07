@@ -53,7 +53,7 @@ public class ReadConfig {
                         SkillTags tag = SkillTags.fromName(tagName.toUpperCase());
                         tags.add(tag);
                     } catch (IllegalArgumentException e) {
-                        LOGGER.warn("[Super Skills System] Unknown skill tag '{}', skipping.", tagName);
+                        LOGGER.warn("[Super Skill System] Unknown skill tag '{}', skipping.", tagName);
                         continue;
                     }
                 }
@@ -64,7 +64,7 @@ public class ReadConfig {
                         SkillTags tag = SkillTags.valueOf(baseEntry.getKey().toUpperCase());
                         base.put(tag, baseEntry.getValue().getAsFloat());
                     } catch (IllegalArgumentException e) {
-                        LOGGER.warn("[Super Skills System] Unknown base tag '{}', skipping.", baseEntry.getKey());
+                        LOGGER.warn("[Super Skill System] Unknown base tag '{}', skipping.", baseEntry.getKey());
                         continue;
                     }
                 }
@@ -76,7 +76,7 @@ public class ReadConfig {
                         SkillTags tag = SkillTags.valueOf(bonusEntry.getKey().toUpperCase());
                         bonuses.put(tag, bonusEntry.getValue().getAsFloat());
                     } catch (IllegalArgumentException e) {
-                        LOGGER.warn("[Super Skills System] Unknown bonus tag '{}', skipping.", bonusEntry.getKey());
+                        LOGGER.warn("[Super Skill System] Unknown bonus tag '{}', skipping.", bonusEntry.getKey());
                         continue;
                     }
                 }
@@ -84,9 +84,9 @@ public class ReadConfig {
             }
 
         } catch (IOException e) {
-            LOGGER.error("[Super Skills System] Error reading config JSON file: {}", e.toString());
+            LOGGER.error("[Super Skill System] Error reading config JSON file: {}", e.toString());
         } catch (Exception e) {
-            LOGGER.error("[Super Skills System] Invalid JSON format: {}", e.toString());
+            LOGGER.error("[Super Skill System] Invalid JSON format: {}", e.toString());
         }
     }
 
@@ -101,7 +101,7 @@ public class ReadConfig {
 //            if (errordelay > 300) {
 //                errordelay = 0;
 //                LOGGER.error(e);
-//                LOGGER.error("[Super Skills System] error {} in {}", subKey, key);
+//                LOGGER.error("[Super Skill System] error {} in {}", subKey, key);
 //            } else
 //                errordelay++;
 //            if (getInt != 1) {
@@ -116,7 +116,7 @@ public class ReadConfig {
             readJsonValue(CreateJson.configFile);
             return true;
         } catch (Exception e) {
-            LOGGER.error("[Super Skills System] Config reload error " + e);
+            LOGGER.error("[Super Skill System] Config reload error " + e);
             return false;
         }
     }

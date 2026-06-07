@@ -432,8 +432,12 @@ public class PlayerInfoSkillScreen extends Screen {
             int x = (int)((topLeftX + textOffsetTopLeftX + textSpacingX * 2) / 0.55f);
             int y = (int)((topLeftY + textOffsetTopLeftY + row * textSpacingY) / 0.55f);
 
+            MutableComponent display = Component.translatable("skill.name."+ skill.getName())
+                    .append(" Lv" + skill.getLevel())
+                            .withStyle(ChatFormatting.DARK_GRAY);
+            
             guiGraphics.drawString(this.font,
-                    Component.literal(skill.getName() + " Lv" + skill.getLevel()),
+                    display,
                     x, y, 0xFFAA00, false
             );
         }

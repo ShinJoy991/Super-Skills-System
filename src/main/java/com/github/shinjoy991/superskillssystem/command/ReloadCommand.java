@@ -29,12 +29,12 @@ public class ReloadCommand {
             if (!player.level().isClientSide && player.level().getServer() != null) {
                 boolean isReloaded = reloadConfig();
                 if (isReloaded) {
-                    MutableComponent message = Component.literal("[Super Skills System]")
+                    MutableComponent message = Component.literal("[Super Skill System]")
                             .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD))
                             .append(Component.literal(" Reloaded").setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
                     player.sendSystemMessage(message);
                 } else {
-                    MutableComponent message = Component.literal("[Super Skills System]")
+                    MutableComponent message = Component.literal("[Super Skill System]")
                             .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD))
                             .append(Component.literal(" Reload Error!!").setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
                     player.sendSystemMessage(message);

@@ -32,7 +32,7 @@ public class AddPrimeLevelCommand {
             if (!player.level().isClientSide && player.level().getServer() != null) {
                 int level = IntegerArgumentType.getInteger(context, "level");
                 AllPlayersInfo.get(player.getUUID()).addPrimeLevel(level);
-                MutableComponent message = Component.literal("[Super Skills System]")
+                MutableComponent message = Component.literal("[Super Skill System]")
                         .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD))
                         .append(Component.literal(" Added " + level + " level").setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
                 player.sendSystemMessage(message);

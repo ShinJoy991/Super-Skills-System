@@ -13,10 +13,12 @@ import static com.github.shinjoy991.superskillssystem.SSS.MODID;
 
 public class RegisterEntity {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES;
-    public static final RegistryObject<EntityType<SectVillager>> SECT_WARRIOR_VILLAGER;
+    public static final RegistryObject<EntityType<SectVillager>> SECT_VILLAGER;
 
     static {
         ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MODID);
-        SECT_WARRIOR_VILLAGER = ENTITY_TYPES.register("sect_warrior_villager", () -> Builder.of(SectVillager::new, MobCategory.MISC).sized(0.6F, 1.95F).clientTrackingRange(10).build("sect_warrior_villager"));
+        SECT_VILLAGER = ENTITY_TYPES.register("sect_villager",
+                () -> Builder.of(SectVillager::new, MobCategory.MISC).sized(0.6F, 1.95F)
+                        .clientTrackingRange(10).build( "sect_villager"));
     }
 }

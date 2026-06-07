@@ -7,6 +7,7 @@ import net.minecraft.network.chat.TextColor;
 import org.checkerframework.checker.units.qual.C;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PassiveSkillInstance {
@@ -39,17 +40,9 @@ public class PassiveSkillInstance {
         return skill.tags;
     }
 
-    public float getBase(SkillTags tag) {
-        return skill.base.getOrDefault(tag, 0f);
-    }
-
-    public float getBonus(SkillTags tag) {
-        return skill.bonuses.getOrDefault(tag, 0f);
-    }
-
     public float getValue(SkillTags tag) {
-        float baseValue = getBase(tag);
-        float bonusValue = getBonus(tag);
+        float baseValue = skill.getBase(tag);
+        float bonusValue = skill.getBonus(tag);
         return baseValue + bonusValue * level;
     }
 
@@ -60,7 +53,7 @@ public class PassiveSkillInstance {
     public Component getInfo(boolean isSectMatch) {
 //        System.out.println("Getting info for skill: " + skill.tags);
         MutableComponent result = Component.literal("");
-        MutableComponent nameLine = Component.translatable("skill.nameg." + skill.name)
+        MutableComponent nameLine = Component.translatable("skill.name." + skill.name)
                 .withStyle(ChatFormatting.BOLD)
                 .withStyle(style -> style.withColor(isSectMatch
                         ? TextColor.fromLegacyFormat(ChatFormatting.DARK_RED)
@@ -73,12 +66,6 @@ public class PassiveSkillInstance {
             result.append(getInfoBaseOnTag(tag));
             result.append("\n");
         }
-
-
-
-
-
-
         return result;
     }
 
@@ -103,5 +90,40 @@ public class PassiveSkillInstance {
 
     public PassiveSkill getSkill() {
         return skill;
+    }
+
+
+    public List<Component> getLoreInfo(boolean isSectMatch) {
+        List<Component> lore = new ArrayList<>();
+        lore.add(skill.sectType.translatableName().copy()
+                        .withStyle(style -> style
+                                .withItalic(false)
+                                .withColor(isSectMatch
+                                        ? TextColor.fromLegacyFormat(ChatFormatting.DARK_RED)
+                                        : TextColor.fromRgb(0x996600)))
+        );
+
+        for (SkillTags tag : skill.tags) {
+            lore.add(getLoreInfoBaseOnTag(tag).copy()
+                            .withStyle(style -> style.withItalic(false)).withStyle(ChatFormatting.GRAY)
+            );
+        }
+        return lore;
+    }
+
+    private Component getLoreInfoBaseOnTag(SkillTags tag) {
+        float value = skill.getBase(tag) + skill.getBonus(tag) * (level + 1);
+        String text = DECIMAL_FORMAT.format(value);
+        if (tag.isPercentage()) {
+            text += "%";
+        }
+        MutableComponent appendValue = Component.literal(text);
+        if (value > 0) {
+            appendValue.withStyle(ChatFormatting.DARK_GREEN);
+        } else if (value < 0) {
+            appendValue.withStyle(ChatFormatting.DARK_RED);
+        }
+        return Component.translatable("skill.info." + tag.value())
+                .append(appendValue);
     }
 }

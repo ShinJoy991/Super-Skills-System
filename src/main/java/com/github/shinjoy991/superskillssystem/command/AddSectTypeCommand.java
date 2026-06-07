@@ -25,7 +25,7 @@ public class AddSectTypeCommand {
     public AddSectTypeCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
                 Commands.literal("SSS")
-                        .then(Commands.literal("addsecttype")
+                        .then(Commands.literal("AddSectType")
                         .requires(source -> source.hasPermission(4))
                         .then(Commands.argument("sect_type", StringArgumentType.word())
                                 .suggests(SECT_TYPE_SUGGESTIONS)
@@ -41,7 +41,7 @@ public class AddSectTypeCommand {
                 String sectTypeString = StringArgumentType.getString(context, "sect_type");
                 if (Objects.equals(sectTypeString, "remove")) {
                     AllPlayersInfo.get(player.getUUID()).setSectType(SectTypes.NONE);
-                    MutableComponent message = Component.literal("[Super Skills System]")
+                    MutableComponent message = Component.literal("[Super Skill System]")
                             .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD))
                             .append(Component.literal("Sect type removed").setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
                     player.sendSystemMessage(message);
@@ -50,13 +50,13 @@ public class AddSectTypeCommand {
                 try {
                     SectTypes sectType = SectTypes.fromName(sectTypeString);
                     AllPlayersInfo.get(player.getUUID()).setSectType(sectType);
-                    MutableComponent message = Component.literal("[Super Skills System]")
+                    MutableComponent message = Component.literal("[Super Skill System]")
                             .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD))
                             .append(Component.literal("Sect type set to ").append(sectType.translatableName()).setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
                     player.sendSystemMessage(message);
 
                 } catch (IllegalArgumentException e) {
-                    MutableComponent message = Component.literal("[Super Skills System]")
+                    MutableComponent message = Component.literal("[Super Skill System]")
                             .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD))
                             .append(Component.literal("Sect type Error!!").setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
                     player.sendSystemMessage(message);

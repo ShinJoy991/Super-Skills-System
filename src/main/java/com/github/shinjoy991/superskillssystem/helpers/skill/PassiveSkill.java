@@ -32,7 +32,13 @@ public class PassiveSkill {
                 .filter(skill -> skill.sectType == sectType)
                 .toList();
     }
+    public float getBase(SkillTags tag) {
+        return base.getOrDefault(tag, 0f);
+    }
 
+    public float getBonus(SkillTags tag) {
+        return bonuses.getOrDefault(tag, 0f);
+    }
     public static List<PassiveSkill> getGlobalPassiveSkillsList() {
         return ReadConfig.passiveSkills;
     }
@@ -76,4 +82,5 @@ public class PassiveSkill {
     public MutableComponent getTranslatableName() {
         return Component.translatable("skill.name." + this.name);
     }
+
 }

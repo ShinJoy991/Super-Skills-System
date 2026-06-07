@@ -13,8 +13,8 @@ public enum SectTypes {
     SECT_5("sect_5"),
     SECT_6("sect_6"),
     SECT_7("sect_7"),
-    SECT_8("sect_8");
-
+    SECT_8("sect_8"),
+    ARCHER("archer");
     private final String name;
 
     SectTypes(String name) {

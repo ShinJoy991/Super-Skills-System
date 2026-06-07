@@ -2,6 +2,7 @@ package com.github.shinjoy991.superskillssystem.command;
 
 import com.github.shinjoy991.superskillssystem.helpers.AllPlayersInfo;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -16,32 +17,34 @@ public class ManaCommand {
     public ManaCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
                 Commands.literal("SSS")
-                        .then(Commands.literal("AddMana")
-                                .requires(commandSource -> commandSource.hasPermission(4))
-                                .executes((command) -> CustomCommand1a(command.getSource()))
-                        ));
+                        .then(Commands.literal("Mana")
+                                .requires(source -> source.hasPermission(4))
+                                .then(Commands.argument("amount", IntegerArgumentType.integer())
+                                        .executes(ctx -> execute(
+                                                ctx.getSource(),
+                                                IntegerArgumentType.getInteger(ctx, "amount")
+                                        )))
+                        )
+        );
     }
-    private int CustomCommand1a(CommandSourceStack source) throws CommandSyntaxException {
+
+    private int execute(CommandSourceStack source, int amount) throws CommandSyntaxException {
 
         ServerPlayer player = source.getPlayerOrException();
-        if (player.hasPermissions(4)) {
-            if (!player.level().isClientSide && player.level().getServer() != null) {
-                if (true) {
-                    // Reset the player's prime exp to 0
-                    AllPlayersInfo.get(player.getUUID()).addMana(1);
-                    MutableComponent message = Component.literal("[Super Skills System]")
-                            .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD))
-                            .append(Component.literal(" Added 1 Mana").setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
-                    player.sendSystemMessage(message);
 
-                } else {
-                    MutableComponent message = Component.literal("[Super Skills System]")
-                            .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD))
-                            .append(Component.literal(" Reload Error!!").setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
-                    player.sendSystemMessage(message);
-                }
-            }
-        }
-        return 0;
+        AllPlayersInfo.get(player.getUUID()).addMana(amount);
+
+        MutableComponent message = Component.literal("[Super Skill System]")
+                .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD))
+                .append(Component.literal(
+                        (amount >= 0 ? " Added +" : " Added ")
+                                + amount + " Mana"
+                ).setStyle(Style.EMPTY.withColor(
+                        amount >= 0 ? ChatFormatting.GREEN : ChatFormatting.RED
+                )));
+
+        player.sendSystemMessage(message);
+
+        return 1;
     }
 }

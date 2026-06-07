@@ -3,13 +3,16 @@ package com.github.shinjoy991.superskillssystem.entity.trading;
 import com.github.shinjoy991.superskillssystem.gui.menu.SectVillagerMenu;
 import com.github.shinjoy991.superskillssystem.helpers.AllPlayersInfo;
 import com.github.shinjoy991.superskillssystem.helpers.PlayerInfo;
+import com.github.shinjoy991.superskillssystem.helpers.skill.ActiveSkill;
 import com.github.shinjoy991.superskillssystem.helpers.skill.PassiveSkillInstance;
 import com.github.shinjoy991.superskillssystem.helpers.skill.SectTypes;
+import com.github.shinjoy991.superskillssystem.helpers.skill.SkillRegistry;
 import com.github.shinjoy991.superskillssystem.network.ModNetworking;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
@@ -28,13 +31,18 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 
 import java.util.List;
+import java.util.Map;
 
 public class SectVillager extends Villager {
 
-    private final SectTypes sectType = SectTypes.WARRIOR;
+    private SectTypes sectType = SectTypes.NONE;
 
     public SectTypes getSectType() {
         return sectType;
+    }
+
+    public void setSectType(SectTypes sectType) {
+        this.sectType = sectType;
     }
 
     public SectVillager(EntityType<? extends Villager> type, Level level) {
@@ -44,6 +52,26 @@ public class SectVillager extends Villager {
                         .setProfession(ModVillagers.SECT_MASTER.get())
                         .setLevel(5) // Level nghề
         );
+    }
+
+    // NBT
+    @Override
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+
+        tag.putString("SectType", sectType.name());
+    }
+    @Override
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+
+        if (tag.contains("SectType")) {
+            try {
+                sectType = SectTypes.valueOf(tag.getString("SectType"));
+            } catch (Exception ignored) {
+                sectType = SectTypes.NONE;
+            }
+        }
     }
 
     @Override
@@ -111,8 +139,29 @@ public class SectVillager extends Villager {
     }
 
     private void openTradingScreen1(ServerPlayer player, Component title) {
+        // Collect active skill IDs for this sect from registry
+        List<ResourceLocation> sectActiveSkillIds = SkillRegistry.SKILLS.entrySet().stream()
+                .filter(e -> {
+                    try {
+                        ActiveSkill instance = e.getValue()
+                                .getConstructor(net.minecraft.world.entity.LivingEntity.class, int.class)
+                                .newInstance(player, 1);
+                        return instance.getSectType() == this.sectType;
+                    } catch (Exception ex) {
+                        return false;
+                    }
+                })
+                .map(Map.Entry::getKey)
+                .collect(java.util.stream.Collectors.toList());
+
+        // Player's active skill levels
+        Map<String, Integer> playerActiveSkillLevels = AllPlayersInfo.get(player.getUUID()).getActiveSkillsMap();
+
         NetworkHooks.openScreen(player, new SimpleMenuProvider((id, inv, pl)
-                        -> new SectVillagerMenu(id, inv, this, this.sectType, AllPlayersInfo.get(player.getUUID()).getPassiveSkillsInstances()), title
+                        -> new SectVillagerMenu(id, inv, this, this.sectType,
+                        AllPlayersInfo.get(player.getUUID()).getPassiveSkillsInstances(),
+                        sectActiveSkillIds,
+                        playerActiveSkillLevels), title
                 ),
                 buf -> {
                     PlayerInfo playerInfo = AllPlayersInfo.get(player.getUUID());
@@ -121,7 +170,7 @@ public class SectVillager extends Villager {
                     // 1. Ghi sectType
                     buf.writeEnum(this.sectType);
 
-                    // 3. Ghi danh sách skill của player
+                    // 2. Ghi passive skills của player
                     CompoundTag tag = new CompoundTag();
                     ListTag skillList = new ListTag();
                     for (PassiveSkillInstance instance : playerPassive) {
@@ -132,6 +181,27 @@ public class SectVillager extends Villager {
                     }
                     tag.put("PassiveSkills", skillList);
                     buf.writeNbt(tag);
+
+                    // 3. Ghi danh sách active skill Id của sect này
+                    CompoundTag activeIdTag = new CompoundTag();
+                    ListTag activeIdList = new ListTag();
+                    for (ResourceLocation id2 : sectActiveSkillIds) {
+                        activeIdList.add(net.minecraft.nbt.StringTag.valueOf(id2.toString()));
+                    }
+                    activeIdTag.put("ActiveSkillIds", activeIdList);
+                    buf.writeNbt(activeIdTag);
+
+                    // 4. Ghi level active skill của player
+                    CompoundTag playerActiveTag = new CompoundTag();
+                    ListTag playerActiveList = new ListTag();
+                    for (Map.Entry<String, Integer> entry : playerActiveSkillLevels.entrySet()) {
+                        CompoundTag skillTag = new CompoundTag();
+                        skillTag.putString("SkillId", entry.getKey());
+                        skillTag.putInt("Level", entry.getValue());
+                        playerActiveList.add(skillTag);
+                    }
+                    playerActiveTag.put("PlayerActiveSkills", playerActiveList);
+                    buf.writeNbt(playerActiveTag);
                 }
         );
 

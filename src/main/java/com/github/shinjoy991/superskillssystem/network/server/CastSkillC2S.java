@@ -8,6 +8,7 @@ import com.github.shinjoy991.superskillssystem.helpers.skill.ActiveSkill;
 import com.github.shinjoy991.superskillssystem.helpers.skill.SkillData;
 import com.github.shinjoy991.superskillssystem.helpers.skill.SkillRegistry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -50,12 +51,12 @@ public class CastSkillC2S {
             PlayerSkillSavedData skillData = PlayerSkillSavedData.get(serverLevel);
             SkillData savedSkill = skillData.getSkill(player.getUUID(), packet.skillId.toString());
             if (savedSkill == null) {
-                System.out.println("[SSS] Player " + player.getName().getString()
+                System.out.println("[Super Skill System] Player " + player.getName().getString()
                         + " tried to cast not loaded skill: " + packet.skillId);
                 return;
             }
             if (savedSkill.getLevel() <= 0) {
-                System.out.println("[SSS] Player " + player.getName().getString()
+                System.out.println("[Super Skill System] Player " + player.getName().getString()
                         + " tried to cast not learned skill: " + packet.skillId);
                 return;
             }
@@ -83,26 +84,30 @@ public class CastSkillC2S {
             if (HelperFunction.isOnCooldown(player.getUUID(), packet.skillId)) {
                 long remaining = HelperFunction.getRemainingCooldown(player.getUUID(), packet.skillId);
                 float remainSec = remaining / 20.0f;
-                System.out.println("[SSS] On cooldown: " + remainSec + "s left");
+//                System.out.println("[Super Skill System] On cooldown: " + remainSec + "s left");
                 // send active message to player
-                HelperFunction.sendActiveMessage(player, "Skill on cooldown: " + remainSec + "s left", 0xFFFF00);
+                Component msg = Component.translatable("message.sss.skill_on_cooldown").append(": " + String.format("%.1f", remainSec) + "s");
+                HelperFunction.sendActiveMessage(player, msg, 0xFFFF00);
                 return;
             }
 
             // ── Check mana ────────────────────────────────────────────────────────
             PlayerInfo playerInfo = AllPlayersInfo.get(player.getUUID());
             if (playerInfo == null) return;
-            int manaCost = skill.getManaCost();
-            if (playerInfo.getMana() < manaCost) {
-                System.out.println("[SSS] Not enough mana: need " + manaCost + ", has " + playerInfo.getMana());
+            int manaCost = skill.getManaCost(skill.getLevel());
+            if (player.isCreative()) {
+                manaCost = 0; // creative mode bypasses mana cost
+            } else if (playerInfo.getMana() < manaCost) {
+                System.out.println("[Super Skill System] Not enough mana: need " + manaCost + ", has " + playerInfo.getMana());
                 // send active message to player
-                 HelperFunction.sendActiveMessage(player, "Not enough mana!", 0xFF0000);
+                Component msg = Component.translatable("message.sss.not_enough_mana");
+                HelperFunction.sendActiveMessage(player, msg, 0xFF0000);
                 return;
             }
 
             // ── All checks passed — deduct mana, apply cooldown, activate ─────────
             playerInfo.addMana(-manaCost);
-            HelperFunction.applyCooldown(player.getUUID(), packet.skillId, skill.getCooldown());
+            HelperFunction.applyCooldown(player.getUUID(), packet.skillId, skill.getCooldown(skill.getLevel()));
             skill.activate();
         });
         context.setPacketHandled(true);

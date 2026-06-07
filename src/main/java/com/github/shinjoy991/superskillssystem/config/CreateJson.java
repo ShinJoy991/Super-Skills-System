@@ -26,7 +26,7 @@ public class CreateJson {
             try {
                 Files.createDirectories(configPath);
             } catch (IOException e) {
-                LOGGER.error("[Super Skills System] Failed to create directory: {}", configPath, e);
+                LOGGER.error("[Super Skill System] Failed to create directory: {}", configPath, e);
                 return;
             }
         }
@@ -37,7 +37,7 @@ public class CreateJson {
 
         Map<String, Object> jsonData = new LinkedHashMap<>();
         List<String> comments = new ArrayList<>();
-        comments.add("This is config section for Super Skills System mod");
+        comments.add("This is config section for Super Skill System mod");
         comments.add("Pretty easy, change it to match your desire, go to mod's page for more information");
 
         jsonData.put("__comment", comments);
@@ -72,7 +72,7 @@ public class CreateJson {
         try (FileWriter writer = new FileWriter(configFile.toFile())) {
             GSON.toJson(jsonData, writer);
         } catch (IOException exception) {
-            LOGGER.error("[Super Skills System] Failed to write config file: {}", configFile, exception);
+            LOGGER.error("[Super Skill System] Failed to write config file: {}", configFile, exception);
         }
     }
 

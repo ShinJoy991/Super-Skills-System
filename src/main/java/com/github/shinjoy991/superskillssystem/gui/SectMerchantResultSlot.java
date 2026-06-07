@@ -2,6 +2,8 @@ package com.github.shinjoy991.superskillssystem.gui;
 
 import com.github.shinjoy991.superskillssystem.gui.menu.SectVillagerMenu;
 import com.github.shinjoy991.superskillssystem.helpers.AllPlayersInfo;
+import com.github.shinjoy991.superskillssystem.network.ModNetworking;
+import com.github.shinjoy991.superskillssystem.network.client.SectVillagerOffersS2C;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
@@ -78,6 +80,14 @@ public class SectMerchantResultSlot extends Slot {
                     } else {
                         // active skill
                         AllPlayersInfo.get(serverPlayer.getUUID()).addActiveSkill(skillId, 1);
+                        sectMenu.rebuildOffersByActiveSkillIdAndLevelChange(skillId, 1);
+                        if (player instanceof ServerPlayer sp) {
+                            ModNetworking.sendToPlayer(sp, new SectVillagerOffersS2C(
+                                    sp.containerMenu.containerId,
+                                    sectMenu.getOffers(),
+                                    sectMenu.getSectType()
+                            ));
+                        }
                     }
                     serverPlayer.connection.send(new ClientboundSetCarriedItemPacket(serverPlayer.getInventory().selected)); // sync slot
                     serverPlayer.containerMenu.setCarried(ItemStack.EMPTY); // xóa khỏi chuột

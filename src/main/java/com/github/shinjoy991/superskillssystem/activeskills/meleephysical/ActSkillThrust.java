@@ -5,9 +5,10 @@ import com.github.shinjoy991.superskillssystem.helpers.skill.ActiveSkill;
 import com.github.shinjoy991.superskillssystem.helpers.skill.SectTypes;
 import com.github.shinjoy991.superskillssystem.helpers.skill.SkillRegistry;
 import com.github.shinjoy991.superskillssystem.register.RegisterDamageType;
-import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -23,24 +24,24 @@ import java.util.List;
 public class ActSkillThrust extends ActiveSkill {
 
     private static final List<DashData> ACTIVE_DASHES = new ArrayList<>();
-
     public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(SSS.MODID, "thrust");
-
     private static final double HIT_RADIUS = 2.0D;
-
     public static void register() {
         SkillRegistry.register(ID, ActSkillThrust.class);
     }
 
     public ActSkillThrust(LivingEntity caster, int level) {
         super(ID, "act_skill_thrust", caster, SectTypes.WARRIOR, level, 1, false);
-        this.manaCost = getManaCost();
+        this.manaCost = getManaCost(level);
         this.damageType = RegisterDamageType.MELEE_PHYSICAL.key();
+        this.baseDamage = getBaseDamage(level);
     }
 
-    public int getManaCost() {
-        return this.level * 2;
+    public int getManaCost(int level) {
+        return level * 2;
     }
+    public int getCooldown(int level) {return 80;}
+    public float getBaseDamage(int level) {return 5;}
 
     @Override
     public void activate() {

@@ -636,10 +636,12 @@ public class PlayerInfo {
     public void addMana(float amount) {
         int mana = Math.round(amount);
         if (this.mana + mana > this.maxMana) {
-            mana = (int) Math.max(0, this.maxMana - this.mana);
+            this.mana = this.maxMana;
+        } else if (this.mana + mana < 0) {
+            this.mana = 0;
+        } else {
+            this.mana += mana;
         }
-        this.mana += mana;
-
         PlayerManaSavedData data = PlayerManaSavedData.get(serverLevelData);
         data.addMana(uuid, mana);
     }
@@ -859,6 +861,11 @@ public class PlayerInfo {
     public List<PassiveSkillInstance> getPassiveSkillsInstances() {
         return this.passiveSkills;
     }
+
+    public Map<String, Integer> getActiveSkillsMap() {
+        return new HashMap<>(this.activeSkills);
+    }
+
     public SkillData getSkillData(String skillName) {
         return PlayerSkillSavedData.get(serverLevelData).getSkill(uuid, skillName);
     }
@@ -1186,6 +1193,10 @@ public class PlayerInfo {
         this.sect = sectType;
         PlayerSectTypeSavedData sectTypeData = PlayerSectTypeSavedData.get(serverLevelData);
         sectTypeData.set(uuid, sectType);
+        // Send update to client
+        CompoundTag tag = new CompoundTag();
+        tag.putString(SterilizeTags.SECT.name(), this.sect.name());
+        ModNetworking.INSTANCE.sendTo(new InfoChangeUpdateS2C(tag), finalPlayer.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
 
     public float getPerfection() {

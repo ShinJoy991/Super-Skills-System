@@ -30,7 +30,7 @@ public class ResetPassiveSkillCommand {
                   AllPlayersInfo.get(player.getUUID()).resetPassiveSkills();
 //                System.out.println("atk dmg: " + AllPlayersInfo.get(player.getUUID()).getAtkDmg() + " Str: " + AllPlayersInfo.get(player.getUUID()).getStrPoint() + " total:" + AllPlayersInfo.get(player.getUUID()).getTotalStr());
 //                 System.out.println("atl: "+ (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE));
-                    MutableComponent message = Component.literal("[Super Skills System]")
+                    MutableComponent message = Component.literal("[Super Skill System]")
                             .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD))
                             .append(Component.literal("Reset passive skills").setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
                     player.sendSystemMessage(message);

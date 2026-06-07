@@ -29,7 +29,7 @@ public class ResetPlayerLevel {
             if (!player.level().isClientSide && player.level().getServer() != null) {
                     // Reset the player's prime exp to 0
                     AllPlayersInfo.get(player.getUUID()).setPrimeExp(0);
-                    MutableComponent message = Component.literal("[Super Skills System]")
+                    MutableComponent message = Component.literal("[Super Skill System]")
                             .setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD))
                             .append(Component.literal(" Reset player's level").setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
                     player.sendSystemMessage(message);

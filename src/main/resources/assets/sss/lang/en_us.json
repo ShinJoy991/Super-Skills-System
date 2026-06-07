@@ -21,7 +21,7 @@
   "entity.minecraft.villager.sss.soundmaster": "Sound Master",
   "entity.minecraft.villager.sss.sect_master": "Sect Master",
 
-  "entity.sss.sect_warrior_villager": "Villager",
+  "entity.sss.sect_villager": "Villager",
 
   "skill.info.atk_flat": "Attack Damage ",
   "skill.info.atk_percent": "Attack Damage ",
@@ -83,10 +83,13 @@
   "damage_type.sss.melee_physical": "Melee Physical",
 
   "skill.level": "Level",
+  "skill.base_damage": "Damage",
   "skill.mana_cost": "Mana Cost",
   "skill.cooldown": "Cooldown",
+  "skill.sect_type": "Sect",
   "skill.type.active": "Active",
   "skill.type.passive": "Passive",
+
   "title.sect": "Sect",
   "sentence.playerinfo.uuid": "View detail",
   "title.name": "Name",
@@ -153,6 +156,9 @@
 
   "sect_type.warrior": "Warrior",
   "sect_type.sect_1": "This Sect 1",
-  "label.sect_villager.skills": "Skills"
+  "label.sect_villager.skills": "Skills",
+
+  "message.sss.not_enough_mana": "Not enough mana!",
+  "message.sss.skill_on_cooldown": "Skill on cooldown"
 
 }
