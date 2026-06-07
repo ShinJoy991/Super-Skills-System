@@ -19,7 +19,12 @@
   "item.sss.prime_exp_orb": "Prime EXP",
 
   "entity.minecraft.villager.sss.soundmaster": "Sound Master",
-  "entity.minecraft.villager.sss.sect_master": "Sect Master",
+  "entity.minecraft.villager.sss.sect_master": "Skill",
+  "entity.minecraft.villager.sss.sect_warrior": "Warrior",
+  "entity.minecraft.villager.sss.sect_archer": "Archer",
+
+  "sect_type.warrior": "Warrior",
+  "sect_type.archer": "Archer",
 
   "entity.sss.sect_villager": "Villager",
 
@@ -77,15 +82,21 @@
   "skill.name.war_technique": "War Technique",
   "skill.name.qi_outburst": "Qi Outburst",
 
+
+
   "skill.name.act_skill_thrust": "Thrust",
   "skill.description.act_skill_thrust": "Thrust forward and deal damage to enemies in the path",
+  "skill.name.act_skill_jump": "Jump",
+  "skill.description.act_skill_jump": "Jump up a distance",
 
+  "damage_type.minecraft.generic": "Generic",
   "damage_type.sss.melee_physical": "Melee Physical",
 
   "skill.level": "Level",
   "skill.base_damage": "Damage",
   "skill.mana_cost": "Mana Cost",
   "skill.cooldown": "Cooldown",
+  "skill.power_type": "Power",
   "skill.sect_type": "Sect",
   "skill.type.active": "Active",
   "skill.type.passive": "Passive",
@@ -152,10 +163,8 @@
   "sentence.popup.delete_skill": "Do you want to delete this skill?",
 
   "death.attack.sss.fixed_damage": "%1$s was slain by %2$s",
-  "label.sect_villager.skill_master": "Skill Master",
+  "label.sect_villager.sect_master": "Sect Master",
 
-  "sect_type.warrior": "Warrior",
-  "sect_type.sect_1": "This Sect 1",
   "label.sect_villager.skills": "Skills",
 
   "message.sss.not_enough_mana": "Not enough mana!",

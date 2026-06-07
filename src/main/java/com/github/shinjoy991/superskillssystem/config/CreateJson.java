@@ -66,6 +66,26 @@ public class CreateJson {
 
 
 
+        jsonData.put("eagle_eye", createData(
+                "archer",
+                Arrays.asList("accuracy", "range_percent"),
+                Map.of("accuracy", 10, "range_percent", 10),
+                Map.of("accuracy", 2, "range_percent", 2)
+        ));
+
+        jsonData.put("swift_draw", createData(
+                "archer",
+                Arrays.asList("attack_speed", "evasion"),
+                Map.of("attack_speed", 0.1f, "evasion", 5),
+                Map.of("attack_speed", 0.02f, "evasion", 1)
+        ));
+
+        jsonData.put("wind_step", createData(
+                "archer",
+                Arrays.asList("speed", "evasion"),
+                Map.of("speed", 0.05f, "evasion", 8),
+                Map.of("speed", 0.01f, "evasion", 1)
+        ));
 
 
 

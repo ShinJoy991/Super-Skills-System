@@ -74,10 +74,11 @@ public class SectMerchantResultSlot extends Slot {
 
                 if (player instanceof ServerPlayer serverPlayer) {
                     String skillId = tag.getString("SkillId");
-                   // AllPlayersInfo.get(serverPlayer.getUUID()).addPassiveSkill(skillName, 1);
+                    // AllPlayersInfo.get(serverPlayer.getUUID()).addPassiveSkill(skillName, 1);
                     if (skillId.isEmpty()) {
                         AllPlayersInfo.get(serverPlayer.getUUID()).addPassiveSkill(skillName, 1);
-                    } else {
+                    }
+                    else {
                         // active skill
                         AllPlayersInfo.get(serverPlayer.getUUID()).addActiveSkill(skillId, 1);
                         sectMenu.rebuildOffersByActiveSkillIdAndLevelChange(skillId, 1);
@@ -94,37 +95,7 @@ public class SectMerchantResultSlot extends Slot {
 
                 }
             }
-
-
-//        if (player instanceof ServerPlayer serverPlayer) {
-//            CompoundTag tag = stack.getTag();
-////            System.out.println("tag is: " + tag);
-//            if (tag != null && tag.contains("SkillName", Tag.TAG_STRING)) {
-////                System.out.println("tag not null");
-//                String skillName = tag.getString("SkillName");
-//                int skillLevel = tag.contains("SkillLevel", Tag.TAG_INT) ? tag.getInt("SkillLevel") : 0;
-//                if (skillLevel != 0) {
-//                    AllPlayersInfo.get(serverPlayer.getUUID()).addPassiveSkill(skillName, 1);
-//                }
-            }
-//            serverPlayer.connection.send(new ClientboundSetCarriedItemPacket(serverPlayer.getInventory().selected)); // sync slot
-//            serverPlayer.containerMenu.setCarried(ItemStack.EMPTY); // xóa khỏi chuột
-
-            // Update the SectVillagerMenu with the new skill information
-//            AbstractContainerMenu abstractcontainermenu = player.containerMenu;
-//                if (abstractcontainermenu instanceof SectVillagerMenu sectMenu) {
-//                    sectMenu.rebuildOffers(AllPlayersInfo.get(serverPlayer.getUUID()).getPassiveSkillsInstances());
-//                }
-
-//        } else {
-//            AbstractContainerMenu abstractcontainermenu = player.containerMenu;
-//            if (abstractcontainermenu instanceof SectVillagerMenu sectMenu) {
-//                CompoundTag tag = stack.getTag();
-//                if (tag != null && tag.contains("SkillName", Tag.TAG_STRING)) {
-//                    String skillName = tag.getString("SkillName");
-//                    sectMenu.rebuildOffersClientByPassiveSkillNameAndLevelChange(skillName, 1);
-//            }
-//        }
+        }
     }
 
 

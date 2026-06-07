@@ -1,6 +1,7 @@
 package com.github.shinjoy991.superskillssystem;
 
 import com.github.shinjoy991.superskillssystem.activeskills.ModSkills;
+import com.github.shinjoy991.superskillssystem.client.renderer.SectVillagerRenderer;
 import com.github.shinjoy991.superskillssystem.config.CreateJson;
 import com.github.shinjoy991.superskillssystem.entity.trading.ModVillagers;
 import com.github.shinjoy991.superskillssystem.entity.trading.SectVillager;
@@ -104,11 +105,14 @@ public class SSS {
             value = {Dist.CLIENT}
     )
     public static class ClientModEvents {
+//        @SubscribeEvent
+//        public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
+//            event.registerEntityRenderer(RegisterEntity.SECT_VILLAGER.get(), VillagerRenderer::new);
+//        }
         @SubscribeEvent
         public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
-            event.registerEntityRenderer(RegisterEntity.SECT_VILLAGER.get(), VillagerRenderer::new);
+            event.registerEntityRenderer(RegisterEntity.SECT_VILLAGER.get(), SectVillagerRenderer::new);
         }
-
 //        @SubscribeEvent
 //        public static void registerParticles(RegisterParticleProvidersEvent event) {
 //            Minecraft.getInstance().particleEngine.register(RegisterParticle.BARRIER_PARTICLE.get(), BarrierParticle.Provider::new);

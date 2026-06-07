@@ -92,6 +92,8 @@ public class PlayerClientData {
     public static List<ActiveSkill> activeSkills = new ArrayList<>();
 
     public static List<PassiveSkill> warriorGlobalPassiveSkills = new ArrayList<>();
+    public static List<PassiveSkill> archerGlobalPassiveSkills = new ArrayList<>();
+    // Thêm sect khác tương tự nếu cần
 
     public static ResourceLocation activeSkillSlot1;
     public static ResourceLocation activeSkillSlot2;
@@ -156,10 +158,7 @@ public class PlayerClientData {
             CompoundTag skillTag = (CompoundTag) t;
             String name = skillTag.getString("SkillName");
             int level = skillTag.getInt("Level");
-            PassiveSkill skill = warriorGlobalPassiveSkills.stream()
-                    .filter(s -> s.name.equals(name))
-                    .findFirst()
-                    .orElse(null);
+            PassiveSkill skill = findSkillInAllGlobalLists(name);
             if (skill != null) {
                 passiveSkills.add(new PassiveSkillInstance(skill, level));
             }
@@ -172,37 +171,81 @@ public class PlayerClientData {
 
     }
 
+//    public static void updateGlobalSkills(CompoundTag tag) {
+//        // Passive skills
+//        List<PassiveSkill> clientPassiveSkillList = new ArrayList<>();
+//
+//        if (tag.contains("warrior", Tag.TAG_LIST)) {
+//            ListTag warriorList = tag.getList("warrior", Tag.TAG_COMPOUND);
+//
+//            for (Tag t : warriorList) {
+//                CompoundTag warriorSkillTag = (CompoundTag) t;
+//
+//                String name = warriorSkillTag.getString("name");
+//                SectTypes sect = SectTypes.valueOf(warriorSkillTag.getString("sect"));
+//
+//                // Đọc base
+//                Map<SkillTags, Float> base = new HashMap<>();
+//                CompoundTag baseTag = warriorSkillTag.getCompound("base");
+//                for (String key : baseTag.getAllKeys()) {
+//                    base.put(SkillTags.valueOf(key), baseTag.getFloat(key));
+//                }
+//
+//                // Đọc bonuses
+//                Map<SkillTags, Float> bonuses = new HashMap<>();
+//                CompoundTag bonusesTag = warriorSkillTag.getCompound("bonuses");
+//                for (String key : bonusesTag.getAllKeys()) {
+//                    bonuses.put(SkillTags.valueOf(key), bonusesTag.getFloat(key));
+//                }
+//
+//                // Đọc tags
+//                List<SkillTags> tags = new ArrayList<>();
+//                if (warriorSkillTag.contains("tags", Tag.TAG_LIST)) {
+//                    ListTag tagsList = warriorSkillTag.getList("tags", Tag.TAG_STRING);
+//                    for (Tag tagEntry : tagsList) {
+//                        tags.add(SkillTags.valueOf(tagEntry.getAsString()));
+//                    }
+//                }
+//
+//                PassiveSkill skill = new PassiveSkill(name, sect, tags, base, bonuses);
+//                clientPassiveSkillList.add(skill);
+//            }
+//        }
+//        warriorGlobalPassiveSkills = clientPassiveSkillList;
+//        System.out.println("Warrior global skills updated: " + warriorGlobalPassiveSkills.size() + " skills loaded.");
+//    }
+
     public static void updateGlobalSkills(CompoundTag tag) {
-        // Passive skills
         List<PassiveSkill> clientPassiveSkillList = new ArrayList<>();
 
-        if (tag.contains("warrior", Tag.TAG_LIST)) {
-            ListTag warriorList = tag.getList("warrior", Tag.TAG_COMPOUND);
+        for (SectTypes sectType : SectTypes.values()) {
+            if (sectType == SectTypes.NONE) continue;
+            String key = sectType.name().toLowerCase();
+            if (!tag.contains(key, Tag.TAG_LIST)) continue;
 
-            for (Tag t : warriorList) {
-                CompoundTag warriorSkillTag = (CompoundTag) t;
+            ListTag sectList = tag.getList(key, Tag.TAG_COMPOUND);
+            List<PassiveSkill> sectSkillList = new ArrayList<>();
 
-                String name = warriorSkillTag.getString("name");
-                SectTypes sect = SectTypes.valueOf(warriorSkillTag.getString("sect"));
+            for (Tag t : sectList) {
+                CompoundTag skillTag = (CompoundTag) t;
+                String name = skillTag.getString("name");
+                SectTypes sect = SectTypes.valueOf(skillTag.getString("sect"));
 
-                // Đọc base
                 Map<SkillTags, Float> base = new HashMap<>();
-                CompoundTag baseTag = warriorSkillTag.getCompound("base");
-                for (String key : baseTag.getAllKeys()) {
-                    base.put(SkillTags.valueOf(key), baseTag.getFloat(key));
+                CompoundTag baseTag = skillTag.getCompound("base");
+                for (String k : baseTag.getAllKeys()) {
+                    base.put(SkillTags.valueOf(k), baseTag.getFloat(k));
                 }
 
-                // Đọc bonuses
                 Map<SkillTags, Float> bonuses = new HashMap<>();
-                CompoundTag bonusesTag = warriorSkillTag.getCompound("bonuses");
-                for (String key : bonusesTag.getAllKeys()) {
-                    bonuses.put(SkillTags.valueOf(key), bonusesTag.getFloat(key));
+                CompoundTag bonusesTag = skillTag.getCompound("bonuses");
+                for (String k : bonusesTag.getAllKeys()) {
+                    bonuses.put(SkillTags.valueOf(k), bonusesTag.getFloat(k));
                 }
 
-                // Đọc tags
                 List<SkillTags> tags = new ArrayList<>();
-                if (warriorSkillTag.contains("tags", Tag.TAG_LIST)) {
-                    ListTag tagsList = warriorSkillTag.getList("tags", Tag.TAG_STRING);
+                if (skillTag.contains("tags", Tag.TAG_LIST)) {
+                    ListTag tagsList = skillTag.getList("tags", Tag.TAG_STRING);
                     for (Tag tagEntry : tagsList) {
                         tags.add(SkillTags.valueOf(tagEntry.getAsString()));
                     }
@@ -210,10 +253,18 @@ public class PlayerClientData {
 
                 PassiveSkill skill = new PassiveSkill(name, sect, tags, base, bonuses);
                 clientPassiveSkillList.add(skill);
+                sectSkillList.add(skill);
+            }
+
+            // Gán vào list riêng từng sect để SectVillagerMenu dùng
+            if (sectType == SectTypes.WARRIOR) {
+                warriorGlobalPassiveSkills = sectSkillList;
+                System.out.println("Warrior global skills updated: " + warriorGlobalPassiveSkills.size());
+            } else if (sectType == SectTypes.ARCHER) {
+                archerGlobalPassiveSkills = sectSkillList;
+                System.out.println("Archer global skills updated: " + archerGlobalPassiveSkills.size());
             }
         }
-        warriorGlobalPassiveSkills = clientPassiveSkillList;
-        System.out.println("Warrior global skills updated: " + warriorGlobalPassiveSkills.size() + " skills loaded.");
     }
 
     public static void updateClientData(CompoundTag tag) {
@@ -291,10 +342,12 @@ public class PlayerClientData {
                 String name = skillTag.getString("SkillName");
                 int level = skillTag.getInt("Level");
 //                player.sendSystemMessage(Component.literal("Skill read from tag: " + name + " level " + level));
-                PassiveSkill skill = warriorGlobalPassiveSkills.stream()
-                        .filter(s -> s.name.equals(name))
-                        .findFirst()
-                        .orElse(null);
+//                PassiveSkill skill = warriorGlobalPassiveSkills.stream()
+//                        .filter(s -> s.name.equals(name))
+//                        .findFirst()
+//                        .orElse(null);
+//                if (skill != null) {
+                PassiveSkill skill = findSkillInAllGlobalLists(name);
                 if (skill != null) {
 //                    player.sendSystemMessage(Component.literal("Skill found in config: " + skill.name));
                     passiveSkills.add(new PassiveSkillInstance(skill, level));
@@ -499,5 +552,14 @@ public class PlayerClientData {
         if (skillSlotsTag.contains("ActiveSkillSlot4")) {
             activeSkillSlot4 = readResourceLocation(skillSlotsTag, "ActiveSkillSlot4");
         }
+    }
+
+    public static PassiveSkill findSkillInAllGlobalLists(String name) {
+        PassiveSkill skill = warriorGlobalPassiveSkills.stream()
+                .filter(s -> s.name.equals(name)).findFirst().orElse(null);
+        if (skill != null) return skill;
+        skill = archerGlobalPassiveSkills.stream()
+                .filter(s -> s.name.equals(name)).findFirst().orElse(null);
+        return skill;
     }
 }

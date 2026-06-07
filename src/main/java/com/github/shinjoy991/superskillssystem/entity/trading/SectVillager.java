@@ -7,8 +7,8 @@ import com.github.shinjoy991.superskillssystem.helpers.skill.ActiveSkill;
 import com.github.shinjoy991.superskillssystem.helpers.skill.PassiveSkillInstance;
 import com.github.shinjoy991.superskillssystem.helpers.skill.SectTypes;
 import com.github.shinjoy991.superskillssystem.helpers.skill.SkillRegistry;
-import com.github.shinjoy991.superskillssystem.network.ModNetworking;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -22,12 +22,15 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerData;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.network.NetworkHooks;
 
 import java.util.List;
@@ -40,7 +43,6 @@ public class SectVillager extends Villager {
     public SectTypes getSectType() {
         return sectType;
     }
-
     public void setSectType(SectTypes sectType) {
         this.sectType = sectType;
     }
@@ -50,8 +52,19 @@ public class SectVillager extends Villager {
         this.setVillagerData(
                 this.getVillagerData()
                         .setProfession(ModVillagers.SECT_MASTER.get())
-                        .setLevel(5) // Level nghề
+                        .setLevel(5)
         );
+    }
+
+    // Gọi sau khi set sectType để cập nhật profession tương ứng
+    public void updateProfessionBySect() {
+        VillagerProfession prof;
+        switch (this.sectType) {
+            case ARCHER -> prof = ModVillagers.SECT_ARCHER.get();
+            case WARRIOR -> prof = ModVillagers.SECT_WARRIOR.get();
+            default -> prof = ModVillagers.SECT_MASTER.get();
+        }
+        this.setVillagerData(this.getVillagerData().setProfession(prof).setLevel(5));
     }
 
     // NBT
@@ -61,6 +74,7 @@ public class SectVillager extends Villager {
 
         tag.putString("SectType", sectType.name());
     }
+
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
@@ -70,6 +84,10 @@ public class SectVillager extends Villager {
                 sectType = SectTypes.valueOf(tag.getString("SectType"));
             } catch (Exception ignored) {
                 sectType = SectTypes.NONE;
+            }
+            // Cập nhật profession sau khi load
+            if (!this.level().isClientSide()) {
+                updateProfessionBySect();
             }
         }
     }
@@ -95,33 +113,27 @@ public class SectVillager extends Villager {
                 this.setUnhappy();
                 return InteractionResult.sidedSuccess(super.level().isClientSide);
             }
-            else {
-                boolean flag = super.getOffers().isEmpty();
-                if (hand == InteractionHand.MAIN_HAND) {
-                    if (flag && !super.level().isClientSide) {
-                        this.setUnhappy();
-                    }
 
-                    player.awardStat(Stats.TALKED_TO_VILLAGER);
+            // Chưa có sect → không mở menu
+            if (this.sectType == SectTypes.NONE) {
+                if (!super.level().isClientSide) {
+                    this.setUnhappy();
                 }
-
-                if (!flag) {
-                    return InteractionResult.sidedSuccess(super.level().isClientSide);
-                }
-                else {
-                    if (!super.level().isClientSide) {
-                        this.startTrading(player);
-                    }
-
-                    return InteractionResult.sidedSuccess(super.level().isClientSide);
-                }
+                return InteractionResult.sidedSuccess(super.level().isClientSide);
             }
+
+            if (hand == InteractionHand.MAIN_HAND) {
+                player.awardStat(Stats.TALKED_TO_VILLAGER);
+            }
+            if (!super.level().isClientSide) {
+                this.startTrading(player);
+            }
+            return InteractionResult.sidedSuccess(super.level().isClientSide);
         }
         else {
             return super.mobInteract(player, hand);
         }
     }
-
 
     private void setUnhappy() {
         this.setUnhappyCounter(40);
@@ -204,12 +216,45 @@ public class SectVillager extends Villager {
                     buf.writeNbt(playerActiveTag);
                 }
         );
+    }
 
-//        if (optionalint.isPresent()) {
-//            MerchantOffers merchantoffers = this.getOffers();
-//            if (!merchantoffers.isEmpty()) {
-//                ModNetworking.sendToPlayer((ServerPlayer) player, new SectVillagerOffersS2C(optionalint.getAsInt(), merchantoffers, this.getSectType()));
-//            }
-//        }
+
+    // ─── Work Block: Warrior = Grindstone, Archer = Fletching Table ───────────
+    private static final int WORK_SCAN_RADIUS = 3;
+    private static final int WORK_SCAN_INTERVAL = 40; // ticks
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (!this.level().isClientSide() && this.tickCount % WORK_SCAN_INTERVAL == 0) {
+            scanNearbyWorkBlock();
+        }
+    }
+
+    private void scanNearbyWorkBlock() {
+        BlockPos pos = this.blockPosition();
+        Level level = this.level();
+
+        for (int dx = -WORK_SCAN_RADIUS; dx <= WORK_SCAN_RADIUS; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dz = -WORK_SCAN_RADIUS; dz <= WORK_SCAN_RADIUS; dz++) {
+                    BlockPos check = pos.offset(dx, dy, dz);
+                    Block block = level.getBlockState(check).getBlock();
+
+                    SectTypes newSect = null;
+                    if (block == Blocks.GRINDSTONE) {
+                        newSect = SectTypes.WARRIOR;
+                    } else if (block == Blocks.FLETCHING_TABLE) {
+                        newSect = SectTypes.ARCHER;
+                    }
+
+                    if (newSect != null && newSect != this.sectType) {
+                        this.sectType = newSect;
+                        updateProfessionBySect();
+                        return;
+                    }
+                }
+            }
+        }
     }
 }

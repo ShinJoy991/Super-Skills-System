@@ -39,6 +39,30 @@ public class ModVillagers {
                     )
             );
 
+    public static final RegistryObject<VillagerProfession> SECT_WARRIOR =
+            VILLAGER_PROFESSIONS.register("sect_warrior",
+                    () -> new VillagerProfession(
+                            "sect_warrior",
+                            poi -> false, // Không yêu cầu POI
+                            poi -> false, // Không tìm kiếm POI
+                            ImmutableSet.of(),
+                            ImmutableSet.of(),
+                            SoundEvents.VILLAGER_CELEBRATE // Hoặc âm thanh khác
+                    )
+            );
+
+    public static final RegistryObject<VillagerProfession> SECT_ARCHER =
+            VILLAGER_PROFESSIONS.register("sect_archer",
+                    () -> new VillagerProfession(
+                            "sect_archer",
+                            poi -> false,
+                            poi -> false,
+                            ImmutableSet.of(),
+                            ImmutableSet.of(),
+                            SoundEvents.VILLAGER_WORK_FLETCHER
+                    )
+            );
+
     public static void register(IEventBus eventBus) {
         POI_TYPES.register(eventBus);
         VILLAGER_PROFESSIONS.register(eventBus);

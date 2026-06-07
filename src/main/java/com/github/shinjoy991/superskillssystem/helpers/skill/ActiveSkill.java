@@ -27,6 +27,7 @@ public abstract class ActiveSkill {
     protected int manaCost;
     protected int cooldown;
     protected float baseDamage;
+    protected float power = 0;
     protected ResourceKey<DamageType> damageType = DamageTypes.GENERIC; // default damage type
 
     protected LivingEntity mainTarget;
@@ -35,6 +36,8 @@ public abstract class ActiveSkill {
 
     protected final boolean isBuff;
     protected final boolean mobCanUse = false;
+    protected boolean displayPowerType = false;
+
 
     public ActiveSkill(
             ResourceLocation id,
@@ -77,58 +80,18 @@ public abstract class ActiveSkill {
     public float getBaseDamage(int level) {
         return baseDamage;
     }
-
+    public boolean getDisplayPowerType() {
+        return displayPowerType;
+    }
+    public float getPower(int level) {
+        return power;
+    }
     public boolean isBuff() {
         return isBuff;
     }
 
     public int getCooldown(int level) {
         return cooldown;
-    }
-
-
-    public Component getInfo(boolean isSectMatch) {
-        MutableComponent result = Component.literal("");
-        MutableComponent nameLine = Component.translatable("skill.name." + name)
-                .withStyle(ChatFormatting.BOLD)
-                .withStyle(style -> style.withColor(isSectMatch
-                        ? TextColor.fromLegacyFormat(ChatFormatting.DARK_RED)
-                        : TextColor.fromRgb(0x996600)));
-
-        result.append(nameLine).append("    ");
-        result.append(Component.translatable("skill.type.active")).append("\n").withStyle(ChatFormatting.DARK_GRAY);
-        result.append(Component.translatable("skill.level").append(": " + level).append("    "));
-        result.append(Component.translatable("skill.base_damage").append(": " + getBaseDamage(level)).append("    "));
-        result.append(Component.translatable("skill.mana_cost").append(": " + manaCost).append("    "));
-        result.append(Component.translatable("skill.cooldown").append(": " + cooldown).append("    "));;
-        result.append(getDamageTypeName()).append("\n");
-        result.append(Component.translatable("skill.description." + name));
-        return result;
-    }
-
-    public List<Component> getLoreInfo(boolean isSectMatch) {
-        List<Component> lore = new ArrayList<>();
-
-        MutableComponent line = sectType.translatableName().copy()
-                .withStyle(style -> style.withItalic(false)
-                        .withColor(isSectMatch
-                                ? TextColor.fromLegacyFormat(ChatFormatting.DARK_RED)
-                                : TextColor.fromRgb(0x996600)));
-
-        Style grayStyle = Style.EMPTY.withItalic(false).withColor(TextColor.fromLegacyFormat(ChatFormatting.GRAY));
-        line.append(Component.literal("    ").withStyle(grayStyle));
-        line.append(getDamageTypeName().copy().withStyle(grayStyle));
-        line.append(Component.literal("    ").withStyle(grayStyle));
-        line.append(Component.translatable("skill.base_damage").append(": " + getBaseDamage(level + 1)).withStyle(grayStyle));
-        line.append(Component.literal("    ").withStyle(grayStyle));
-        line.append(Component.translatable("skill.mana_cost").append(": " + getManaCost(level + 1)).withStyle(grayStyle));
-        line.append(Component.literal("    ").withStyle(grayStyle));
-        line.append(Component.translatable("skill.cooldown").append(": " + getCooldown(level + 1)).withStyle(grayStyle));
-        lore.add(line);
-
-        lore.add(Component.translatable("skill.description." + name).withStyle(grayStyle));
-
-        return lore;
     }
 
     public ResourceKey<DamageType> getDamageType() {
@@ -142,4 +105,61 @@ public abstract class ActiveSkill {
         );
     }
 
+
+    // Info with power type
+    public Component getInfo(boolean isSectMatch, boolean isDisplayPowerType) {
+        MutableComponent powerTypeLore = Component.translatable("skill.base_damage")
+                .append(": " + getBaseDamage(level));
+        if (isDisplayPowerType) {
+            powerTypeLore = Component.translatable("skill.power_type")
+                    .append(": " + getPower(level));
+        }
+        MutableComponent result = Component.literal("");
+        MutableComponent nameLine = Component.translatable("skill.name." + name)
+                .withStyle(ChatFormatting.BOLD)
+                .withStyle(style -> style.withColor(isSectMatch
+                        ? TextColor.fromLegacyFormat(ChatFormatting.DARK_RED)
+                        : TextColor.fromRgb(0x996600)));
+
+        result.append(nameLine).append("    ");
+        result.append(Component.translatable("skill.type.active")).append("\n").withStyle(ChatFormatting.DARK_GRAY);
+        result.append(Component.translatable("skill.level").append(": " + level).append("    "));
+        result.append(powerTypeLore).append("    ");
+        result.append(Component.translatable("skill.mana_cost").append(": " + manaCost).append("    "));
+        result.append(Component.translatable("skill.cooldown").append(": " + cooldown).append("    "));;
+        result.append(getDamageTypeName()).append("\n");
+        result.append(Component.translatable("skill.description." + name));
+        return result;
+    }
+
+    public List<Component> getLoreInfo(boolean isSectMatch, boolean isDisplayPowerType) {
+        MutableComponent powerTypeLore = Component.translatable("skill.base_damage")
+                .append(": " + getBaseDamage(level + 1));
+        if (isDisplayPowerType) {
+            powerTypeLore = Component.translatable("skill.power_type")
+                    .append(": " + getPower(level + 1));
+        }
+        List<Component> lore = new ArrayList<>();
+
+        MutableComponent line = sectType.translatableName().copy()
+                .withStyle(style -> style.withItalic(false)
+                        .withColor(isSectMatch
+                                ? TextColor.fromLegacyFormat(ChatFormatting.DARK_RED)
+                                : TextColor.fromRgb(0x996600)));
+
+        Style grayStyle = Style.EMPTY.withItalic(false).withColor(TextColor.fromLegacyFormat(ChatFormatting.GRAY));
+        line.append(Component.literal("    ").withStyle(grayStyle));
+        line.append(getDamageTypeName().copy().withStyle(grayStyle));
+        line.append(Component.literal("    ").withStyle(grayStyle));
+        line.append(powerTypeLore.withStyle(grayStyle));
+        line.append(Component.literal("    ").withStyle(grayStyle));
+        line.append(Component.translatable("skill.mana_cost").append(": " + getManaCost(level + 1)).withStyle(grayStyle));
+        line.append(Component.literal("    ").withStyle(grayStyle));
+        line.append(Component.translatable("skill.cooldown").append(": " + getCooldown(level + 1)).withStyle(grayStyle));
+        lore.add(line);
+
+        lore.add(Component.translatable("skill.description." + name).withStyle(grayStyle));
+
+        return lore;
+    }
 }

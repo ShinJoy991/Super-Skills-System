@@ -48,7 +48,7 @@ public class SectVillagerScreen extends AbstractContainerScreen<SectVillagerMenu
 //    private static final int SCROLL_BAR_TOP_POS_Y = 18;
 //    private static final int SCROLL_BAR_START_X = 94;
     private static final Component SKILLS_LABEL = Component.translatable("label.sect_villager.skills");
-    private static final Component SKILL_MASTER_LABEL = Component.translatable("label.sect_villager.skill_master");
+    private static final Component SKILL_MASTER_LABEL = Component.translatable("label.sect_villager.sect_master");
     private static final Component LEVEL_SEPARATOR = Component.literal(" - ");
     private static final Component DEPRECATED_TOOLTIP = Component.translatable("merchant.deprecated");
     private int shopItem;

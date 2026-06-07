@@ -125,10 +125,11 @@ public class SectVillagerMenu extends AbstractContainerMenu {
                 String name = skillTag.getString("SkillName");
                 int level = skillTag.getInt("Level");
 
-                PassiveSkill skill = PlayerClientData.warriorGlobalPassiveSkills.stream()
-                        .filter(s -> s.name.equals(name))
-                        .findFirst()
-                        .orElse(null);
+//                PassiveSkill skill = PlayerClientData.warriorGlobalPassiveSkills.stream()
+//                        .filter(s -> s.name.equals(name))
+//                        .findFirst()
+//                        .orElse(null);
+                PassiveSkill skill = PlayerClientData.findSkillInAllGlobalLists(name);
 
                 if (skill != null) {
                     skills.add(new PassiveSkillInstance(skill, level));
@@ -232,8 +233,8 @@ public class SectVillagerMenu extends AbstractContainerMenu {
         this.playerPassiveSkills = playerPassiveSkills;
 
         // todo:
-        List<PassiveSkill> listPassiveSkills = PlayerClientData.warriorGlobalPassiveSkills;
-
+//        List<PassiveSkill> listPassiveSkills = PlayerClientData.warriorGlobalPassiveSkills;
+        List<PassiveSkill> listPassiveSkills = getPassiveSkillListBySect();
 
         // Map skillName -> level
         Map<String, Integer> skillLevelMap = new HashMap<>();
@@ -374,7 +375,7 @@ public class SectVillagerMenu extends AbstractContainerMenu {
 
             // Build lore từ getInfo(), bỏ dòng đầu (name) và dòng level
             try {
-                List<Component> loreComponents = dummy.getLoreInfo(dummy.getSectType().equals(PlayerClientData.sect));
+                List<Component> loreComponents = dummy.getLoreInfo(dummy.getSectType().equals(PlayerClientData.sect), dummy.getDisplayPowerType());
 
                 ListTag loreList = new ListTag();
 
@@ -588,5 +589,24 @@ public class SectVillagerMenu extends AbstractContainerMenu {
         rebuildOffers(this.playerPassiveSkills);
     }
 
+    private List<PassiveSkill> getPassiveSkillListBySect() {
+        if (this.trader.isClientSide()) {
+            switch (this.sectType) {
+                case WARRIOR -> {
+                    return PlayerClientData.warriorGlobalPassiveSkills;
+                }
+                case ARCHER -> {
+                    return PlayerClientData.archerGlobalPassiveSkills;
+                }
+                default -> {
+                    return new ArrayList<>();
+                }
+            }
+        } else {
+            return ReadConfig.passiveSkills.stream()
+                    .filter(s -> s.sectType == this.sectType)
+                    .collect(java.util.stream.Collectors.toList());
+        }
+    }
 
 }

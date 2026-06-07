@@ -468,7 +468,7 @@ public class PlayerInfoSkillScreen extends Screen {
                 return Component.literal("No skill info available.");
             }
             ActiveSkill activeSkill = PlayerClientData.activeSkills.get(idx);
-            return activeSkill.getInfo(activeSkill.getSectType() == PlayerClientData.sect);
+            return activeSkill.getInfo(activeSkill.getSectType() == PlayerClientData.sect, activeSkill.getDisplayPowerType());
         }
         if (selectedDetail < 0 || selectedDetail >= PlayerClientData.passiveSkills.size()) {
             return Component.literal("No skill info available.");

@@ -1,0 +1,50 @@
+package com.github.shinjoy991.superskillssystem.client.renderer;
+
+import com.github.shinjoy991.superskillssystem.SSS;
+import com.github.shinjoy991.superskillssystem.entity.trading.SectVillager;
+import com.github.shinjoy991.superskillssystem.helpers.skill.SectTypes;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.VillagerRenderer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
+
+@OnlyIn(Dist.CLIENT)
+public class SectVillagerRenderer extends VillagerRenderer {
+
+    // Texture mặc định (vanilla) - dùng khi NONE hoặc chưa có skin riêng
+    private static final ResourceLocation DEFAULT_TEXTURE =
+            ResourceLocation.fromNamespaceAndPath("minecraft", "textures/entity/villager/villager.png");
+
+    // Texture riêng cho từng sect - đặt vào assets/sss/textures/entity/villager/
+    private static final ResourceLocation WARRIOR_TEXTURE =
+            ResourceLocation.fromNamespaceAndPath(SSS.MODID, "textures/entity/villager/profession/sect_warrior.png");
+
+    private static final ResourceLocation ARCHER_TEXTURE =
+            ResourceLocation.fromNamespaceAndPath(SSS.MODID, "textures/entity/villager/profession/sect_archer.png");
+
+    public SectVillagerRenderer(EntityRendererProvider.Context context) {
+        super(context);
+    }
+
+    @Override
+    public @NotNull ResourceLocation getTextureLocation(Villager villager) {
+        if (villager instanceof SectVillager sectVillager) {
+            SectTypes sect = sectVillager.getSectType();
+            switch (sect) {
+                case WARRIOR -> {
+                    return WARRIOR_TEXTURE;
+                }
+                case ARCHER -> {
+                    return ARCHER_TEXTURE;
+                }
+                default -> {
+                    return DEFAULT_TEXTURE;
+                }
+            }
+        }
+        return DEFAULT_TEXTURE;
+    }
+}

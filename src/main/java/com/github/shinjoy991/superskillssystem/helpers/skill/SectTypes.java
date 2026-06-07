@@ -6,14 +6,7 @@ import java.awt.*;
 
 public enum SectTypes {
     NONE("none"),
-    SECT_1("sect_1"),
-    SECT_2("sect_2"),
     WARRIOR("warrior"),
-    SECT_4("sect_4"),
-    SECT_5("sect_5"),
-    SECT_6("sect_6"),
-    SECT_7("sect_7"),
-    SECT_8("sect_8"),
     ARCHER("archer");
     private final String name;
 
