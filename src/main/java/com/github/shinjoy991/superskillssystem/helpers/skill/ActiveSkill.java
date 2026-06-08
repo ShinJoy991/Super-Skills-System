@@ -1,6 +1,9 @@
 package com.github.shinjoy991.superskillssystem.helpers.skill;
 
 import com.github.shinjoy991.superskillssystem.activeskills.meleephysical.ActSkillThrust;
+import com.github.shinjoy991.superskillssystem.helpers.AllPlayersInfo;
+import com.github.shinjoy991.superskillssystem.helpers.HelperFunction;
+import com.github.shinjoy991.superskillssystem.helpers.PlayerInfo;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -8,13 +11,13 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public abstract class ActiveSkill {
 
@@ -38,7 +41,6 @@ public abstract class ActiveSkill {
     protected final boolean mobCanUse = false;
     protected boolean displayPowerType = false;
 
-
     public ActiveSkill(
             ResourceLocation id,
             String name,
@@ -55,7 +57,38 @@ public abstract class ActiveSkill {
         this.isBuff = isBuff;
     }
 
-    public abstract void activate();
+
+    public final void start(ServerPlayer player) {
+        // 1. Cooldown check
+        if (HelperFunction.isOnCooldown(player.getUUID(), this.id)) {
+            long remaining = HelperFunction.getRemainingCooldown(player.getUUID(), this.id);
+            HelperFunction.sendActiveMessage(player,
+                    Component.translatable("message.sss.skill_on_cooldown")
+                            .append(": " + String.format("%.1f", remaining / 20.0f) + "s"),
+                    0xFFFF00);
+            return;
+        }
+        // 2. Mana check
+        PlayerInfo playerInfo = AllPlayersInfo.get(player.getUUID());
+        if (playerInfo == null) return;
+        int cost = player.isCreative() ? 0 : getManaCost(this.level);
+        if (playerInfo.getMana() < cost) {
+            HelperFunction.sendActiveMessage(player,
+                    Component.translatable("message.sss.not_enough_mana"),
+                    0xFF0000);
+            return;
+        }
+        // 3. Condition check (override per skill — e.g. holding sword)
+        if (!canActivate(player)) return;
+        // 4. Commit: deduct mana, apply cooldown, run
+        playerInfo.addMana(-cost);
+        HelperFunction.applyCooldown(player.getUUID(), this.id, getCooldown(this.level));
+        activate();
+    }
+
+    protected boolean canActivate(ServerPlayer player) { return true; }
+
+    protected abstract void activate();
 
     public ResourceLocation getId() {
         return id;

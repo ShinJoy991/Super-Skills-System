@@ -25,6 +25,9 @@ public class SectVillagerRenderer extends VillagerRenderer {
     private static final ResourceLocation ARCHER_TEXTURE =
             ResourceLocation.fromNamespaceAndPath(SSS.MODID, "textures/entity/villager/profession/sect_archer.png");
 
+    private static final ResourceLocation MAGE_TEXTURE =
+            ResourceLocation.fromNamespaceAndPath(SSS.MODID, "textures/entity/villager/profession/sect_mage.png");
+
     public SectVillagerRenderer(EntityRendererProvider.Context context) {
         super(context);
     }
@@ -39,6 +42,9 @@ public class SectVillagerRenderer extends VillagerRenderer {
                 }
                 case ARCHER -> {
                     return ARCHER_TEXTURE;
+                }
+                case MAGE -> {
+                    return MAGE_TEXTURE;
                 }
                 default -> {
                     return DEFAULT_TEXTURE;

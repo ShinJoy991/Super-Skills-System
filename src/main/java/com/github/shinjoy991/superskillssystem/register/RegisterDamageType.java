@@ -26,6 +26,7 @@ public class RegisterDamageType {
     // Đăng ký các DamageType tại đây
     public static final DamageTypeEntry MELEE_PHYSICAL = register("melee_physical", 0.1f);
     public static final DamageTypeEntry RANGED_PHYSICAL = register("ranged_physical", 0.1f);
+    public static final DamageTypeEntry MAGIC = register("magic_damage", 0.1f);
 //    public static final DamageTypeEntry HYBRID = register("hybrid_damage", 0.1f);
 
     public static void register(IEventBus bus) {

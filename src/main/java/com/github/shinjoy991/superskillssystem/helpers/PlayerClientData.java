@@ -93,6 +93,7 @@ public class PlayerClientData {
 
     public static List<PassiveSkill> warriorGlobalPassiveSkills = new ArrayList<>();
     public static List<PassiveSkill> archerGlobalPassiveSkills = new ArrayList<>();
+    public static List<PassiveSkill> mageGlobalPassiveSkills = new ArrayList<>();
     // Thêm sect khác tương tự nếu cần
 
     public static ResourceLocation activeSkillSlot1;
@@ -263,6 +264,9 @@ public class PlayerClientData {
             } else if (sectType == SectTypes.ARCHER) {
                 archerGlobalPassiveSkills = sectSkillList;
                 System.out.println("Archer global skills updated: " + archerGlobalPassiveSkills.size());
+            } else if (sectType == SectTypes.MAGE) {
+                mageGlobalPassiveSkills = sectSkillList;
+                System.out.println("Mage global skills updated: " + mageGlobalPassiveSkills.size());
             }
         }
     }
@@ -555,11 +559,21 @@ public class PlayerClientData {
     }
 
     public static PassiveSkill findSkillInAllGlobalLists(String name) {
-        PassiveSkill skill = warriorGlobalPassiveSkills.stream()
-                .filter(s -> s.name.equals(name)).findFirst().orElse(null);
-        if (skill != null) return skill;
-        skill = archerGlobalPassiveSkills.stream()
-                .filter(s -> s.name.equals(name)).findFirst().orElse(null);
-        return skill;
+        for (PassiveSkill skill : warriorGlobalPassiveSkills) {
+            if (skill.name.equals(name)) {
+                return skill;
+            }
+        }
+        for (PassiveSkill skill : archerGlobalPassiveSkills) {
+            if (skill.name.equals(name)) {
+                return skill;
+            }
+        }
+        for (PassiveSkill skill : mageGlobalPassiveSkills) {
+            if (skill.name.equals(name)) {
+                return skill;
+            }
+        }
+        return null;
     }
 }

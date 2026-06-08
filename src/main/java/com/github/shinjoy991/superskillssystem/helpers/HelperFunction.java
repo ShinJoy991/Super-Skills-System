@@ -18,95 +18,6 @@ public class HelperFunction {
     private static final UUID SPD_UUID = UUID.fromString("c8edfd12-8e53-4c57-85b4-4c3d1af1bca1");
     private static final UUID ATK_SPD_UUID = UUID.fromString("7f8a9d42-3d2e-4c9e-8f12-123456789abc");
 
-//    public static void removeAttributeBonusFromEquipment(ServerPlayer player, ItemStack armor) {
-//        CompoundTag tag = armor.getTag();
-//        if (tag == null || !tag.contains("GEM_INLAY_COUNT"))
-//            return;
-//        for (int i = 1; i <= 3; i++) {
-//            String type = tag.getString("GEM_INLAY_" + i);
-//            try {
-//                switch (type) {
-//                    case "ATK_1" -> {
-//                        AttributeInstance attributeInstance = player.getAttribute(Attributes.ATTACK_DAMAGE);
-//                        if (attributeInstance != null && tag.hasUUID("GemATKUUID_" + i)) {
-//                            attributeInstance.removeModifier(tag.getUUID("GemATKUUID_" + i));
-//                        }
-//                    }
-//                    case "DEF_1" -> {
-//                        AttributeInstance attributeInstance = player.getAttribute(Attributes.ARMOR);
-//                        if (attributeInstance != null && tag.hasUUID("GemDEFUUID_" + i)) {
-//                            attributeInstance.removeModifier(tag.getUUID("GemDEFUUID_" + i));
-//                        }
-//                    }
-//                    case "HP_1" -> {
-//                        AttributeInstance attributeInstance = player.getAttribute(Attributes.MAX_HEALTH);
-//                        if (attributeInstance != null && tag.hasUUID("GemHPUUID_" + i)) {
-//                            attributeInstance.removeModifier(tag.getUUID("GemHPUUID_" + i));
-//                            player.setHealth(player.getHealth());
-//                        }
-//                    }
-//                    case "SPD_1" -> {
-//                        AttributeInstance attributeInstance = player.getAttribute(Attributes.MOVEMENT_SPEED);
-//                        if (attributeInstance != null && tag.hasUUID("GemSPDUUID_" + i)) {
-//                            attributeInstance.removeModifier(tag.getUUID("GemSPDUUID_" + i));
-//                        }
-//                    }
-//                }
-//            } catch (Exception ignored) {
-//            }
-//        }
-//    }
-
-//    private static void applyAttributeBonusFromEquipment(Player player, CompoundTag tag) {
-//        try {
-//            int gemCount = tag.getInt("GEM_INLAY_COUNT");
-//            for (int i = 1; i <= gemCount; i++) {
-//                String gemName = tag.getString("GEM_INLAY_" + i);
-//                switch (gemName) {
-//                    case "ATK_1" -> {
-//                        AttributeInstance attributeInstance = player.getAttribute(Attributes.ATTACK_DAMAGE);
-//                        if (attributeInstance != null) {
-//                            UUID uuid = UUID.randomUUID();
-//                            AttributeModifier modifier = new AttributeModifier(uuid, "Gem ATK Bonus", Config.GEM_ATK_POWER, AttributeModifier.Operation.ADDITION);
-//                            attributeInstance.addTransientModifier(modifier);
-//                            tag.putUUID("GemATKUUID_" + i, uuid);
-//                        }
-//                    }
-//                    case "DEF_1" -> {
-//                        AttributeInstance attributeInstance = player.getAttribute(Attributes.ARMOR);
-//                        if (attributeInstance != null) {
-//                            UUID uuid = UUID.randomUUID();
-//                            AttributeModifier modifier = new AttributeModifier(uuid, "Gem DEF Bonus", Config.GEM_DEF_POWER, AttributeModifier.Operation.ADDITION);
-//                            attributeInstance.addTransientModifier(modifier);
-//                            tag.putUUID("GemDEFUUID_" + i, uuid);
-//                        }
-//                    }
-//
-//                    case "HP_1" -> {
-//                        AttributeInstance attributeInstance = player.getAttribute(Attributes.MAX_HEALTH);
-//                        if (attributeInstance != null) {
-//                            UUID uuid = UUID.randomUUID();
-//                            AttributeModifier modifier = new AttributeModifier(uuid, "Gem HP Bonus", Config.GEM_HP_POWER, AttributeModifier.Operation.ADDITION);
-//                            attributeInstance.addTransientModifier(modifier);
-//                            tag.putUUID("GemHPUUID_" + i, uuid);
-//                            player.setHealth(player.getHealth());
-//                        }
-//                    }
-//                    case "SPD_1" -> {
-//                        AttributeInstance attributeInstance = player.getAttribute(Attributes.MOVEMENT_SPEED);
-//                        if (attributeInstance != null) {
-//                            UUID uuid = UUID.randomUUID();
-//                            AttributeModifier modifier = new AttributeModifier(uuid, "Gem SPD Bonus", Config.GEM_SPD_POWER, AttributeModifier.Operation.ADDITION);
-//                            attributeInstance.addTransientModifier(modifier);
-//                            tag.putUUID("GemSPDUUID_" + i, uuid);
-//                        }
-//                    }
-//                }
-//            }
-//        } catch (Exception ignored) {
-//        }
-//    }
-
     public static void refreshPlayerAttributes(ServerPlayer player, SkillTags skillTags, float bonus) {
         switch (skillTags)
         {
@@ -136,7 +47,6 @@ public class HelperFunction {
             }
         }
     }
-
 
     // ── Cooldown helpers ──────────────────────────────────────────────────────
 

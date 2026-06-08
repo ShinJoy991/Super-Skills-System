@@ -22,9 +22,11 @@
   "entity.minecraft.villager.sss.sect_master": "Skill",
   "entity.minecraft.villager.sss.sect_warrior": "Warrior",
   "entity.minecraft.villager.sss.sect_archer": "Archer",
+    "entity.minecraft.villager.sss.sect_mage": "Mage",
 
   "sect_type.warrior": "Warrior",
   "sect_type.archer": "Archer",
+  "sect_type.mage": "Mage",
 
   "entity.sss.sect_villager": "Villager",
 
@@ -82,6 +84,23 @@
   "skill.name.war_technique": "War Technique",
   "skill.name.qi_outburst": "Qi Outburst",
 
+  "skill.name.warrior_refinement": "Warrior's Refinement",
+  "skill.name.striking_technique": "Striking technique",
+  "skill.name.augmentation_tempering": "Augmentation Tempering",
+  "skill.name.combat_artistry": "Combat Artistry",
+  "skill.name.draconic_swiftness_art": "Draconic Swiftness Art",
+
+
+  "skill.name.mystic_talisman": "Mystic Talisman",
+  "skill.name.tome_of_wisdom": "Tome of Wisdom",
+  "skill.name.tome_of_covert_lore": "Tome of Covert Lore",
+
+
+  "skill.name.eagle_eye": "Eagle Eye",
+  "skill.name.swift_draw": "Swift Draw",
+  "skill.name.wind_step": "Wind Step",
+
+  "skill.name.magic_ascension": "Magic Ascension",
 
 
   "skill.name.act_skill_thrust": "Thrust",

@@ -45,7 +45,6 @@ public class ActSkillThrust extends ActiveSkill {
 
     @Override
     public void activate() {
-//        System.out.println("THRUST Activated by " + caster.getName().getString() + " at level " + level);
         Vec3 look = caster.getLookAngle().normalize();
         
         // Dash bằng vận tốc thật thay vì push
@@ -81,7 +80,7 @@ public class ActSkillThrust extends ActiveSkill {
         private final float baseDamage;
         private final double hitRadius;
         private int ticksActive = 0;
-        private static final int MAX_DURATION = 20; // 20 ticks = 1 giây
+        private static final int MAX_DURATION = 20;
 
         public DashData(LivingEntity caster, float baseDamage, double hitRadius) {
             this.caster = caster;

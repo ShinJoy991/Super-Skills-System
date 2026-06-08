@@ -45,7 +45,6 @@ public class CastSkillC2S {
             Class<? extends ActiveSkill> clazz = SkillRegistry.get(packet.skillId);
             if (clazz == null) return;
 
-
             // ── Check if player really has the skill ─────────────────────────────
             ServerLevel serverLevel = (ServerLevel) player.level();
             PlayerSkillSavedData skillData = PlayerSkillSavedData.get(serverLevel);
@@ -70,7 +69,6 @@ public class CastSkillC2S {
                 e.printStackTrace();
                 return;
             }
-
             // create skill instance
             ActiveSkill skill;
             try {
@@ -79,36 +77,7 @@ public class CastSkillC2S {
                 e.printStackTrace();
                 return;
             }
-
-            // ── Check cooldown ────────────────────────────────────────────────────
-            if (HelperFunction.isOnCooldown(player.getUUID(), packet.skillId)) {
-                long remaining = HelperFunction.getRemainingCooldown(player.getUUID(), packet.skillId);
-                float remainSec = remaining / 20.0f;
-//                System.out.println("[Super Skill System] On cooldown: " + remainSec + "s left");
-                // send active message to player
-                Component msg = Component.translatable("message.sss.skill_on_cooldown").append(": " + String.format("%.1f", remainSec) + "s");
-                HelperFunction.sendActiveMessage(player, msg, 0xFFFF00);
-                return;
-            }
-
-            // ── Check mana ────────────────────────────────────────────────────────
-            PlayerInfo playerInfo = AllPlayersInfo.get(player.getUUID());
-            if (playerInfo == null) return;
-            int manaCost = skill.getManaCost(skill.getLevel());
-            if (player.isCreative()) {
-                manaCost = 0; // creative mode bypasses mana cost
-            } else if (playerInfo.getMana() < manaCost) {
-                System.out.println("[Super Skill System] Not enough mana: need " + manaCost + ", has " + playerInfo.getMana());
-                // send active message to player
-                Component msg = Component.translatable("message.sss.not_enough_mana");
-                HelperFunction.sendActiveMessage(player, msg, 0xFF0000);
-                return;
-            }
-
-            // ── All checks passed — deduct mana, apply cooldown, activate ─────────
-            playerInfo.addMana(-manaCost);
-            HelperFunction.applyCooldown(player.getUUID(), packet.skillId, skill.getCooldown(skill.getLevel()));
-            skill.activate();
+            skill.start(player);
         });
         context.setPacketHandled(true);
     }

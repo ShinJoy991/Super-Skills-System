@@ -1,6 +1,7 @@
 package com.github.shinjoy991.superskillssystem.helpers;
 
 import com.github.shinjoy991.superskillssystem.helpers.saveddata.SavedDelayedTaskData;
+import com.github.shinjoy991.superskillssystem.helpers.skill.ActiveSkill;
 import com.google.common.collect.ArrayListMultimap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.event.TickEvent;
@@ -49,9 +50,8 @@ public class DelayFunc {
             }
         } else if (event.phase == TickEvent.Phase.END) {
             pendingTasks.removeAll(tick);
+
             ++tick;
         }
-
-
     }
 }

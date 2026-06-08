@@ -7,7 +7,8 @@ import java.awt.*;
 public enum SectTypes {
     NONE("none"),
     WARRIOR("warrior"),
-    ARCHER("archer");
+    ARCHER("archer"),
+    MAGE("mage");
     private final String name;
 
     SectTypes(String name) {

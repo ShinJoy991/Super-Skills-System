@@ -313,23 +313,23 @@ public class SectVillagerMenu extends AbstractContainerMenu {
         }
 
         // Add active skills
+        // Add active skills
         for (ResourceLocation skillId : this.sectActiveSkillIds) {
-            // Tạo dummy instance trước để lấy name
             Class<? extends ActiveSkill> clazz = SkillRegistry.get(skillId);
             if (clazz == null) continue;
+
+            int playerLevel = playerActiveSkillLevels.getOrDefault(skillId.toString(), 0);
+            int nextLevel = Math.min(playerLevel + 1, 20);
 
             ActiveSkill dummy;
             try {
                 dummy = clazz.getConstructor(net.minecraft.world.entity.LivingEntity.class, int.class)
-                        .newInstance(null, 1);
+                        .newInstance(null, nextLevel);
             } catch (Exception e) {
                 continue;
             }
 
-            String skillName = dummy.getName(); // lấy đúng name từ instance
-
-            int playerLevel = playerActiveSkillLevels.getOrDefault(skillId.toString(), 0);
-            int nextLevel = Math.min(playerLevel + 1, 20);
+            String skillName = dummy.getName();
 
             int emeraldCost;
             int diamondCost;
@@ -373,20 +373,12 @@ public class SectVillagerMenu extends AbstractContainerMenu {
             nbt.putString("SkillName", skillName);
             nbt.putString("SkillId", skillId.toString());
 
-            // Build lore từ getInfo(), bỏ dòng đầu (name) và dòng level
             try {
                 List<Component> loreComponents = dummy.getLoreInfo(dummy.getSectType().equals(PlayerClientData.sect), dummy.getDisplayPowerType());
-
                 ListTag loreList = new ListTag();
-
                 for (Component line : loreComponents) {
-                    loreList.add(
-                            StringTag.valueOf(
-                                    Component.Serializer.toJson(line)
-                            )
-                    );
+                    loreList.add(StringTag.valueOf(Component.Serializer.toJson(line)));
                 }
-
                 CompoundTag displayTag = result.getOrCreateTagElement("display");
                 displayTag.put("Lore", loreList);
             } catch (Exception e) {
@@ -560,10 +552,7 @@ public class SectVillagerMenu extends AbstractContainerMenu {
         if (!found) {
             PassiveSkill skill;
             if (this.trader.isClientSide()) {
-                skill = PlayerClientData.warriorGlobalPassiveSkills.stream()
-                        .filter(s -> s.name.equals(skillName))
-                        .findFirst()
-                        .orElse(null);
+                skill = PlayerClientData.findSkillInAllGlobalLists(skillName);
             } else {
                 skill = ReadConfig.passiveSkills.stream()
                         .filter(s -> s.name.equals(skillName))
@@ -597,6 +586,9 @@ public class SectVillagerMenu extends AbstractContainerMenu {
                 }
                 case ARCHER -> {
                     return PlayerClientData.archerGlobalPassiveSkills;
+                }
+                case MAGE -> {
+                    return PlayerClientData.mageGlobalPassiveSkills;
                 }
                 default -> {
                     return new ArrayList<>();

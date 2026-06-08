@@ -62,6 +62,7 @@ public class SectVillager extends Villager {
         switch (this.sectType) {
             case ARCHER -> prof = ModVillagers.SECT_ARCHER.get();
             case WARRIOR -> prof = ModVillagers.SECT_WARRIOR.get();
+            case MAGE -> prof = ModVillagers.SECT_MAGE.get();
             default -> prof = ModVillagers.SECT_MASTER.get();
         }
         this.setVillagerData(this.getVillagerData().setProfession(prof).setLevel(5));
@@ -246,6 +247,8 @@ public class SectVillager extends Villager {
                         newSect = SectTypes.WARRIOR;
                     } else if (block == Blocks.FLETCHING_TABLE) {
                         newSect = SectTypes.ARCHER;
+                    } else if (block == Blocks.ENCHANTING_TABLE) {
+                        newSect = SectTypes.MAGE;
                     }
 
                     if (newSect != null && newSect != this.sectType) {

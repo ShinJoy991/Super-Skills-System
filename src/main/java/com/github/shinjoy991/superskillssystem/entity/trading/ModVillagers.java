@@ -1,5 +1,6 @@
 package com.github.shinjoy991.superskillssystem.entity.trading;
 
+import com.github.shinjoy991.superskillssystem.helpers.AllPlayersInfo;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
@@ -60,6 +61,18 @@ public class ModVillagers {
                             ImmutableSet.of(),
                             ImmutableSet.of(),
                             SoundEvents.VILLAGER_WORK_FLETCHER
+                    )
+            );
+
+    public static final RegistryObject<VillagerProfession> SECT_MAGE =
+            VILLAGER_PROFESSIONS.register("sect_mage",
+                    () -> new VillagerProfession(
+                            "sect_mage",
+                            poi -> false,
+                            poi -> false,
+                            ImmutableSet.of(),
+                            ImmutableSet.of(),
+                            SoundEvents.VILLAGER_CELEBRATE
                     )
             );
 
