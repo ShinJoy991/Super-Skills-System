@@ -9,6 +9,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -27,7 +28,7 @@ public class RegisterItem {
     public static final RegistryObject<Item> PRIME_EXP_BOOK;
     public static final RegistryObject<Item> PRIME_EXP_ORB;
 
-
+    public static final RegistryObject<Item> SECT_VILLAGER_SPAWN_EGG;
 
     static {
         ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, SSS.MODID);
@@ -62,12 +63,22 @@ public class RegisterItem {
             }
         });
 
+        // Spawn Eggs
+        SECT_VILLAGER_SPAWN_EGG = ITEMS.register("sect_villager_spawn_egg",
+                () -> new ForgeSpawnEggItem(
+                        RegisterEntity.SECT_VILLAGER,
+                        0x8B6F47, // màu chính
+                        0xC2B280, // màu đốm
+                        new Item.Properties()));
 
+
+        // Creative Tab
         CREATIVE_TAB = CREATIVE_MODE_TAB.register("creative_tab", () -> CreativeModeTab.builder().icon(() -> new ItemStack((ItemLike)ICON.get())).displayItems((parameters, output) -> {
             output.accept(new ItemStack(CRUSTED_MAGMA_BLOCK.get()));
             output.accept(new ItemStack(PRIME_EXP_GRINDER.get()));
             output.accept(new ItemStack(PRIME_EXP_BOOK.get()));
             output.accept(new ItemStack(PRIME_EXP_ORB.get()));
+            output.accept(SECT_VILLAGER_SPAWN_EGG.get());
         }).title(Component.translatable("itemGroup.sss.creative_tab")).build());
     }
 }

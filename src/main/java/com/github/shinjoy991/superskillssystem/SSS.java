@@ -69,7 +69,7 @@ public class SSS {
         CreateJson.CreateJsonConfigFile();
         readJsonValue(CreateJson.configFile);
 
-        LOGGER.info("Mushroom Edition PREINIT setting up...");
+        LOGGER.info("Super Skills System PREINIT setting up...");
     }
 
     @SubscribeEvent

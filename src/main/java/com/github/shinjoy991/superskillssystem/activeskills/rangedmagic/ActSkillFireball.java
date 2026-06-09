@@ -32,7 +32,6 @@ public class ActSkillFireball extends ActiveSkill {
                 1,
                 false
         );
-
         this.manaCost = getManaCost(level);
         this.damageType = RegisterDamageType.MAGIC.key();
         this.baseDamage = getBaseDamage(level);
