@@ -6,9 +6,18 @@ import java.awt.*;
 
 public enum SectTypes {
     NONE("none"),
-    WARRIOR("warrior"),
-    ARCHER("archer"),
-    MAGE("mage");
+    WARRIOR("warrior"), // Axe, Hammer, Spear
+    ARCHER("archer"), // Bow, Crossbow
+    MAGE("mage"), // Staff, Wand
+    SWORDSMAN("swordsman"), // Sword
+    MEDIC("medic"), // Book
+    STRIKER("striker"), // Fist, Claw
+    TRICKSTER("trickster"), // Potion, shadow moving // Sự Vật
+    GUARDIAN("guardian"), // shield, armor
+    HUNTER("hunter"), // Gun // tăng thuoc tinh
+    SUMMONER("summoner"), // Summoning // Dark magic, Necromancy
+    ENGINEER("engineer"), // Gadget, Futuristic weapon //number
+    ASSASSIN("assassin"); // Dagger, Poison
     private final String name;
 
     SectTypes(String name) {

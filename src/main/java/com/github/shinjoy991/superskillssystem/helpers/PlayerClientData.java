@@ -94,7 +94,15 @@ public class PlayerClientData {
     public static List<PassiveSkill> warriorGlobalPassiveSkills = new ArrayList<>();
     public static List<PassiveSkill> archerGlobalPassiveSkills = new ArrayList<>();
     public static List<PassiveSkill> mageGlobalPassiveSkills = new ArrayList<>();
-    // Thêm sect khác tương tự nếu cần
+    public static List<PassiveSkill> swordsmanGlobalPassiveSkills = new ArrayList<>();
+    public static List<PassiveSkill> medicGlobalPassiveSkills = new ArrayList<>();
+    public static List<PassiveSkill> strikerGlobalPassiveSkills = new ArrayList<>();
+    public static List<PassiveSkill> tricksterGlobalPassiveSkills = new ArrayList<>();
+    public static List<PassiveSkill> guardianGlobalPassiveSkills = new ArrayList<>();
+    public static List<PassiveSkill> hunterGlobalPassiveSkills = new ArrayList<>();
+    public static List<PassiveSkill> summonerGlobalPassiveSkills = new ArrayList<>();
+    public static List<PassiveSkill> engineerGlobalPassiveSkills = new ArrayList<>();
+    public static List<PassiveSkill> assassinGlobalPassiveSkills = new ArrayList<>();
 
     public static ResourceLocation activeSkillSlot1;
     public static ResourceLocation activeSkillSlot2;
@@ -267,6 +275,33 @@ public class PlayerClientData {
             } else if (sectType == SectTypes.MAGE) {
                 mageGlobalPassiveSkills = sectSkillList;
                 System.out.println("Mage global skills updated: " + mageGlobalPassiveSkills.size());
+            } else if (sectType == SectTypes.SWORDSMAN) {
+                swordsmanGlobalPassiveSkills = sectSkillList;
+                System.out.println("Swordsman global skills updated: " + swordsmanGlobalPassiveSkills.size());
+            } else if (sectType == SectTypes.MEDIC) {
+                medicGlobalPassiveSkills = sectSkillList;
+                System.out.println("Medic global skills updated: " + medicGlobalPassiveSkills.size());
+            } else if (sectType == SectTypes.STRIKER) {
+                strikerGlobalPassiveSkills = sectSkillList;
+                System.out.println("Striker global skills updated: " + strikerGlobalPassiveSkills.size());
+            } else if (sectType == SectTypes.TRICKSTER) {
+                tricksterGlobalPassiveSkills = sectSkillList;
+                System.out.println("Trickster global skills updated: " + tricksterGlobalPassiveSkills.size());
+            } else if (sectType == SectTypes.GUARDIAN) {
+                guardianGlobalPassiveSkills = sectSkillList;
+                System.out.println("Guardian global skills updated: " + guardianGlobalPassiveSkills.size());
+            } else if (sectType == SectTypes.HUNTER) {
+                hunterGlobalPassiveSkills = sectSkillList;
+                System.out.println("Hunter global skills updated: " + hunterGlobalPassiveSkills.size());
+            } else if (sectType == SectTypes.SUMMONER) {
+                summonerGlobalPassiveSkills = sectSkillList;
+                System.out.println("Summoner global skills updated: " + summonerGlobalPassiveSkills.size());
+            } else if (sectType == SectTypes.ENGINEER) {
+                engineerGlobalPassiveSkills = sectSkillList;
+                System.out.println("Engineer global skills updated: " + engineerGlobalPassiveSkills.size());
+            } else if (sectType == SectTypes.ASSASSIN) {
+                assassinGlobalPassiveSkills = sectSkillList;
+                System.out.println("Assassin global skills updated: " + assassinGlobalPassiveSkills.size());
             }
         }
     }

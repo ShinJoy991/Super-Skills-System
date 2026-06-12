@@ -44,55 +44,119 @@ public class CreateJson {
         // Warrior skills
         jsonData.put("overlord_sutra", createData(
                 "warrior",
-                Arrays.asList(ATK_FLAT.value(), DEF_FLAT.value()),
-                Map.of(ATK_FLAT.value(), 10, DEF_FLAT.value(), 10),
-                Map.of(ATK_FLAT.value(), 5, DEF_FLAT.value(), 5)
-        ));
-
-        jsonData.put("tyrant_body_divine_technique", createData(
-                "warrior",
-                Arrays.asList(ATK_PERCENT.value(), HP_PERCENT.value()),
-                Map.of(ATK_PERCENT.value(), 10, HP_PERCENT.value(), 10),
-                Map.of(ATK_PERCENT.value(), 2, HP_PERCENT.value(), 2)
+                Arrays.asList(ATK_FLAT.value(), ATK_PERCENT.value()),
+                Map.of(ATK_FLAT.value(), 2, ATK_PERCENT.value(), 5),
+                Map.of(ATK_FLAT.value(), 0.2, ATK_PERCENT.value(), 0.25)
         ));
 
         jsonData.put("war_technique", createData(
                 "warrior",
                 Arrays.asList(ATK_PERCENT.value(), RANGE_PERCENT.value()),
-                Map.of(ATK_PERCENT.value(), 10, RANGE_PERCENT.value(), 10),
-                Map.of(ATK_PERCENT.value(), 2, RANGE_PERCENT.value(), 2)
+                Map.of(ATK_PERCENT.value(), 5, RANGE_PERCENT.value(), 5),
+                Map.of(ATK_PERCENT.value(), 0.25, RANGE_PERCENT.value(), 0.25)
         ));
 
         jsonData.put("warrior_refinement", createData(
                 "warrior",
-                Arrays.asList(STR_FLAT.value(), STR_PERCENT.value()),
-                Map.of(STR_FLAT.value(), 5, STR_PERCENT.value(), 5),
-                Map.of(STR_FLAT.value(), 2, STR_PERCENT.value(), 2)
-        ));
+                Arrays.asList(STR_PERCENT.value(), DEF_FLAT.value(), HP_FLAT.value()),
+                Map.of(ATK_FLAT.value(), 1, DEF_FLAT.value(), 1, HP_FLAT.value(), 3),
+                Map.of(ATK_FLAT.value(), 0.1, DEF_FLAT.value(), 0.1, HP_FLAT.value(), 0.15)
+                ));
 
         jsonData.put("striking_technique", createData(
                 "warrior",
-                Arrays.asList(ATK_FLAT.value(), DEF_PEN_FLAT.value()),
-                Map.of(ATK_FLAT.value(), 10, DEF_PEN_FLAT.value(), 10),
-                Map.of(ATK_FLAT.value(), 2, DEF_PEN_FLAT.value(), 2)
+                Arrays.asList(CRIT_CHANCE.value(), ATTACK_SPEED.value()),
+                Map.of(CRIT_CHANCE.value(), 5, ATTACK_SPEED.value(), 0.05),
+                Map.of(CRIT_CHANCE.value(), 1, ATTACK_SPEED.value(), 0.0075)
         ));
 
         jsonData.put("augmentation_tempering", createData(
                 "warrior",
-                Arrays.asList(ATK_PERCENT.value(), HP_PERCENT.value()),
-                Map.of(ATK_PERCENT.value(), 10, HP_PERCENT.value(), 10),
-                Map.of(ATK_PERCENT.value(), 2, HP_PERCENT.value(), 2)
+                Arrays.asList(HP_FLAT.value(), STR_FLAT.value()),
+                Map.of(HP_FLAT.value(), 3, STR_FLAT.value(), 5),
+                Map.of(HP_FLAT.value(), 0.15, STR_FLAT.value(), 1.25)
         ));
 
-        jsonData.put("combat_artistry", createData(
+        jsonData.put("military_strategy", createData(
                 "warrior",
-                Arrays.asList(ATK_PERCENT.value(), COUNTER_CHANCE.value()),
-                Map.of(ATK_PERCENT.value(), 10, COUNTER_CHANCE.value(), 10),
-                Map.of(ATK_PERCENT.value(), 2, COUNTER_CHANCE.value(), 2)
+                Arrays.asList(DEF_PEN_FLAT.value(), STR_PERCENT.value()),
+                Map.of(DEF_PEN_FLAT.value(), 2, STR_PERCENT.value(), 2),
+                Map.of(DEF_PEN_FLAT.value(), 0.1, STR_PERCENT.value(), 0.5)
         ));
 
-        jsonData.put("draconic_swiftness_art", createData(
+        jsonData.put("combat_training", createData(
                 "warrior",
+                Arrays.asList(COUNTER_CHANCE.value(), EVASION.value()),
+                Map.of(COUNTER_CHANCE.value(), 5, EVASION.value(), 5),
+                Map.of(COUNTER_CHANCE.value(), 0.25, EVASION.value(), 0.75)
+        ));
+
+        jsonData.put("iron_will", createData(
+                "warrior",
+                Arrays.asList(RESISTANCE.value(), DMG_REDUCTION.value()),
+                Map.of(RESISTANCE.value(), 2, DMG_REDUCTION.value(), 2),
+                Map.of(RESISTANCE.value(), 0.5, DMG_REDUCTION.value(), 0.25)
+        ));
+
+        jsonData.put("siege_technique", createData(
+                "warrior",
+                Arrays.asList(RESISTANCE_PEN.value(), MAGIC_RESISTANCE_PEN.value()),
+                Map.of(RESISTANCE_PEN.value(), 5, MAGIC_RESISTANCE_PEN.value(), 5),
+                Map.of(RESISTANCE_PEN.value(), 0.5, MAGIC_RESISTANCE_PEN.value(), 0.25)
+        ));
+
+        jsonData.put("vanguard_assault", createData(
+                "warrior",
+                Arrays.asList(ATTACK_SPEED.value(), DEF_PEN_PERCENT.value(), AGI_PERCENT.value()),
+                Map.of(ATTACK_SPEED.value(), 0.05, DEF_PEN_PERCENT.value(), 3, AGI_PERCENT.value(), 1),
+                Map.of(ATTACK_SPEED.value(), 0.0075, DEF_PEN_PERCENT.value(), 0.25, AGI_PERCENT.value(), 0.3)
+        ));
+
+        jsonData.put("battlefield_adaptation", createData(
+                "warrior",
+                Arrays.asList(PER_FLAT.value(), EVASION.value()),
+                Map.of(PER_FLAT.value(), 5, EVASION.value(), 3),
+                Map.of(PER_FLAT.value(), 1, EVASION.value(), 0.35)
+        ));
+
+        jsonData.put("defensive_tactics", createData(
+                "warrior",
+                Arrays.asList(DEF_PERCENT.value(), DMG_REDUCTION.value()),
+                Map.of(DEF_PERCENT.value(), 5, DMG_REDUCTION.value(), 3),
+                Map.of(DEF_PERCENT.value(), 0.5, DMG_REDUCTION.value(), 0.5)
+        ));
+
+        jsonData.put("offensive_tactics", createData(
+                "warrior",
+                Arrays.asList(RANGE_FLAT.value(), ACCURACY.value()),
+                Map.of(RANGE_FLAT.value(), 2, ACCURACY.value(), 5),
+                Map.of(RANGE_FLAT.value(), 0.2, ACCURACY.value(), 0.75)
+        ));
+
+        jsonData.put("fearless_charge", createData(
+                "warrior",
+                Arrays.asList(SPEED.value(), VIT_FLAT.value()),
+                Map.of(SPEED.value(), 0.005, VIT_FLAT.value(), 1),
+                Map.of(SPEED.value(), 0.0002, VIT_FLAT.value(), 0.15)
+        ));
+
+        jsonData.put("tyrant_body_divine_technique", createData(
+                "warrior",
+                Arrays.asList(HP_FLAT.value(), HP_PERCENT.value()),
+                Map.of(HP_FLAT.value(), 4, HP_PERCENT.value(), 4),
+                Map.of(HP_FLAT.value(), 0.2, HP_PERCENT.value(), 0.2)
+        ));
+
+        jsonData.put("weapon_master", createData(
+                "warrior",
+                Arrays.asList(WEAPON_DMG_PERCENT.value()),
+                Map.of(WEAPON_DMG_PERCENT.value(), 5),
+                Map.of(WEAPON_DMG_PERCENT.value(), 0.5)
+        ));
+
+        // Archer skills
+        jsonData.put("draconic_swiftness", createData(
+                "archer",
                 Arrays.asList(SPEED.value()),
                 Map.of(SPEED.value(), 0.1f),
                 Map.of(SPEED.value(), 0.02f)
@@ -106,7 +170,7 @@ public class CreateJson {
         ));
 
 
-        jsonData.put("eagle_eye", createData(
+        jsonData.put("hawkeye", createData(
                 "archer",
                 Arrays.asList(ACCURACY.value()),
                 Map.of(ACCURACY.value(), 10),
@@ -127,6 +191,7 @@ public class CreateJson {
                 Map.of(SPEED.value(), 0.02f)
         ));
 
+        // Mage skills
         jsonData.put("mystic_talisman", createData(
                 "mage",
                 Arrays.asList(MANA_FLAT.value(), INT_FLAT.value()),
@@ -146,6 +211,17 @@ public class CreateJson {
                 Arrays.asList(MANA_PERCENT.value(), PER_FLAT.value()),
                 Map.of(MANA_PERCENT.value(), 10, PER_FLAT.value(), 5),
                 Map.of(MANA_PERCENT.value(), 2, PER_FLAT.value(), 2)
+        ));
+
+        // SWOORDSMAN skills
+
+
+        // Medic skills
+        jsonData.put("vital_essence_manipulation", createData(
+                "medic",
+                Arrays.asList(HP_PERCENT.value(), MANA_PERCENT.value()),
+                Map.of(HP_PERCENT.value(), 10, MANA_PERCENT.value(), 10),
+                Map.of(HP_PERCENT.value(), 2, MANA_PERCENT.value(), 2)
         ));
 
 

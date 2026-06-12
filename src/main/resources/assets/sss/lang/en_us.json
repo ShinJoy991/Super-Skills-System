@@ -9,8 +9,8 @@
   "enchantment.sss.magma_walker": "Magma Walker",
   "enchantment.sss.magma_walker.desc": "Solidifies lava if you slowly step on it  [Boots]",
 
-  "itemGroup.sss.creative_tab": "Level Up System",
-  "item.sss.mod_icon": "LUS Mod Icon",
+  "itemGroup.sss.creative_tab": "Super Skill System",
+  "item.sss.mod_icon": "SSS Mod Icon",
 
   "container.prime_exp_grinder_title": "Prime EXP Grinder",
 
@@ -20,14 +20,6 @@
 
   "entity.minecraft.villager.sss.soundmaster": "Sound Master",
   "entity.minecraft.villager.sss.sect_master": "Skill",
-  "entity.minecraft.villager.sss.sect_warrior": "Warrior",
-  "entity.minecraft.villager.sss.sect_archer": "Archer",
-    "entity.minecraft.villager.sss.sect_mage": "Mage",
-
-  "sect_type.warrior": "Warrior",
-  "sect_type.archer": "Archer",
-  "sect_type.mage": "Mage",
-
   "entity.sss.sect_villager": "Villager",
 
   "skill.info.atk_flat": "Attack Damage ",
@@ -78,35 +70,6 @@
   "skill.info.magic_resistance_pen": "Magic Resistance Penetration ",
 
   "skill.info.unknown": "Skill Info UNK",
-
-  "skill.name.overlord_sutra": "Overlord Sutra",
-  "skill.name.tyrant_body_divine_technique": "Tyrant Body Technique",
-  "skill.name.war_technique": "War Technique",
-  "skill.name.qi_outburst": "Qi Outburst",
-
-  "skill.name.warrior_refinement": "Warrior's Refinement",
-  "skill.name.striking_technique": "Striking technique",
-  "skill.name.augmentation_tempering": "Augmentation Tempering",
-  "skill.name.combat_artistry": "Combat Artistry",
-  "skill.name.draconic_swiftness_art": "Draconic Swiftness Art",
-
-
-  "skill.name.mystic_talisman": "Mystic Talisman",
-  "skill.name.tome_of_wisdom": "Tome of Wisdom",
-  "skill.name.tome_of_covert_lore": "Tome of Covert Lore",
-
-
-  "skill.name.eagle_eye": "Eagle Eye",
-  "skill.name.swift_draw": "Swift Draw",
-  "skill.name.wind_step": "Wind Step",
-
-  "skill.name.magic_ascension": "Magic Ascension",
-
-
-  "skill.name.act_skill_thrust": "Thrust",
-  "skill.description.act_skill_thrust": "Thrust forward and deal damage to enemies in the path",
-  "skill.name.act_skill_jump": "Jump",
-  "skill.description.act_skill_jump": "Jump up a distance",
 
   "damage_type.minecraft.generic": "Generic",
   "damage_type.sss.melee_physical": "Melee Physical",
@@ -187,6 +150,68 @@
   "label.sect_villager.skills": "Skills",
 
   "message.sss.not_enough_mana": "Not enough mana!",
-  "message.sss.skill_on_cooldown": "Skill on cooldown"
+  "message.sss.skill_on_cooldown": "Skill on cooldown",
+
+
+
+
+
+
+
+  "entity.minecraft.villager.sss.sect_warrior": "Warrior",
+  "sect_type.warrior": "Warrior",
+
+  "skill.name.overlord_sutra": "Overlord Sutra",
+  "skill.name.tyrant_body_divine_technique": "Tyrant Body Technique",
+  "skill.name.war_technique": "War Technique",
+  "skill.name.qi_outburst": "Qi Outburst",
+  "skill.name.warrior_refinement": "Warrior's Refinement",
+  "skill.name.striking_technique": "Striking technique",
+  "skill.name.augmentation_tempering": "Augmentation Tempering",
+  "skill.name.combat_artistry": "Combat Artistry",
+
+  "skill.name.act_skill_thrust": "Thrust",
+  "skill.description.act_skill_thrust": "Thrust forward and deal damage to enemies in the path",
+
+
+
+
+  "entity.minecraft.villager.sss.sect_archer": "Archer",
+  "sect_type.archer": "Archer",
+
+  "skill.name.draconic_swiftness": "Draconic Swiftness",
+  "skill.name.eagle_eye": "Eagle Eye",
+  "skill.name.swift_draw": "Swift Draw",
+  "skill.name.wind_step": "Wind Step",
+
+  "skill.name.act_skill_jump": "Jump",
+  "skill.description.act_skill_jump": "Jump up a distance",
+
+
+
+
+  "entity.minecraft.villager.sss.sect_mage": "Mage",
+  "sect_type.mage": "Mage",
+
+  "skill.name.mystic_talisman": "Mystic Talisman",
+  "skill.name.tome_of_wisdom": "Tome of Wisdom",
+  "skill.name.tome_of_covert_lore": "Tome of Covert Lore",
+  "skill.name.magic_ascension": "Magic Ascension",
+
+
+
+
+  "entity.minecraft.villager.sss.sect_swordman": "Swordman",
+  "sect_type.swordman": "Swordman",
+
+  "skill.name.sword_dance": "Sword Dance",
+  "skill.name.sword_rain": "Sword Rain",
+  "skill.name.sword_shield": "Sword Shield",
+  "skill.name.sword_mastery": "Sword Mastery",
+
+
+
+
+
 
 }

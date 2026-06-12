@@ -43,7 +43,13 @@ public class PassiveSkillInstance {
     public float getValue(SkillTags tag) {
         float baseValue = skill.getBase(tag);
         float bonusValue = skill.getBonus(tag);
-        return baseValue + bonusValue * level;
+        if (level == 1) {
+            return baseValue;
+        }
+        else if (level == 20) {
+            return baseValue + bonusValue * 20;
+        }
+        return baseValue + bonusValue * (level - 1);
     }
 
     public boolean hasTag(SkillTags tag) {
@@ -112,7 +118,7 @@ public class PassiveSkillInstance {
     }
 
     private Component getLoreInfoBaseOnTag(SkillTags tag) {
-        float value = skill.getBase(tag) + skill.getBonus(tag) * (level + 1);
+        float value = this.getValue(tag);
         String text = DECIMAL_FORMAT.format(value);
         if (tag.isPercentage()) {
             text += "%";

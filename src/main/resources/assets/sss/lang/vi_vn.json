@@ -9,24 +9,18 @@
   "enchantment.sss.magma_walker": "Magma Walker",
   "enchantment.sss.magma_walker.desc": "Solidifies lava if you slowly step on it  [Boots]",
 
-  "itemGroup.sss.creative_tab": "Level Up System",
-  "item.sss.mod_icon": "LUS Mod Icon",
+  "itemGroup.sss.creative_tab": "Super Skills System",
+
 
   "container.prime_exp_grinder_title": "Prime EXP Grinder",
 
+  "item.sss.mod_icon": "SSS Mod Icon",
   "item.sss.prime_exp_book": "Prime EXP Book",
   "item.sss.prime_exp_grinder": "Prime EXP Grinder",
   "item.sss.prime_exp_orb": "Prime EXP",
 
-  "entity.minecraft.villager.sss.soundmaster": "Sound Master",
-  "entity.minecraft.villager.sss.sect_master": "Skill",
-  "entity.minecraft.villager.sss.sect_warrior": "Warrior",
-  "entity.minecraft.villager.sss.sect_archer": "Archer",
 
-  "sect_type.warrior": "Warrior",
-  "sect_type.archer": "Archer",
 
-  "entity.sss.sect_villager": "Villager",
 
   "skill.info.atk_flat": "Attack Damage ",
   "skill.info.atk_percent": "Attack Damage ",
@@ -77,30 +71,22 @@
 
   "skill.info.unknown": "Skill Info Unknown",
 
-  "skill.name.overlord_sutra": "Bá Vương Tâm Kinh",
-  "skill.name.tyrant_body_divine_technique": "Bá Thể Thần Công",
-  "skill.name.war_technique": "Thuật Chiến Tranh",
-  "skill.name.qi_outburst": "Tập Khí Bạo Phát",
-
-  "skill.name.warrior_refinement": "Luyện Chiến Sĩ",
-  "skill.name.striking_technique": "Kỹ Xảo Tấn Công",
-  "skill.name.augmentation_tempering": "Luyện Cường Hóa",
-  "skill.name.combat_artistry": "Kỹ Xảo Chiến Đấu",
-  "skill.name.draconic_swiftness_art": "Du Long Pháp",
-
-  "skill.name.mystic_talisman": "Bùa Thần Bí",
-  "skill.name.tome_of_wisdom": "Thư Tri Thức",
-  "skill.name.tome_of_covert_lore": "Pháp Thư Mật Ngữ",
-  "skill.name.magic_ascension": "Magic Ascension",
 
 
-  "skill.name.act_skill_thrust": "Thrust",
-  "skill.description.act_skill_thrust": "Thrust forward and deal damage to enemies in the path",
-  "skill.name.act_skill_jump": "Jump",
-  "skill.description.act_skill_jump": "Jump up a distance",
+
+  "entity.sss.sect_villager": "Villager",
+  "entity.minecraft.villager.sss.soundmaster": "Sound Master",
+  "entity.minecraft.villager.sss.sect_master": "Skill",
+
+
+
+
 
   "damage_type.minecraft.generic": "Generic",
   "damage_type.sss.melee_physical": "Melee Physical",
+
+
+
 
   "skill.level": "Level",
   "skill.base_damage": "Damage",
@@ -111,8 +97,10 @@
   "skill.type.active": "Active",
   "skill.type.passive": "Passive",
 
+
+
+
   "title.sect": "Sect",
-  "sentence.playerinfo.uuid": "View detail",
   "title.name": "Name",
   "title.playerinfo": "Player Info",
   "title.detailinfo": "Detail Info",
@@ -139,7 +127,7 @@
   "sentence.detail.intelligence": "Intelligence greatly affects magic attack, some magic DEF, magic RES, magic penetration and RES",
   "sentence.detail.perception": "Perception affects magic attack, magic DEF, magic RES, DEF, Speed, Damage RED, RES, Evasion and Mana Regen",
   "sentence.detail.level": "Each level will accumulate 3 attribute points, prime exp can be get from special activities like",
-
+  "sentence.playerinfo.uuid": "View detail",
   "sentence.detail.weapon_dmg": "Damage of weapon and it's base",
   "sentence.detail.atk_dmg": "Increases the damage of physical attack",
   "sentence.detail.range_dmg": "Increases the damage of ranged attack",
@@ -178,6 +166,220 @@
   "label.sect_villager.skills": "Skills",
 
   "message.sss.not_enough_mana": "Not enough mana!",
-  "message.sss.skill_on_cooldown": "Skill on cooldown"
+  "message.sss.skill_on_cooldown": "Skill on cooldown",
 
+
+
+
+
+
+  "sect_type.warrior": "Warrior",
+  "entity.minecraft.villager.sss.sect_warrior": "Warrior",
+
+  "skill.name.overlord_sutra": "Bá Vương Chân Kinh",
+  "skill.name.war_technique": "Thuật Chiến Tranh",
+  "skill.name.warrior_refinement": "Rèn Chiến Sĩ",
+  "skill.name.striking_technique": "Kỹ Thuật Tấn Công",
+  "skill.name.augmentation_tempering": "Cường Hóa",
+  "skill.name.military_strategy": "Binh Pháp Quân Sự",
+  "skill.name.combat_training": "Huấn Luyện Tác Chiến",
+  "skill.name.iron_will": "Ý Chí Thép",
+  "skill.name.siege_technique": "Thuật Công Phá",
+  "skill.name.vanguard_assault": "Xung Kích",
+  "skill.name.battlefield_adaptation": "Thích Nghi Chiến Trường",
+  "skill.name.defensive_tactics": "Chiến Thuật Thủ",
+  "skill.name.offensive_tactics": "Chiến Thuật Công",
+  "skill.name.fearless_charge": "Xung Phong Dũng Cảm",
+  "skill.name.tyrant_body_divine_technique": "Bá Thể Thần Thuật",
+  "skill.name.weapon_master": "Vũ Khí Đại Sư",
+
+
+
+
+  "skill.name.act_skill_thrust": "Thrust",
+  "skill.description.act_skill_thrust": "Thrust forward and deal damage to enemies in the path",
+
+
+
+  "entity.minecraft.villager.sss.sect_archer": "Archer",
+  "sect_type.archer": "Archer",
+
+
+  "skill.name.draconic_swiftness": "Du Long",
+  "skill.name.wildhunt": "Liệp Dã",
+  "skill.name.physique": "Kiện Thể",
+  "skill.name.longbreath": "Trường Tức",
+  "skill.name.farsight": "Viễn Mục",
+  "skill.name.shadowtrace": "Truy Ảnh",
+  "skill.name.hawkeye": "Ưng Nhãn",
+  "skill.name.godsight": "Thần Thị",
+  "skill.name.huntersense": "Liệp Thức",
+  "skill.name.hiddenwind": "Tàng Phong",
+  "skill.name.flashstep": "Thiểm Quang",
+  "skill.name.fatebound": "Mệnh Ảnh",
+  "skill.name.counterkill": "Phản Sát",
+  "skill.name.finalstrike": "Tuyệt Kích",
+  "skill.name.stellar_rain": "Tinh Vũ",
+  "skill.name.crescent_eclipse": "Khuyết Nguyệt",
+  "skill.name.sleepless_void": "Vô Miên",
+  "skill.name.primal_control": "Ngự Nguyên",
+
+  "skill.name.act_skill_jump": "Jump",
+  "skill.description.act_skill_jump": "Jump up a distance",
+
+
+
+
+  "entity.minecraft.villager.sss.sect_mage": "Mage",
+  "sect_type.mage": "Mage",
+
+  "skill.name.mystic_talisman": "Bùa Huyền Bí",
+  "skill.name.tome_of_wisdom": "Thư Tri Thức",
+  "skill.name.tome_of_covert_lore": "Thư Mật Ngữ",
+  "skill.name.magic_ascension": "Tiến Cấp Pháp Thuật",
+
+  "skill.name.magic_specialist": "Chuyên Gia Pháp Thuật",
+  "skill.name.battle_mage": "Pháp Sư Tác Chiến",
+  "skill.name.swift_casting": "Thần Tốc Thi Thuật",
+  "skill.name.basic_magic": "Ma Thuật Căn Bản",
+  "skill.name.arcane_body": "Pháp Thể",
+  "skill.name.protective_shield": "Hộ Thân Thuẫn",
+  "skill.name.mana_resonance": "Ma Lực Cộng Hưởng",
+  "skill.name.magical_empowerment": "Ma Năng Cường Hóa",
+  "skill.name.arcane_arts": "Huyền Thuật",
+  "skill.name.divine_studies": "Thần Học",
+  "skill.name.supreme_magic": "Pháp Thuật Tối Thượng",
+  "skill.name.mana_circulation": "Ma Lực Hồi Chuyển",
+  "skill.name.spell_penetration": "Xuyên Phá Pháp Thuật",
+  "skill.name.arcane_burst": "Pháp Lực Bùng Nổ",
+  "skill.name.formation_studies": "Pháp Trận Học",
+  "skill.name.mana_exceed": "Ma Lực Cực Hạn",
+  "skill.name.mana_increase": "Tăng Ma Lực",
+  "skill.name.magic_armament": "Pháp Thuật Vũ Trang",
+  "skill.name.magic_pact": "Khế Ước Thuật",
+  "skill.name.ancient_grimoire": "Pháp Thư Cổ Đại",
+
+
+
+
+  "entity.minecraft.villager.sss.sect_swordman": "Swordman",
+  "sect_type.swordman": "Swordman",
+
+  "skill.name.sword_dance": "Kiếm Vũ",
+  "skill.name.sword_soaring": "Ngự Kiếm Thuật",
+  "skill.name.flowing_sword_essence": "Kiếm Khí Lưu Chuyển",
+  "skill.name.sword_spirit_guard": "Kiếm Linh Hộ Thể",
+  "skill.name.overlord_sword_pressure": "Bá Kiếm Chấn Nhiếp",
+  "skill.name.sword_power_burst": "Kiếm Lực Bộc Phát",
+  "skill.name.sword_soul_blessing": "Kiếm Phách Gia Hộ",
+  "skill.name.heavenly_dao_sword": "Thiên Đạo Kiếm",
+  "skill.name.meridian_rending_sword": "Đoạn Mạch Liệt Kiếm",
+  "skill.name.iron_force_sword": "Thiết Kình Kiếm",
+  "skill.name.hundred_refined_sword_art": "Bách Luyện Kiếm Pháp",
+  "skill.name.heavenly_breaking_sword": "Đoạn Thiên Kiếm",
+  "skill.name.dao_inquiry_sword": "Pháp Vấn Kiếm",
+  "skill.name.six_meridian_sword_stance": "Lục Mạch Kiếm Thế",
+  "skill.name.overlord_sword_body": "Bá Vương Kiếm Thể",
+  "skill.name.swordless_technique": "Vô Kiếm Công",
+  "skill.name.arcane_sword": "Ma Năng Kiếm",
+  "skill.name.extreme_shadow_sword_art": "Cực Ảnh Pháp Kiếm",
+  "skill.name.unfettered_sword": "Tự Tại Kiếm",
+  "skill.name.taiji sword": "Thái Cực Kiếm",
+  "skill.name.evil_wind_sword_codex": "Tà Phong Kiếm Lục",
+  "skill.name.nine_forms_sword_art": "Cửu Thức Pháp Kiếm",
+  "skill.name.true_origin_sword_manual": "Chân Nguyên Kiếm Phổ",
+  "skill.name.jade_sound_sword_technique": "Ngọc Âm Kiếm Thuật",
+  "skill.name.nine_sun_sword": "Cửu Dương Kiếm",
+
+  "skill.name.sword_incantation_heaven_split": "Kiếm Chú - Trảm Càn Khôn",
+
+
+
+
+  "entity.minecraft.villager.sss.sect_medic": "Medic",
+  "sect_type.medic": "Medic",
+
+  "skill.name.swift_wind_seal": "Tật Phong Ấn",
+  "skill.name.pure_wind_qi_gathering": "Thanh Phong Tụ Khí",
+  "skill.name.tempest_phantasm": "Cuồng Phong Tức Ảnh",
+  "skill.name.flame_cloud_seal": "Hỏa Vân Ấn",
+  "skill.name.blazing_force": "Liệt Hỏa Gia Lực",
+  "skill.name.crimson_body": "Xích Thể",
+  "skill.name.heavenly_thunder_seal": "Thiên Lôi Ấn",
+  "skill.name.thunder_refinement": "Lôi Luyện",
+  "skill.name.purifying_thunder_shadow": "Tịnh Lôi Phá Ảnh",
+  "skill.name.extreme_frost_seal": "Cực Hàn Ấn",
+  "skill.name.frozen_qi_mind": "Băng Tâm Tọa Khí",
+  "skill.name.formless_snow": "Tuyết Linh Vô Tướng",
+  "skill.name.golden_seal": "Hoàng Kim Ấn",
+  "skill.name.diamond_body": "Kim Cương Tọa Thể",
+  "skill.name.iron_heart": "Thiết Tâm",
+  "skill.name.wood_spirit_seal": "Mộc Linh Ấn",
+  "skill.name.jade_body": "Linh Lung Thể",
+  "skill.name.natural_guard": "Hộ Thể Tự Nhiên",
+  "skill.name.spirit_medicine": "Linh Dược Thuật",
+  "skill.name.mysterious_water_seal": "Huyền Thủy Ấn",
+  "skill.name.blue_shadow": "Lam Lưu Ảnh",
+  "skill.name.azure_tide_domain": "Bích Hà Vực",
+
+
+
+
+  "entity.minecraft.villager.sss.sect_guardian": "Guardian",
+  "sect_type.guardian": "Guardian",
+
+  "skill.name.hundred_immunity": "Bách Độc Bất Xâm",
+  "skill.name.holy_body": "Thánh Linh Thể",
+  "skill.name.lightning_counterstrike": "Lôi Quang Phản Kích",
+  "skill.name.damage_reversal_art": "Nghịch Thương Thuật",
+  "skill.name.endless_empowerment": "Vô Tận Gia Trì",
+  "skill.name.spirit_reservoir": "Linh Trì",
+  "skill.name.tyrant_shield": "Bá Thuẫn",
+  "skill.name.armor_reservoir": "Khải Trì",
+  "skill.name.arcane_shield": "Pháp Thuẫn",
+  "skill.name.divine_shield_rebound": "Thần Thuẫn Phản Chấn",
+  "skill.name.soul_enhancement": "Linh Hồn Cường Hóa",
+  "skill.name.ancient_strength_empowerment": "Cổ Lực Gia Trì",
+  "skill.name.combat_instinct": "Bản Năng Chiến Đấu",
+  "skill.name.fortified_body": "Cường Thể",
+  "skill.name.war_mammoth": "Cự Tượng",
+  "skill.name.inner_might": "Khí Cốt Kình",
+  "skill.name.colossus_shield": "Phiên Thiên Thuẫn",
+  "skill.name.defense_art": "Binh Pháp Thủ",
+  "skill.name.origin_shield": "Nguyên Thuẫn",
+
+
+
+
+  "entity.minecraft.villager.sss.sect_striker": "Striker",
+  "sect_type.striker": "Striker",
+
+  "skill.name.battle_will": "Chiến Ý",
+  "skill.name.martial_soul": "Võ Phách",
+  "skill.name.raging_tiger": "Cuồng Hổ",
+  "skill.name.dragon_might": "Long Uy",
+  "skill.name.exorcist_technique": "Phục Ma Công",
+  "skill.name.tyrant_strength": "Bá Lực",
+  "skill.name.vanquishers_hand": "Hàng Ma Thủ",
+  "skill.name.vanquishers_sutra": "Hàng Ma Chân Kinh",
+  "skill.name.rampage_divine_art": "Bạo Thể Thần Công",
+  "skill.name.reapers_hand": "Tay Tử Thần",
+  "skill.name.arhat_marrow_sutra": "La Hán Tẩy Tủy Kinh",
+  "skill.name.phoenix_song": "Phượng Ca",
+  "skill.name.armor_breaking_strike": "Phá Giáp Lực",
+  "skill.name.dreadbone_force": "Quỷ Cốt Kình",
+  "skill.name.peerless_claw": "Vô Song Trảo",
+  "skill.name.vajra_guard": "Kim Thân Hộ Giáp",
+  "skill.name.divine_guiding": "Thần Dẫn Lộ",
+  "skill.name.piercing_blood": "Xuyên Huyết",
+  "skill.name.sacred_blessing": "Thánh Linh Hộ Mệnh",
+  "skill.name.black_tortoise_aegis": "Huyền Vũ Hộ Thể",
+  "skill.name.dragonlord_strength": "Long Tượng Lực",
+  "skill.name.titan_body": "Cự Linh Thể",
+
+
+
+  "skill.name.wind_step": "Tật Phong Ảo Ảnh",
+  "skill.name.qi_outburst": "Khí Bạo Phát",
+  "skill.name.storm_eye": "Mắt Bão"
 }

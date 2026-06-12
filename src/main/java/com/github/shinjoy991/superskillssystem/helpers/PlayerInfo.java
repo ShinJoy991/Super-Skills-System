@@ -269,7 +269,7 @@ public class PlayerInfo {
                 (skillBonusMap.getOrDefault(SkillTags.ATK_PERCENT, 0f) + equipmentBonusMap.getOrDefault(SkillTags.ATK_PERCENT, 0f)))
                 + skillBonusMap.getOrDefault(SkillTags.ATK_FLAT, 0f) + equipmentBonusMap.getOrDefault(SkillTags.ATK_FLAT, 0f);
         ServerPlayer serverPlayer = (ServerPlayer) serverLevelData.getPlayerByUUID(this.uuid);
-        System.out.println("calAtk: " + calAtk + " atk: " + atk + " player_atk: " + player_atk +" att: "+ ((float) serverPlayer.getAttributeValue(Attributes.ATTACK_DAMAGE)));
+//        System.out.println("calAtk: " + calAtk + " atk: " + atk + " player_atk: " + player_atk +" att: "+ ((float) serverPlayer.getAttributeValue(Attributes.ATTACK_DAMAGE)));
 
         this.AtkDmg = calAtk;
     }
@@ -1204,7 +1204,7 @@ public class PlayerInfo {
     }
 
     public double getHealthBonus() {
-        double healthBonus = this.TotalVit * 0.1f + this.TotalStr * 0.02f;
+        double healthBonus = this.TotalVit * 0.33f + this.TotalStr * 0.1f;
         healthBonus *= (1 + 0.01f * (skillBonusMap.getOrDefault(SkillTags.HP_PERCENT, 0f) + equipmentBonusMap.getOrDefault(SkillTags.HP_PERCENT, 0f)));
         healthBonus += skillBonusMap.getOrDefault(SkillTags.HP_FLAT, 0f) + equipmentBonusMap.getOrDefault(SkillTags.HP_FLAT, 0f);
         return healthBonus;

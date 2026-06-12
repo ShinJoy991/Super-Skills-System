@@ -4,6 +4,7 @@ import com.github.shinjoy991.superskillssystem.helpers.AllPlayersInfo;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -68,6 +69,114 @@ public class ModVillagers {
             VILLAGER_PROFESSIONS.register("sect_mage",
                     () -> new VillagerProfession(
                             "sect_mage",
+                            poi -> false,
+                            poi -> false,
+                            ImmutableSet.of(),
+                            ImmutableSet.of(),
+                            SoundEvents.VILLAGER_CELEBRATE
+                    )
+            );
+
+    public static final RegistryObject<VillagerProfession> SECT_SWORDSMAN =
+            VILLAGER_PROFESSIONS.register("sect_swordsman",
+                    () -> new VillagerProfession(
+                            "sect_swordsman",
+                            poi -> false,
+                            poi -> false,
+                            ImmutableSet.of(),
+                            ImmutableSet.of(),
+                            SoundEvents.VILLAGER_WORK_ARMORER
+                    )
+            );
+
+    public static final RegistryObject<VillagerProfession> SECT_MEDIC =
+            VILLAGER_PROFESSIONS.register("sect_medic",
+                    () -> new VillagerProfession(
+                            "sect_medic",
+                            poi -> false,
+                            poi -> false,
+                            ImmutableSet.of(),
+                            ImmutableSet.of(),
+                            SoundEvents.VILLAGER_WORK_CARTOGRAPHER
+                    )
+            );
+
+    public static final RegistryObject<VillagerProfession> SECT_STRIKER =
+            VILLAGER_PROFESSIONS.register("sect_striker",
+                    () -> new VillagerProfession(
+                            "sect_striker",
+                            poi -> false,
+                            poi -> false,
+                            ImmutableSet.of(),
+                            ImmutableSet.of(),
+                            SoundEvents.VILLAGER_CELEBRATE
+                    )
+            );
+
+    public static final RegistryObject<VillagerProfession> SECT_TRICKSTER =
+            VILLAGER_PROFESSIONS.register("sect_trickster",
+                    () -> new VillagerProfession(
+                            "sect_trickster",
+                            poi -> false,
+                            poi -> false,
+                            ImmutableSet.of(),
+                            ImmutableSet.of(),
+                            SoundEvents.VILLAGER_WORK_CARTOGRAPHER
+                    )
+            );
+
+    public static final RegistryObject<VillagerProfession> SECT_GUARDIAN =
+            VILLAGER_PROFESSIONS.register("sect_guardian",
+                    () -> new VillagerProfession(
+                            "sect_guardian",
+                            poi -> false,
+                            poi -> false,
+                            ImmutableSet.of(),
+                            ImmutableSet.of(),
+                            SoundEvents.VILLAGER_WORK_ARMORER
+                    )
+            );
+
+    public static final RegistryObject<VillagerProfession> SECT_HUNTER =
+            VILLAGER_PROFESSIONS.register("sect_hunter",
+                    () -> new VillagerProfession(
+                            "sect_hunter",
+                            poi -> false,
+                            poi -> false,
+                            ImmutableSet.of(),
+                            ImmutableSet.of(),
+                            SoundEvents.VILLAGER_WORK_FLETCHER
+                    )
+            );
+
+    public static final RegistryObject<VillagerProfession> SECT_SUMMONER =
+            VILLAGER_PROFESSIONS.register("sect_summoner",
+                    () -> new VillagerProfession(
+                            "sect_summoner",
+                            poi -> false,
+                            poi -> false,
+                            ImmutableSet.of(),
+                            ImmutableSet.of(),
+                            SoundEvents.VILLAGER_CELEBRATE
+                    )
+            );
+
+    public static final RegistryObject<VillagerProfession> SECT_ENGINEER =
+            VILLAGER_PROFESSIONS.register("sect_engineer",
+                    () -> new VillagerProfession(
+                            "sect_engineer",
+                            poi -> false,
+                            poi -> false,
+                            ImmutableSet.of(),
+                            ImmutableSet.of(),
+                            SoundEvents.VILLAGER_WORK_ARMORER
+                    )
+            );
+
+    public static final RegistryObject<VillagerProfession> SECT_ASSASSIN =
+            VILLAGER_PROFESSIONS.register("sect_assassin",
+                    () -> new VillagerProfession(
+                            "sect_assassin",
                             poi -> false,
                             poi -> false,
                             ImmutableSet.of(),

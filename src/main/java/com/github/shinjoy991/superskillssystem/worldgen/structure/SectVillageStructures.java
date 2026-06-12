@@ -31,16 +31,16 @@ public class SectVillageStructures {
                     Pair.of("sss:village/sect_house_plains_1", 50)
             ),
             "village/snowy/houses", List.of(
-                    Pair.of("sss:village/sect_house_snowy_1", 3)
+                    Pair.of("sss:village/sect_house_snowy_1", 50)
             ),
             "village/savanna/houses", List.of(
-                    Pair.of("sss:village/sect_house_savanna_1", 3)
+                    Pair.of("sss:village/sect_house_savanna_1", 50)
             ),
             "village/taiga/houses", List.of(
-                    Pair.of("sss:village/sect_house_taiga_1", 3)
+                    Pair.of("sss:village/sect_house_taiga_1", 30)
             ),
             "village/desert/houses", List.of(
-                    Pair.of("sss:village/sect_house_desert_1", 3)
+                    Pair.of("sss:village/sect_house_desert_1", 50)
             )
     );
 

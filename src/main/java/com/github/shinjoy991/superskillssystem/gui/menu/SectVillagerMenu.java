@@ -581,15 +581,19 @@ public class SectVillagerMenu extends AbstractContainerMenu {
     private List<PassiveSkill> getPassiveSkillListBySect() {
         if (this.trader.isClientSide()) {
             switch (this.sectType) {
-                case WARRIOR -> {
-                    return PlayerClientData.warriorGlobalPassiveSkills;
-                }
-                case ARCHER -> {
-                    return PlayerClientData.archerGlobalPassiveSkills;
-                }
-                case MAGE -> {
-                    return PlayerClientData.mageGlobalPassiveSkills;
-                }
+                case WARRIOR -> {return PlayerClientData.warriorGlobalPassiveSkills;}
+                case ARCHER -> {return PlayerClientData.archerGlobalPassiveSkills;}
+                case MAGE -> {return PlayerClientData.mageGlobalPassiveSkills;}
+                case SWORDSMAN -> {return PlayerClientData.swordsmanGlobalPassiveSkills;}
+                case MEDIC -> {return PlayerClientData.medicGlobalPassiveSkills;}
+                case STRIKER -> {return PlayerClientData.strikerGlobalPassiveSkills;}
+                case TRICKSTER -> {return PlayerClientData.tricksterGlobalPassiveSkills;}
+                case GUARDIAN -> {return PlayerClientData.guardianGlobalPassiveSkills;}
+                case HUNTER -> {return PlayerClientData.hunterGlobalPassiveSkills;}
+                case SUMMONER -> {return PlayerClientData.summonerGlobalPassiveSkills;}
+                case ENGINEER -> {return PlayerClientData.engineerGlobalPassiveSkills;}
+                case ASSASSIN -> {return PlayerClientData.assassinGlobalPassiveSkills;}
+
                 default -> {
                     return new ArrayList<>();
                 }
